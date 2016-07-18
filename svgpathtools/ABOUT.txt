@@ -1,0 +1,1 @@
+Note: This is a special (older) version of svgpathtools.  The newer version has issues with the way svgtree is set up.

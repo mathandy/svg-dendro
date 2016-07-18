@@ -1,4 +1,6 @@
 *.pyc
 .*
 /tests
+/output/*
+!/output/*.txt
 !/.gitignore

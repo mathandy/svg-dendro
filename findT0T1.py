@@ -20,7 +20,7 @@
 
 from numpy import roots, isclose
 from operator import itemgetter
-from svg.path import Path
+from svgpathtools import Path
 from misc4rings import normalLineAtT_toInner_intersects_withOuter
 from __future__ import division #forces floating point division (use // for int division)
 

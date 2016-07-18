@@ -419,7 +419,7 @@ class IncompleteRing(object):
 #            ##DEBUG sd;fjadsfljkjl;
 #            if self.ring.path[0].start == (260.778+153.954j):
 #                from misc4rings import dis
-#                from svg.path import Line
+#                from svgpathtools import Line
 #                p2d=[self.completed_path,
 #                     self.down_ladder0[0].ORring.path,
 #                     self.down_ladder1[0].ORring.path]
@@ -474,7 +474,7 @@ class IncompleteRing(object):
         if (abs(cp_start - self.completed_path.point(0)) >= tol_closure or
             abs(cp_end - self.completed_path.point(1)) >= tol_closure):
             self.completed_path = parse_path(path2str(self.completed_path))
-            raise Exception("weird .point() bug where .point(1) != end... I just added this check in on 3-5-15, so maybe if this happens it doesn't even matter.  Try removing this code-block... or change svg.path.Path.point() method to return one or the other.")
+            raise Exception("weird .point() bug where .point(1) != end... I just added this check in on 3-5-15, so maybe if this happens it doesn't even matter.  Try removing this code-block... or change svgpathtools.Path.point() method to return one or the other.")
 
     def findTransect2endpointFromInnerPath_normal(self,irORcr_innerPath,innerPath,T_range,Tpf,endBin):
         #Tpf: If The T0 transect intersects self and the T1 does not, then Tpf should be True, otherwise it should be false.

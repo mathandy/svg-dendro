@@ -11,22 +11,22 @@ from os import getcwd
 # input_directory = "C:\\Users\\Andy\\Desktop\\samples\\" 
 
 # Run one real sample SVG
-input_directory = os_path.join(getcwd(),'samples')
+# input_directory = os_path.join(getcwd(), 'samples')
 
 # Run fake/test sample SVGs
-# input_directory = os_path.join(getcwd(),'samples','tests')
+input_directory = os_path.join(getcwd(), 'samples', 'tests')
 
 # Run all real sample SVGs
 # input_directory = os_path.join(getcwd(),'samples','reals')
 
 ### Output directory
-outputFolder = os_path.join(getcwd(),'output')
+outputFolder = os_path.join(getcwd(), 'output')
 
 
 ###############################################################################
 ###Easy Run Options ###########################################################
 ###############################################################################
-if_file_throws_error_skip_and_move_to_next_file = True
+if_file_throws_error_skip_and_move_to_next_file = False
 
 # 0 is first file, 1 is second, etc.
 start_at_file_number = 0  
@@ -43,7 +43,7 @@ N_transects = 50
 generate_evenly_spaced_transects = True
 
 # Find the area
-find_areas = True
+find_areas = False
 
 # This isn't really an option (unless you're sure rings are sorted in SVG)
 if generate_evenly_spaced_transects or find_areas:

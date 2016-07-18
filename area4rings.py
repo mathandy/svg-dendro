@@ -4,7 +4,7 @@ def find_ring_areas(sorted_ring_list, center, svgfile):#
     from andysSVGpathTools import reversePath, disvg
     from andysmod import Radius
     from options4rings import colordict, basic_output_on, showCurrentFilesProgress, outputFolder, create_SVG_showing_area_paths, outputFolder_debug
-    from svg.path import parse_path
+    from svgpathtools import parse_path
     from os import path as os_path
     #This codeblock creates a one pixel by one pixel square Ring object to act as the core - it is recorded in CP. note: perimeter should be found as a path and treated at a ring already
     csd = centerSquare(center)
@@ -53,7 +53,7 @@ def find_ring_areas(sorted_ring_list, center, svgfile):#
         except:
             from options4rings import outputTroubledCPs
             if outputTroubledCPs:
-                from svg.path import Line
+                from svgpathtools import Line
                 from options4rings import colordict
                 paths = [cp.inner.path,cp.outer.path]+[ir.ring.path for ir in cp.ir_boolset] + [sorted_ring_list[-1].path]
                 path_colors = [cp.inner.color,cp.outer.color]+[ir.ring.color for ir in cp.ir_boolset] + [colordict['boundary']]

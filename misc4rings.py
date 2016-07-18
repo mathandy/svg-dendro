@@ -417,7 +417,7 @@ def displaySVGPaths_numbered(pathList,savefile,*colors): #creates and saves an s
 def displaySVGPaths(pathList,*colors): #creates and saves an svf file displaying the input paths
     show_closed_discont=True
     import svgwrite
-    from svg.path import Path, Line, CubicBezier
+    from svgpathtools import Path, Line, CubicBezier
 #    from time import strftime
 #    from re import sub
 #    dwg = svgwrite.Drawing('temporary_displaySVGPaths%s.svg'%time_date, size= ("%spx"%(int(xmax-xmin+1)), "%spx"%(int(ymax-ymin+1))))
@@ -560,7 +560,7 @@ def displaySVGPaths_named(pathList,name,*colors): ###DEPRECATED #creates and sav
 
 
 #def test_displaySVGPaths():
-#    from svg.path import Path, Line, CubicBezier
+#    from svgpathtools import Path, Line, CubicBezier
 #    from misc4rings import path2str
 #    ps1 = path2str(Path(Line(1,10+100j)))
 #    ps2 = path2str(Path(Line(10j,10),CubicBezier(10,50j,10+50j,30+100j)))
