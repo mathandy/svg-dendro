@@ -19,40 +19,48 @@ the transects will start.
 
 To Run
 ------
-1) Follow the setup instructions below.
-2) Download and then unzip SVGTree.
-3) Read through the file "options.py".  This is where you point the code to 
-where you're storing the SVGs you'd like to input, and explains all the 
-options available.  If you have any questions, feel free to ask me 
-(AndyAPort@gmail.com).
+1. Follow the setup instructions below.
 
-4) Open a terminal/command-prompt, navigate into the SVGTree folder and enter 
-the following command.
+2. Download and then unzip SVGTree.
+
+3. Read through the file "options.py".  This is where you point the code to where you're storing the SVGs you'd like to input, and explains all the options available.  If you have any questions, feel free to ask me (AndyAPort@gmail.com).
+
+4. Open a terminal/command-prompt, navigate into the SVGTree folder and enter the following command (without the $).
+
 $ python svgtree.py
 
 Prerequisites
 -------------
 -  **python 2.x**
 -  **numpy**
+-  **scipy**
 -  **svgwrite**
 -  **svgpathtools**
 
 Setup
 -----
-1) Get Python 2:
-If you have a Mac or are running Linux, you already have Python 2.x.
-If you're on windows, go download Python 2 and install it.
-If not already installed, you can **install the prerequisites** using
-pip.
 
-2) Install the necessary python packages. This is easy using pip.  Just open 
-up a terminal/command-prompt and enter the following three commands.
+1. Get Python 2.  
+
+Note: If you have a **Mac** or are running **Linux**, you already have Python 2.x.  If you're on **Windows**, go download Python 2 and install it.
+
+2. Install the necessary python packages. 
+
+Note: This is easy using pip (which typically comes with Python).  Just open up a terminal/command-prompt and enter the following four commands (without the $).
+
 $ pip install numpy
+
+$ pip install scipy
+
 $ pip install svgwrite
+
 $ pip install svgpathtools
+
+For help
+--------
+Contact me, AndyAPort@gmail.com
 
 Licence
 -------
 
 This module is under a MIT License.
-
