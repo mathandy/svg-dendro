@@ -10,14 +10,14 @@ from os import getcwd
 # Windows example:
 # input_directory = "C:\\Users\\Andy\\Desktop\\samples\\" 
 
-# Run one real sample SVG
-# input_directory = os_path.join(getcwd(), 'samples')
+# Run just two simple examples
+input_directory = os_path.join(getcwd(), 'samples')
 
 # Run fake/test sample SVGs
-input_directory = os_path.join(getcwd(), 'samples', 'tests')
+# input_directory = os_path.join(getcwd(), 'samples', 'tests')
 
 # Run all real sample SVGs
-# input_directory = os_path.join(getcwd(),'samples','reals')
+input_directory = os_path.join(getcwd(),'samples','reals')
 
 ### Output directory
 outputFolder = os_path.join(getcwd(), 'output')
@@ -63,11 +63,11 @@ assume_svg_is_fixed = False
 # If True then creates an SVG of the correct colors etc to save time in the 
 # future in case pickle files need to be redone. The fixed svg will be stored 
 # in the output folder set above.
-create_fixed_svg = True  
+create_fixed_svg = True
 
 # folder to store pickle files (which saves some progress in case the program
 # needs to be re-run). By default, these pickle files are NOT used.
-outputFolder_pickles  = os_path.join(outputFolder, "pickle_files")  
+outputFolder_pickles = os_path.join(outputFolder, "pickle_files")
 ignore_extant_pickle_file = True
 ignore_extant_sorted_pickle_file = True
 
@@ -81,8 +81,8 @@ save_path_length_in_pickle = True
 # Note: This will smooth kinks in your rings without changing the data 
 # significantly, this is important for efficiency (and several other reasons).
 smooth_rings = True  # If True, rings will be check for kinks and smoothed
-maxjointsize = 3 # smoothing parameter  (must be positive)
-tightness = 1.99 # smoothing parameter (must be in (0, 2))
+maxjointsize = 3  # smoothing parameter  (must be positive)
+tightness = 1.99  # smoothing parameter (must be in (0, 2))
 
 # If smooth_rings = False, this may allow (if set True) inverse transects 
 # to be generated... will work assuming all kinks are joints of line segments
@@ -137,13 +137,13 @@ when_orientation_cannot_be_determined_assume_CCW = True
 try_to_open_svgs_in_browser = True
 
 # Trims paths with high curvature ends
-remove_curly_ends = False  
+remove_curly_ends = True
 
 # Ignore curly ends where entire segment violates curvature tolerance
 ignore_long_curls = True  
 
 # If necessary, stop and ask user if curly end can be cropped
-manually_curly_end = False  
+manually_curly_end = False
 
 # (user assistance required unless force_remove_self_intersections) if true, 
 # the program check for self-intersections in open rings and if found will 
@@ -153,8 +153,9 @@ remove_self_intersections = True
 # If true will assume user always answers yes.
 force_remove_self_intersections = True 
 
-# Check if rings is inproperly closed so that ends overlap (w/o self-intersection)
-check4overlappingends = False 
+# Check if rings is improperly closed so that ends overlap
+# (w/o self-intersection)
+check4overlappingends = True
 
 # To remove rings to small to be intentional
 remove_inappropriately_short_rings = True
@@ -221,6 +222,7 @@ outputTroubledCPs = True
 ###Area options ###############################################################
 ###############################################################################
 # Create SVG showing "completed" paths used for area computation
+# These are stored in the debug folder (inside the output folder)
 create_SVG_showing_area_paths = True 
 
 
@@ -231,7 +233,7 @@ showCurrentFilesProgress = OutputBoolean(True)
 showUnraveledRingPlot = False
 full_output_on = OutputBoolean(False)
 warnings_output_on = OutputBoolean(True)
-closednessCheck_output_on = OutputBoolean(False)
+closednessCheck_output_on = OutputBoolean(True)
 basic_output_on = OutputBoolean(True)
 colorcheck_output_on = OutputBoolean(False)
 intersection_removal_progress_output_on = OutputBoolean(True)

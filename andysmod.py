@@ -576,6 +576,8 @@ class RepeatedTimer(object): #from 'https://stackoverflow.com/questions/3393612/
     def stop(self):
         self._timer.cancel()
         self.is_running = False
+
+
 def cv2hist(img):
     import cv2
     from matplotlib import pyplot as plt
@@ -586,9 +588,13 @@ def cv2hist(img):
         plt.plot(histr,color = col)
         plt.xlim([0,256])
     plt.show()
+
+
 def id(x):#https://ipython-books.github.io/featured-01/
     # This function returns the memory block address of an array.
     return x.__array_interface__['data'][0]
+
+
 def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):
     """computes the limit of func(t) as t->t0
     Note: The domain of func is assumed to be (t0-delta0,t0),(t0,t0+delta0), or
@@ -615,14 +621,15 @@ def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):
     lim = epsilon * 10
     old_lim = -epsilon * 10
     its = 0
-    while abs(lim - old_lim) >= epsilon and its < maxits:
-        its += 1
+    for its in range(maxits):
+        if not abs(lim - old_lim) >= epsilon:
+            break
         old_lim = lim
         ts = [uniform(t0, t0 + delta) for dummy in range(n)]
         lims = map(func, ts)
         lim = sum(lims) / len(lims)
         delta /= n
-    if its >= maxits:
+    if its >= maxits - 1:
         raise Exception("Maximum iterations reached.")
     return lim
 

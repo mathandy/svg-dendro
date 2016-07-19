@@ -6,8 +6,7 @@ from cmath import phase
 from operator import itemgetter
 from os import getcwd, path as os_path
 from andysmod import memoize, bool2bin, eucdist_numpy, argmin
-from svgpathtools import (Line, CubicBezier, Path, parse_path, wsvg,
-                          disvg)
+from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg
 
 # Internal Dependencies
 import options4rings as opt
@@ -37,7 +36,7 @@ def isNotTooFarFrom(p,q): #takes two complex numbers, returns boolean
     return abs(p-q) < tol_isNotTooFarFrom
 
 
-def isNear(p,q):
+def isNear(p, q):
     """takes two complex numbers, returns boolean"""
     return abs(p-q) < opt.tol_isNear
 
@@ -495,8 +494,11 @@ def displaySVGPaths_transects_old(ringList,data_transects,transect_angles,filena
     dwg.save()
 
 
-def displaySVGPaths_transects(ring_list, data_transects, transect_angles, skipped_angle_indices):
-    filename = opt.outputFolder + ring_list[0].svgname
+def displaySVGPaths_transects(ring_list, data_transects, transect_angles, skipped_angle_indices, fn=None):
+    if not fn:
+        filename = opt.outputFolder + ring_list[0].svgname
+    else:
+        filename = fn
 
     transectPaths = []
     for tran_index in range(len(data_transects)):
@@ -569,14 +571,14 @@ def displaySVGPaths_named(pathList,name,*colors): ###DEPRECATED #creates and sav
 def plotUnraveledRings(ring_list,center):
     import matplotlib.pyplot as plt
 #    from cmath import phase
-    from andysmod import sortby
+    import operator
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.set_xlabel('theta based on center')
     ax.set_ylabel('radius from center')
     ax.set_title('Straightened Ring Plot')
     for ring in ring_list:
-        N =  50 #determines fineness of plot
+        N = 50  # determines fineness of plot
         x = lambda t: phase(ring.path.point(t)- center)
         y = lambda t: abs(ring.path.point(t)- center)
         tvals = [float(i)/(N-1) for i in range(N)]
@@ -584,8 +586,8 @@ def plotUnraveledRings(ring_list,center):
         pts2 = []
         for i in range(1,len(pts)):
             if abs(pts[i][0] - pts[i-1][0]) > 3:
-                pts2 = sortby(pts[i:len(pts)],0)
-                pts = sortby(pts[0:i],0)
+                pts2 = pts[i:len(pts)].sorted(key=operator.itemgetter(0))
+                pts = pts[0:i].sorted(key=operator.itemgetter(0))
                 break
         xpts = [pt[0] for pt in pts]
         ypts = [pt[1] for pt in pts]

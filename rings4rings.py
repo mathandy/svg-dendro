@@ -190,64 +190,74 @@ class IncompleteRing(object):
         self.up_ladders = sortby(self.up_ladders,1)
         self.up_ladders.reverse()
 
-
     def addSegsToCP(self, segs, tol_closure=opt.tol_isApproxClosedPath):
-    #input a list of segments to append to self.completed_path
-    #this function will stop adding segs if a seg endpoint is near the completed_path startpoint
+        """input a list of segments to append to self.completed_path
+        this function will stop adding segs if a seg endpoint is near the
+        completed_path startpoint"""
         if len(segs)==0:
             raise Exception("No segs given to insert")
 
-        #Iterate through segs to check if segments join together nicely
-        #and (fix them if need be and) append them to completed_path
+        # Iterate through segs to check if segments join together nicely
+        # and (fix them if need be and) append them to completed_path
         for seg in segs:
-            #This block checks if cp is (nearly) closed.
-            #If so, closes it with a Line, and returns the fcn
+            # This block checks if cp is (nearly) closed.
+            # If so, closes it with a Line, and returns the fcn
             if len(self.completed_path)!=0:
                 cp_start, cp_end = self.completed_path[0].start, self.completed_path[-1].end
                 if abs(cp_start - cp_end) < tol_closure:
                     if cp_start==cp_end:
-                    #then do nothing else and return
+                    # then do nothing else and return
                         return
                     else:
-                    #then close completed_path with a line and return
-                        self.completed_path.append(Line(cp_start,cp_end))
+                    # then close completed_path with a line and return
+                        self.completed_path.append(Line(cp_start, cp_end))
                         return
 
-            if len(self.completed_path)!=0 and seg.start != self.completed_path[-1].end:
-            #then seg does not start at the end of completed_path, fix it then add it on
-                current_endpoint = self.completed_path[-1].end
-                if abs(seg.start - current_endpoint) <  tol_closure:
-                #then seg is slightly off from current end of completed_path, fix seg and insert it into completed_path
-                    if isinstance(seg,CubicBezier):
-                        P0,P1,P2,P3 = cubPoints(seg)
-                        newseg = CubicBezier(current_endpoint,P1,P2,P3)
-                    elif isinstance(seg,Line):
-                        newseg = Line(current_endpoint,seg.end)
+                elif seg.start != self.completed_path[-1].end:
+                    # then seg does not start at the end of completed_path,
+                    # fix it then add it on
+                    current_endpoint = self.completed_path[-1].end
+                    if abs(seg.start - current_endpoint) <  tol_closure:
+                        # then seg is slightly off from current end of
+                        # completed_path, fix seg and insert it into
+                        # completed_path
+                        if isinstance(seg, CubicBezier):
+                            P0, P1, P2, P3 = seg.bpoints()
+                            newseg = CubicBezier(current_endpoint, P1, P2, P3)
+                        elif isinstance(seg, Line):
+                            newseg = Line(current_endpoint, seg.end)
+                        else:
+                            raise Exception('Path segment is neither Line '
+                                            'object nor CubicBezier object.')
+                        self.completed_path.insert(len(self.completed_path), newseg)
                     else:
-                        raise Exception('Path segment is neither Line object nor CubicBezier object.')
-                    self.completed_path.insert(len(self.completed_path),newseg)
+                        raise Exception("Segment being added to path does not "
+                                        "start at path endpoint.")
                 else:
-                    raise Exception("Segment being added to path does not start at path endpoint.")
-            else:
-            #then seg does not need to be fixed, so go ahead and insert it
-                self.completed_path.insert(len(self.completed_path),seg)
+                    # then seg does not need to be fixed, so go ahead and insert it
+                    self.completed_path.insert(len(self.completed_path), seg)
 
-    def addConnectingPathToCP(self,connecting_path,seg0,t0,seg1,t1):
-        #first find orientation by checking whether t0 is closer to start or end.
-        T0,T1 = segt2PathT(connecting_path,seg0,t0), segt2PathT(connecting_path,seg1,t1)
-        i0,i1 = connecting_path.index(seg0), connecting_path.index(seg1)
-        first_seg = reverseSeg(trimSeg(seg1,0,t1))
-        last_seg = reverseSeg(trimSeg(seg0,t0,1))
-        if T0>T1: #discontinuity between intersection points
+    def addConnectingPathToCP(self, connecting_path, seg0, t0, seg1, t1):
+        # first find orientation by checking whether t0 is closer to start or end.
+        T0, T1 = segt2PathT(connecting_path, seg0, t0), segt2PathT(connecting_path, seg1, t1)
+        i0, i1 = connecting_path.index(seg0), connecting_path.index(seg1)
+        first_seg = reverseSeg(trimSeg(seg1, 0, t1))
+        last_seg = reverseSeg(trimSeg(seg0, t0, 1))
+
+        if T0 > T1:  # discontinuity between intersection points
             if isApproxClosedPath(connecting_path):
-                middle_segs = [reverseSeg(connecting_path[i1-i]) for i in range(1,(i1-i0)%len(connecting_path))]
+                middle_segs = [reverseSeg(connecting_path[i1-i]) for i in range(1, (i1-i0) % len(connecting_path))]
             else:
-                raise Exception("ir jumps another ir's gap.  This case is not implimented yet")
-        elif T0<T1: #discontinuity NOT between intersection points
-            middle_segs = [reverseSeg(connecting_path[i1+i0-i]) for i in range(i0+1,i1)]
+                raise Exception("ir jumps another ir's gap.  This case is not "
+                                "implimented yet")
+        elif T0 < T1:  # discontinuity NOT between intersection points
+            middle_segs = [reverseSeg(connecting_path[i1+i0-i]) for i in range(i0 + 1, i1)]
         else:
-            raise Exception("T0=T1, this means there's a bug in either pathXpathIntersections fcn or trimAndAddTransectsBeforeCompletion fcn")
-        #first seg
+            raise Exception("T0=T1, this means there's a bug in either "
+                            "pathXpathIntersections fcn or "
+                            "trimAndAddTransectsBeforeCompletion fcn")
+
+        # first seg
         if isDegenerateSegment(first_seg):
             tmpSeg = copyobject(middle_segs.pop(0))
             tmpSeg.start = first_seg.start
@@ -260,46 +270,58 @@ class IncompleteRing(object):
             printPath(connecting_path)
             raise Exception("first_seg is set up wrongly")
 
-        #middle segs
+        # middle segs
         self.addSegsToCP(middle_segs)
-        #last seg
+
+        # last seg
         if isDegenerateSegment(last_seg):
             middle_segs[-1].end = last_seg.end
         else:
             self.addSegsToCP([last_seg])
 
-
     def trimAndAddTransectsBeforeCompletion(self):
-        #Retrieve transect endpoints if necessary
-        (irORcr0,T0), (irORcr1,T1) = self.down_ladder0, self.down_ladder1
+
+        # Retrieve transect endpoints if necessary
+        (irORcr0, T0), (irORcr1, T1) = self.down_ladder0, self.down_ladder1
         tr0_start_pt = irORcr0.ORring.point(T0)
         tr1_end_pt = irORcr1.ORring.point(T1)
 
-        if not self.overlap0: #no overlap at start, add transect0 to beginning of connected path (before the ir itself)
-            i0=-1
-            startSeg = Line(tr0_start_pt,self.ir_start)
-        else: #overlap at start, trim the first seg in the ir (don't connect anything, just trim)
-            i0=self.ring.path.index(self.corrected_start[1])
-            startSeg = trimSeg(self.corrected_start[1],self.corrected_start[2],1)
-        if not self.overlap1: #no overlap at end to add transect1 to connected path (append to end of the ir)
-            i1=len(self.ring.path)
-            endSeg = Line(self.ir_end,tr1_end_pt)
-        else: #overlap at end, trim the last seg in the ir (don't connect anything, just trim)
-            i1=self.ring.path.index(self.corrected_end[1])
-            endSeg = trimSeg(self.corrected_end[1],0,self.corrected_end[2])
-        #first seg
+        if not self.overlap0:
+            # then no overlap at start, add transect0 to beginning of
+            # connected path (before the ir itself)
+            i0 = -1
+            startSeg = Line(tr0_start_pt, self.ir_start)
+        else:
+            # overlap at start, trim the first seg in the ir (don't connect
+            # anything, just trim)
+            i0 = self.ring.path.index(self.corrected_start[1])
+            startSeg = trimSeg(self.corrected_start[1], self.corrected_start[2],1)
+        if not self.overlap1:
+            # then no overlap at end to add transect1 to connected path
+            # (append to end of the ir)
+            i1 = len(self.ring.path)
+            endSeg = Line(self.ir_end, tr1_end_pt)
+        else:
+            # overlap at end, trim the last seg in the ir (don't connect
+            # anything, just trim)
+            i1 = self.ring.path.index(self.corrected_end[1])
+            endSeg = trimSeg(self.corrected_end[1], 0, self.corrected_end[2])
+
+        # first seg
         if isDegenerateSegment(startSeg):
             tmpSeg = copyobject(self.ring.path[i0+1])
             tmpSeg.start = startSeg.start
             startSeg = tmpSeg
-            i0 +=1
+            i0 += 1
             self.addSegsToCP([startSeg])
         else:
             self.addSegsToCP([startSeg])
-        #middle segs
-        if i0+1!=i1:
-            self.addSegsToCP([self.ring.path[i] for i in range(i0+1,i1)])
-        #last seg
+
+        # middle segs
+        if i0 + 1 != i1:
+            self.addSegsToCP([self.ring.path[i] for i in range(i0+1, i1)])
+
+        # last seg
         if isDegenerateSegment(endSeg):
             self.completed_path[-1].end = endSeg.end
         else:
@@ -307,104 +329,120 @@ class IncompleteRing(object):
 
     def irpoint(self, pos):
         return self.ring.point(pos)
+
     def area(self):
         if not isinstance(self.completed_path,Path):
             return "Fail"
-        if self.completed_path == None or not isApproxClosedPath(self.completed_path):
-#            raise Exception("completed_path not complete.  Distance between start and end: %s"%abs(self.completed_path.point(0) - self.completed_path.point(1)))
+        if (self.completed_path is None or not isApproxClosedPath(self.completed_path)):
+            # raise Exception("completed_path not complete.  Distance between start and end: %s"%abs(self.completed_path.point(0) - self.completed_path.point(1)))
             return "Fail"
         return areaEnclosed(self.completed_path)
-    def type(self,colordict):
-        for (key,val) in colordict.items():
+
+    def type(self, colordict):
+        for (key, val) in colordict.items():
             if self.ring.color == val:
                 return key
         else:
             raise Exception("Incomplete Ring color not in colordict... you shouldn't have gotten this far.  Bug detected.")
+
 #    def info(self,cp_index):
 #    ###### "complete ring index, complete?, inner BrookID, outer BrookID, inner color, outer color, area, area Ignoring IRs, averageRadius, minR, maxR, IRs contained"
 #        return str(cp_index) + "," + "Incomplete"+"," + "N/A" + ", " + self.ring.brook_tag + "," + "N/A" + ", " + self.ring.color +"," + str(self.area()) +", "+ "N/A"+","+str(self.ring.aveR())+","+str(self.ring.minR)+","+str(self.ring.maxR)+","+"N/A"
 
-    def info(self,cp_index,colordict):
+    def info(self, cp_index, colordict):
         ###### "complete ring index, type, # of IRs contained, minR, maxR, aveR, area, area Ignoring IRs"
         return str(cp_index)+","+self.type(colordict)+","+"N/A"+","+str(self.ring.minR)+","+ str(self.ring.maxR)+","+str(self.ring.aveR())+","+str(self.area())+","+"N/A"
 
-    def followPathBackwards2LadderAndUpDown(self,irORcr,T0):
-    #irORcr is the path being followed, self is the IR to be completed
-    #returns (traveled_path,irORcr_new,t_new) made from the part of irORcr's path before T0 (and after ladder) plus the line from ladder (the first one that is encountered)
+    def followPathBackwards2LadderAndUpDown(self, irORcr, T0):
+        """irORcr is the path being followed, self is the IR to be completed
+        returns (traveled_path,irORcr_new,t_new) made from the part of irORcr's
+        path before T0 (and after ladder) plus the line from ladder (the first
+        one that is encountered)"""
         rds = remove_degenerate_segments
         irORcr_path = irORcr.ORring.path
         thetaprekey = Theta_Tstar(T0)
         thetakey = lambda lad: thetaprekey.distfcn(lad[1])
         sorted_upLadders = sorted(irORcr.up_ladders, key=thetakey)
 
-        if isinstance(irORcr,CompleteRing):
-            (ir_new, T) = sorted_upLadders[0]
-            if T!=T0:
-                reversed_path_followed = reversePath(cropPath(irORcr_path,T,T0))
-            else:#this happens when up and down ladder are at same location
+        if isinstance(irORcr, CompleteRing):
+            ir_new, T = sorted_upLadders[0]
+            if T != T0:
+                reversed_path_followed = reversePath(cropPath(irORcr_path, T, T0))
+            else:  # this happens when up and down ladder are at same location
                 reversed_path_followed = Path()
 
-            #add the ladder to reversed_path_followed
-            if (irORcr,T)==ir_new.down_ladder0:
+            # add the ladder to reversed_path_followed
+            if (irORcr, T) == ir_new.down_ladder0:
                 if not ir_new.overlap0:
-                    ladder = Line(irORcr_path.point(T),ir_new.irpoint(0))
+                    ladder = Line(irORcr_path.point(T), ir_new.irpoint(0))
                     reversed_path_followed.append(ladder)
                     T_ir_new = 0
                 else:
-                    T_ir_new = segt2PathT(ir_new.ring.path,ir_new.corrected_start[1],ir_new.corrected_start[2])
-            elif (irORcr,T)==ir_new.down_ladder1:
+                    T_ir_new = segt2PathT(ir_new.ring.path,
+                                          ir_new.corrected_start[1],
+                                          ir_new.corrected_start[2])
+            elif (irORcr, T) == ir_new.down_ladder1:
                 if not ir_new.overlap1:
-                    ladder = Line(irORcr_path.point(T),ir_new.irpoint(1))
+                    ladder = Line(irORcr_path.point(T), ir_new.irpoint(1))
                     reversed_path_followed.append(ladder)
                     T_ir_new = 1
                 else:
-                    T_ir_new = segt2PathT(ir_new.ring.path,ir_new.corrected_end[1],ir_new.corrected_end[2])
+                    T_ir_new = segt2PathT(ir_new.ring.path,
+                                          ir_new.corrected_end[1],
+                                          ir_new.corrected_end[2])
             else:
-                raise Exception("this case shouldn't be reached, mistake in logic or didn't set downladder somewhere.")
-            return (rds(reversed_path_followed), ir_new, T_ir_new)
-        else: #current ring to follow to ladder is incomplete ring
+                raise Exception("this case shouldn't be reached, mistake in "
+                                "logic or didn't set downladder somewhere.")
+            return rds(reversed_path_followed), ir_new, T_ir_new
+
+        else:  # current ring to follow to ladder is incomplete ring
             irORcr_path = irORcr.ring.path
-            for (ir_new, T) in sorted_upLadders:
-                if T < T0: #Note: always following path backwards
-                    reversed_path_followed = reversePath(cropPath(irORcr_path,T,T0))
-                    if (irORcr,T)==ir_new.down_ladder0:
+            for ir_new, T in sorted_upLadders:
+                if T < T0:  # Note: always following path backwards
+                    reversed_path_followed = irORcr_path.cropped(T, T0).reversed()
+                    if (irORcr, T) == ir_new.down_ladder0:
 
                         if not ir_new.overlap0:
-                            ladder = Line(irORcr_path.point(T),ir_new.irpoint(0))
+                            ladder = Line(irORcr_path.point(T), ir_new.irpoint(0))
                             reversed_path_followed.append(ladder)
                             T_ir_new = 0
                         else:
-                            T_ir_new = segt2PathT(ir_new.ring.path,ir_new.corrected_start[1],ir_new.corrected_start[2])
-                    elif (irORcr,T)==ir_new.down_ladder1:
+                            T_ir_new = segt2PathT(ir_new.ring.path,
+                                                  ir_new.corrected_start[1],
+                                                  ir_new.corrected_start[2])
+                    elif (irORcr, T) == ir_new.down_ladder1:
                         if not ir_new.overlap1:
-                            ladder = Line(irORcr_path.point(T),ir_new.irpoint(1))
+                            ladder = Line(irORcr_path.point(T), ir_new.irpoint(1))
                             reversed_path_followed.append(ladder)
                             T_ir_new = 1
                         else:
-                            T_ir_new = segt2PathT(ir_new.ring.path,ir_new.corrected_end[1],ir_new.corrected_end[2])
+                            T_ir_new = segt2PathT(ir_new.ring.path,
+                                                  ir_new.corrected_end[1],
+                                                  ir_new.corrected_end[2])
                     else:
-                        raise Exception("this case shouldn't be reached, mistake in logic or didn't set downladder somewhere.")
-                    return (rds(reversed_path_followed), ir_new, T_ir_new)
-            else: #none of the upladder were between 0 and T0, so use downladder at 0
+                        tmp_mes = ("this case shouldn't be reached, mistake "
+                                   "in logic or didn't set downladder "
+                                   "somewhere.")
+                        raise Exception(tmp_mes)
+
+                    return rds(reversed_path_followed), ir_new, T_ir_new
+
+            # none of the upladder were between 0 and T0,
+            # so use downladder at 0
+            else:
                 (irORcr_new, T_new) = irORcr.down_ladder0
                 irORcr_new_path = irORcr_new.ORring.path
 
                 ###Should T0==0 ever?
                 if T0 != 0:
-                    reversed_path_followed = reversePath(cropPath(irORcr.ring.path,0,T0))
+                    reversed_path_followed = irORcr.ring.path.cropped(0, T0).reversed()
                 else:
                     reversed_path_followed = Path()
-#                    ###DEBUG asdflkaj;lkjhskdhhf
-#                    from misc4rings import dis
-#                    dis([self.ring.path,irORcr.ring.path,self.completed_path,irORcr_new_path],['green','red','blue','orange'])
-#                    reversed_path_followed = Path()#<--maybe this is solution
-#                    raise Exception("Figure out if adding this if statement was necessary or if T0==0 because of an ealier bug.")
-#                    ###DEBUG asdflkaj;lkjhskdhhf
 
                 if irORcr.overlap0 == False:
-                    ladder = Line(irORcr_path.point(0),irORcr_new_path.point(T_new))
+                    ladder = Line(irORcr_path.point(0), irORcr_new_path.point(T_new))
                     reversed_path_followed.append(ladder)
-                return (rds(reversed_path_followed), irORcr_new, T_new)
+                return rds(reversed_path_followed), irORcr_new, T_new
 
     def findMiddleOfConnectingPath(self):
         #creates path starting of end of down_ladder1, go to nearest (with t> t0) up-ladder or if no up-ladder then down_ladder at end and repeat until getting to bottom of down_ladder0
@@ -438,8 +476,8 @@ class IncompleteRing(object):
 #                print abs(lad1.start-lad1.end)
 #                bla=1
 #            ##end of DEBUG sd;fjadsfljkjl;
-
-            (traveled_path_part,irORcr_new,T_new) = self.followPathBackwards2LadderAndUpDown(irORcr_new,T_new)
+            
+            traveled_path_part, irORcr_new, T_new = self.followPathBackwards2LadderAndUpDown(irORcr_new, T_new)
 
             for seg in traveled_path_part:
                 traveled_path.append(seg)
@@ -453,7 +491,7 @@ class IncompleteRing(object):
 #                    for seg in reversePath(cropPath(irORcr_new_path,self.down_ladder0[1],T_new)):
 #                        traveled_path.append(seg)
 #                break
-            if (irORcr_new,T_new) == self.down_ladder0:
+            if (irORcr_new, T_new) == self.down_ladder0:
                 return traveled_path
 
             if iters >= maxIts-1:

@@ -6,14 +6,14 @@ from warnings import warn
 from svgpathtools import (Path, Line, CubicBezier, polyroots, real,
                           imag, disvg, wsvg)
 from svgpathtools.misctools import isclose
+poly_imag_part = imag
+poly_real_part = real
 
 # Internal Dependencies
 from andysSVGpathTools import pathT2tseg, segDerivative, isClosed
 import options4rings as opt
 from misc4rings import normalLineAtT_toInner_intersects_withOuter
 
-poly_imag_part = imag
-poly_real_part = real
 
 def isPointOutwardOfSeg_old(pt, seg):
     # Let c(t) = seg.point(t). If <pt-c(t),c'(t)>=0 has a solution 0<=t<=1,
@@ -35,16 +35,16 @@ def isPointOutwardOfSeg_old(pt, seg):
                 else:
                     return []
         return []
-    elif isinstance(seg,CubicBezier):
-        a0,a1,a2,a3 = seg.start.real,seg.control1.real,seg.control2.real,seg.end.real
-        b0,b1,b2,b3 = seg.start.imag,seg.control1.imag,seg.control2.imag,seg.end.imag
+    elif isinstance(seg, CubicBezier):
+        a0, a1, a2, a3 = seg.start.real, seg.control1.real, seg.control2.real, seg.end.real
+        b0, b1, b2, b3 = seg.start.imag, seg.control1.imag, seg.control2.imag, seg.end.imag
         deg0 = 3*a0**2 - 3*a0*a1 + 3*b0**2 - 3*b0*b1 - 3*(a0 - a1)*q0 - 3*(b0 - b1)*q1
         deg1 = -15*a0**2 + 30*a0*a1 - 9*a1**2 - 6*a0*a2 - 15*b0**2 + 30*b0*b1 - 9*b1**2 - 6*b0*b2 + 6*(a0 - 2*a1 + a2)*q0 + 6*(b0 - 2*b1 + b2)*q1
         deg2 = 30*a0**2 - 90*a0*a1 + 54*a1**2 + 9*(4*a0 - 3*a1)*a2 - 3*a0*a3 + 30*b0**2 - 90*b0*b1 + 54*b1**2 + 9*(4*b0 - 3*b1)*b2 - 3*b0*b3 - 3*(a0 - 3*a1 + 3*a2 - a3)*q0 - 3*(b0 - 3*b1 + 3*b2 - b3)*q1
         deg3 = -30*a0**2 + 120*a0*a1 - 108*a1**2 - 36*(2*a0 - 3*a1)*a2 - 18*a2**2 + 12*(a0 - a1)*a3 - 30*b0**2 + 120*b0*b1 - 108*b1**2 - 36*(2*b0 - 3*b1)*b2 - 18*b2**2 + 12*(b0 - b1)*b3
         deg4 = 15*a0**2 - 75*a0*a1 + 90*a1**2 + 15*(4*a0 - 9*a1)*a2 + 45*a2**2 - 15*(a0 - 2*a1 + a2)*a3 + 15*b0**2 - 75*b0*b1 + 90*b1**2 + 15*(4*b0 - 9*b1)*b2 + 45*b2**2 - 15*(b0 - 2*b1 + b2)*b3
         deg5 = -3*a0**2 + 18*a0*a1 - 27*a1**2 - 18*(a0 - 3*a1)*a2 - 27*a2**2 + 6*(a0 - 3*a1 + 3*a2)*a3 - 3*a3**2 - 3*b0**2 + 18*b0*b1 - 27*b1**2 - 18*(b0 - 3*b1)*b2 - 27*b2**2 + 6*(b0 - 3*b1 + 3*b2)*b3 - 3*b3**2
-        inner_prod_coeffs = (deg5,deg4,deg3,deg2,deg1,deg0)
+        inner_prod_coeffs = (deg5, deg4, deg3, deg2, deg1, deg0)
 
         # Note about nondeg_cond:
         # The derivative of a CubicBezier object can be zero, but only at
@@ -86,6 +86,7 @@ def isPointOutwardOfSeg(pt, seg):
                 z1.imag*z2.imag)
 
     def allcond(_t):
+        from andysSVGpathTools import segUnitTangent
         tt = max(0, min(1, _t.real))
         lin2pt = Line(seg.point(tt), pt)
         real_cond = isclose(_t.imag, 0)
@@ -93,14 +94,13 @@ def isPointOutwardOfSeg(pt, seg):
                        isclose(_t.real, 0) or
                        isclose(_t.real, 1))
         nondeg_cond = (not isclose(seg.derivative(tt), 0) or 
-                       isclose(dot_prod(seg.unit_tangent(tt), lin2pt.unit_tangent()), 0))
-        outward_cond = dot_prod(lin2pt.unit_tangent(), seg.normal(tt)) > 0
+                       isclose(dot_prod(segUnitTangent(seg, tt), lin2pt.unit_tangent()), 0))
+        outward_cond = dot_prod(lin2pt.unit_tangent(), -1j*segUnitTangent(seg, tt)) > 0
         
         return real_cond and bezier_cond and nondeg_cond and outward_cond
 
     inward_tvals = polyroots(inner_prod, condition=allcond)
     return [tval.real for tval in inward_tvals]
-
 
 
 def isPointOutwardOfPath(pt, path, outerRing=None, justone=False):
@@ -362,8 +362,8 @@ def generate_unsorted_transects(ring_list, center):
     from options4rings import basic_output_on, warnings_output_on, N_transects, unsorted_transect_debug_output_folder, unsorted_transect_debug_on, colordict
     from misc4rings import transect_from_angle, normalLineAt_t_toInnerSeg_intersects_withOuter
     from andysSVGpathTools import pathlistXlineIntersections
-    from andysmod import Timer, minby
-    from svgpathtools import Path, Line
+    from andysmod import Timer
+    import operator
     from random import uniform
 
     #Find outer boundary ring
@@ -418,8 +418,9 @@ def generate_unsorted_transects(ring_list, center):
             # normal line to use to find intersections (from center to boundary ring)
             nl2bdry, seg_outer, t_outer = transect_from_angle(test_angle, center, boundary_ring.path, 'debug')
             #make normal line a little longer
-            nl2bdry = Line(nl2bdry.start, nl2bdry.start + 1.5*(nl2bdry.end-nl2bdry.start)) 
-            (tl,path_index,seg,tp) = minby(pathlistXlineIntersections(nl2bdry,[ring_list[i].path for i in unused_ring_indices]),0) #(tl,path_index,seg,tp)
+            nl2bdry = Line(nl2bdry.start, nl2bdry.start + 1.5*(nl2bdry.end-nl2bdry.start))
+            tmp = pathlistXlineIntersections(nl2bdry, [ring_list[i].path for i in unused_ring_indices])
+            (tl,path_index,seg,tp) = min(tmp, key=operator.itemgetter(0)) #(tl,path_index,seg,tp)
 
             transect.append(nl2bdry.point(tl))
             transect_rings.append(unused_ring_indices[path_index])
@@ -441,7 +442,9 @@ def generate_unsorted_transects(ring_list, center):
                 
                 normal_line_intersections = pathlistXlineIntersections(nl2bdry, [ring_list[i].path for i in unused_ring_indices])
                 try:
-                    (tl,path_index,seg,tp) = minby(normal_line_intersections,0) #(tl,path_index,seg,tp)
+                    # (tl,path_index,seg,tp)
+                    tl, path_index, seg, tp = min(normal_line_intersections,
+                                                  key=operator.itemgetter(0))
                 except ValueError:
                     raise
                 if unsorted_transect_debug_on:

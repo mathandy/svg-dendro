@@ -289,6 +289,7 @@ def closedness_consistency_check(ring_list):
         atest = isApproxClosedPath(ring.path) #equivalent to isApproxClosedPath(ring.path)
         ctest = ring.color in {colordict['complete'],colordict['boundary']}
         if not ((ztest and atest and ctest) or (not ztest and not atest and not ctest)):
+            # import ipdb; ipdb.set_trace()
             failed_rings.append(ring)
             opt.closednessCheck_output_on.dprint("A ring failed the closedness consistency check.")
             opt.closednessCheck_output_on.dprint("Path String: " + str(ring.string))

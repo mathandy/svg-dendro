@@ -38,10 +38,16 @@ def fix_svg(ring_list, center):
             colors = [r.color for r in ring_list]
             nodes = [ring_list[idx].path.point(0.5) for idx in short_rings]
             center_line = [Line(center-1,center+1)]
-            shortrings_svg_filename = opt.outputFolder + svgfile[0:len(svgfile)-4] + "_short-rings.svg"
+            tmp = svgfile[0:len(svgfile)-4] + "_short-rings.svg"
+            shortrings_svg_filename = os_path.join(opt.outputFolder, tmp)
             disvg(paths + [center_line], colors + [opt.colordict['center']],
                   nodes=nodes, filename=shortrings_svg_filename)
-            opt.basic_output_on.dprint("Done.  SVG created highlighting short rings by placing a node at each short ring's midpoint.  Note: since these rings are all under %s pixels in length, they may be hard to see and may even be completely covered by the node.SVG file saved to:\n%s"%(appropriate_ring_length_minimum,shortrings_svg_filename))
+            args = appropriate_ring_length_minimum, shortrings_svg_filename
+            mes = ("Done.  SVG created highlighting short rings by placing a node at "
+                   "each short ring's midpoint.  Note: since these rings are all under "
+                   "{} pixels in length, they may be hard to see and may even be "
+                   "completely covered by the node.SVG file saved to:\n{}").format(*args)
+            opt.basic_output_on.dprint(mes)
         if opt.dont_remove_closed_inappropriately_short_rings:
             shortest_ring_length = min([r.path.length() for r in [ring_list[idx] for idx in short_rings if ring_list[idx].isClosed()]])
             open_short_rings = [idx for idx in short_rings if not ring_list[idx].isClosed()]
@@ -62,7 +68,7 @@ def fix_svg(ring_list, center):
         else:
             warn("%s inappropriately short rings were found, but "
                  "remove_inappropriately_short_rings is set to False." % len(ring_list))
-        print ""
+        print("")
 
 
     # Remove very short segments from rings
@@ -156,12 +162,15 @@ def fix_svg(ring_list, center):
                 new_path += [seg for seg in second_half.cropped(0, T2)]
                 new_path = Path(*new_path)
 
-                if not opt.force_remove_self_intersections:
+                if opt.force_remove_self_intersections:
+                    dec = True
+                else:
                     print "Should I remove the red and green sections?"
                     disvg([greenpart, new_path, redpart],
                           ['green', 'blue', 'red'],
                           nodes=[seg1.point(t1)])
                     dec = inputyn()
+
                 if dec:
                     r.path = new_path
                     print "Path cropped."
@@ -178,8 +187,8 @@ def fix_svg(ring_list, center):
                 colors[r_idx] = opt.colordict['safe2']
             node_colors = [opt.colordict['safe1']] * len(nodes)
 
-            fixed_svg_filename = (opt.outputFolder + svgfile[0:len(svgfile)-4] +
-                                  "_SelfIntersections.svg")
+            tmp = svgfile[0:len(svgfile)-4] + "_SelfIntersections.svg"
+            fixed_svg_filename = os_path.join(opt.outputFolder, tmp)
             disvg(paths + [center_line],
                   colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -229,8 +238,8 @@ def fix_svg(ring_list, center):
                 colors[r_idx] = opt.colordict['safe2']
             node_colors = [opt.colordict['safe1']] * len(nodes)
 
-            fixed_svg_filename = (opt.outputFolder + svgfile[0:len(svgfile)-4] +
-                                  "_kinks.svg")
+            tmp = svgfile[0:len(svgfile)-4] + "_kinks.svg"
+            fixed_svg_filename = os_path.join(opt.outputFolder, tmp)
             disvg(paths + [center_line],
                   colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -287,9 +296,8 @@ def fix_svg(ring_list, center):
                     indicator_lines.append(Line(bad_pt, endpt))
             indicator_cols = [opt.colordict['safe1']] * len(indicator_lines)
 
-
-            fixed_svg_filename = (opt.outputFolder + svgfile[0:len(svgfile)-4] +
-                                  "_OverlappingEnds.svg")
+            tmp = svgfile[0:len(svgfile)-4] + "_OverlappingEnds.svg"
+            fixed_svg_filename = os_path.join(opt.outputFolder, tmp)
             disvg(paths + [center_line] + indicator_lines,
                   colors + [opt.colordict['center']] + indicator_cols,
                   filename=fixed_svg_filename)
@@ -315,6 +323,12 @@ def fix_svg(ring_list, center):
 
     # Trim paths with high curvature (i.e. curly) ends
     if opt.remove_curly_ends:
+        def kappa(seg, t):
+            try:
+                return seg.curvature(t)
+            except ValueError:
+                return 0
+
         print "Trimming high curvature ends..."
         for ring in ring_list:
             if ring.isClosed():
@@ -323,10 +337,10 @@ def fix_svg(ring_list, center):
             # Find estimate of max curvature of inner part of ring
             segCurvatures = []
             for seg in ring.path[1:-1]:
-                segCurvatures.append(max(seg.curvature(t) 
-                                     for t in np.linspace(0, 1, 10) ))
+                segCurvatures.append(max(kappa(seg, t)
+                                     for t in np.linspace(0, 1, 10)))
             for seg in [ring.path[0], ring.path[-1]]:
-                segCurvatures.append(max(seg.curvature(t) 
+                segCurvatures.append(max(kappa(seg, t)
                                      for t in np.linspace(.2, .8, 5) ))
 #                    aveCurvature = aveCurvature/(len(ring.path)*10)
 
@@ -343,7 +357,7 @@ def fix_svg(ring_list, center):
             startseg = ring.path[0]
             for k in range(0, 50):
                 t = 0.5 - k/100
-                if startseg.curvature(t) > tol_curvature:
+                if kappa(startseg, t) > tol_curvature:
                     if k < 10:
                         if opt.manually_curly_end:
                             print mes1
@@ -453,8 +467,8 @@ def fix_svg(ring_list, center):
                 inters = pathXpathIntersections(ring_list[i].path,ring_list[j].path)
                 nodes += [inter[0].point(inter[2]) for inter in inters]
 
-            fixed_svg_filename = (opt.outputFolder + svgfile[0:len(svgfile)-4] +
-                                  "_ClosedRingsOverlap.svg")
+            tmp = svgfile[0:len(svgfile)-4] + "_ClosedRingsOverlap.svg"
+            fixed_svg_filename = os_path.join(opt.outputFolder, tmp)
             disvg(fixed_paths + [center_line],
                   fixed_colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -533,8 +547,9 @@ def svgtree():
     #sort ring_list from innermost to outermost and record sort index
     if opt.sort_rings_on:
         if not sorted_pickle_file_exists:
-            opt.basic_output_on.dprint("Attempting to sort ring_list.  This could "
-                                   "take a minute...",'nr')
+            tmp_mes =("Attempting to sort ring_list.  This could take a minute "
+                      "(or thirty)...")
+            opt.basic_output_on.dprint(tmp_mes,'nr')
             #find sorting of ring_list
             from sorting4rings import sort_rings
 #                    ring_sorting, psorting = sort_rings(ring_list, om_pickle_file)
@@ -588,10 +603,10 @@ def svgtree():
         #show them (this creates an svg file in the root folder)
         if opt.create_SVG_picture_of_transects:
             svgname = svgfile[0:len(svgfile)-4]
-            displaySVGPaths_transects(ring_list, data, angles, skipped_angle_indices)
-            opt.basic_output_on.dprint("\nSVG showing transects generated "
-                                       "saved to:\n" + opt.outputFolder +
-                                       svgname + "_transects.svg\n")
+            svg_trans = os_path.join(opt.outputFolder, svgname + "_transects.svg")
+            displaySVGPaths_transects(ring_list, data, angles, skipped_angle_indices, fn=svg_trans)
+            tmp_mes = "\nSVG showing transects generated saved to:\n" + svg_trans + "\n"
+            opt.basic_output_on.dprint(tmp_mes)
 
         #Save results from transects
         from transects4rings import save_transect_data, save_transect_summary
@@ -617,7 +632,8 @@ def svgtree():
     if opt.create_SVG_showing_ring_sort:
         opt.basic_output_on.dprint("Attempting to create SVG showing ring sorting...",'nr')
         from misc4rings import displaySVGPaths_numbered
-        svgname = os_path.join(opt.outputFolder_debug,svgfile[0:len(svgfile)-4]+"_sort_numbered"+".svg")
+        tmp = svgfile[0:len(svgfile)-4] + "_sort_numbered"+".svg"
+        svgname = os_path.join(opt.outputFolder_debug, tmp)
         displaySVGPaths_numbered([r.path for r in ring_list],svgname,[r.color for r in ring_list])
         opt.basic_output_on.dprint("Done.")
 

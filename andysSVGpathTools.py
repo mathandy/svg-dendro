@@ -1,6 +1,10 @@
-# This is a tool kit which adds functionality to the python module svg.path
-# The functions present here are only designed to deal with Line objects, CubicBezier objects, and Path objects composed of Line and CubicBezier objects
+"""This is a tool kit which adds functionality to the python module svg.path.
+The functions present here are only designed to deal with Line objects,
+CubicBezier objects, and Path objects composed of Line and CubicBezier
+objects"""
+
 # External Dependencies:
+from __future__ import division
 from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots
 from numpy import array, dot, roots, isclose, matrix, inf
 from scipy.integrate import quad
@@ -23,15 +27,18 @@ from andysmod import open_in_browser, memoize
 check_for_kinksTrue = rings_may_contain_unremoved_kinks  # set to true for github version
 
 
-###Misc###########################################################################
+###Misc########################################################################
 # def isNear(p,q): #takes two complex numbers, returns boolean
 #     return abs(p-q) < tol_isNear
+
+
 def z2xy(z):
     return z.real, z.imag
 
 
-def isClosedPathStr(
-        pathStr):  # takes in SVF 'd=' path string and outputs true if closed (according to SVG)
+def isClosedPathStr(pathStr):
+    """takes in SVF 'd=' path string and outputs true if closed (according to
+    SVG)"""
     tmp = pathStr.rstrip()
     return tmp[len(tmp) - 1] == 'z'
 
@@ -45,8 +52,8 @@ def isClosed(path_or_seg):
         raise Exception("First argument must be Path or CubicBezier or Line.")
 
 
-def cubicCurve(P,
-               t):  # Evaluated the cubic Bezier curve (given by control points P) at t
+def cubicCurve(P, t):
+    """Evaluated the cubic Bezier curve (given by control points P) at t"""
     return P[0] * (1 - t) ** 3 + 3 * P[1] * t * (1 - t) ** 2 + 3 * P[2] * (
     1 - t) * t ** 2 + P[3] * t ** 3
 
@@ -56,11 +63,11 @@ def concatPaths(list_of_paths):
 
 
 def bezier2standard(cub):
-    '''
+    """
     Input: CubicBezier object or tuple (P0,P1,P2,P3)
     Output: (p0,p1,p2,p3) s.t. p3*t**3 + p2*t**2 + p1*t + p0 =
     P0*(1-t)**3 + 3*P1*(1-t)**2*t + 3*P2*(1-t)*t**2 + P3*t**3
-    '''
+    """
     if isinstance(cub, CubicBezier):
         P = cub.bpoints()
     #    A = matrix([[1,3,3,0],
@@ -76,11 +83,11 @@ def bezier2standard(cub):
 
 
 def standard2bezier(coeffs):
-    '''
+    """
     Input: iterable coeffs = (p0,p1,p2,p3)
     Output: [P0,P1,P2,P3] s.t. p3*t**3 + p2*t**2 + p1*t + p0 =
     P0*(1-t)**3 + 3*P1*(1-t)**2*t + 3*P2*(1-t)*t**2 + P3*t**3
-    '''
+    """
     A = matrix([[1, 0, 0, 0],
                 [-3, 3, 0, 0],
                 [3, -6, 3, 0],
@@ -90,16 +97,16 @@ def standard2bezier(coeffs):
 
 
 def stcubic_eval(coeffs, t):
-    '''
+    """
     Input: iterable coeffs = (p0,p1,p2,p3)
     Output: p3*t**3 + p2*t**2 + p1*t + p0
-    '''
+    """
     p0, p1, p2, p3 = coeffs
     return p3 * t ** 3 + p2 * t ** 2 + p1 * t + p0
 
 
 def segt2PathT(path, seg, t):  # formerly segt2PathT
-    # finds T s.t path(T) = seg(t), for any seg in path and t in [0,1]
+    """finds T s.t path(T) = seg(t), for any seg in path and t in [0,1]"""
     #    path._calc_lengths()
     #    # Find which segment the point we search for is located on:
     #    segment_start = 0
@@ -115,8 +122,8 @@ def segt2PathT(path, seg, t):  # formerly segt2PathT
     return path.t2T(seg, t)
 
 
-def reverseSeg(
-        seg):  # reverses the orientation of a Line or CubicBezier segment
+def reverseSeg(seg):
+    """reverses the orientation of a Line or CubicBezier segment"""
     #    if isinstance(seg,CubicBezier):
     #        new_cub = CubicBezier(seg.end,seg.control2,seg.control1,seg.start)
     #        if seg._length:
@@ -130,8 +137,9 @@ def reverseSeg(
     return seg.reversed()
 
 
-def reversePath(
-        path):  # reverses the orientation of a path object composed of lines and cubicBeziers segments
+def reversePath(path):
+    """reverses the orientation of a path object composed of lines and
+    cubicBeziers segments"""
     newpath = []
     for seg in path:
         newpath.append(reverseSeg(seg))
@@ -140,10 +148,11 @@ def reversePath(
 
 
 def ptInPath2tseg(pt, path, tol=0.1):  # formerly pt2tvalinPath
-    # returns (t,seg) where seg in path, 0<=t<=1, seg.point(t) = pt and d = |seg.point(t)-pt|
-    (d, t, seg) = closestPointInPath(pt, path)
+    """returns (t,seg) where seg in path, 0<=t<=1, seg.point(t) = pt and
+    d = |seg.point(t)-pt|"""
+    d, t, seg = closestPointInPath(pt, path)
     if d < tol:
-        return (t, seg)
+        return t, seg
     else:
         raise Exception("pt not in path by tolerance check.  d = %s" % d)
 
@@ -225,13 +234,17 @@ def extremePointInPath(pt, path, min_or_max):  # 0=min, 1=max
             seg.start.real, seg.control1.real, seg.control2.real, seg.end.real)
             (b_0, b_1, b_2, b_3) = (
             seg.start.imag, seg.control1.imag, seg.control2.imag, seg.end.imag)
+
+            # gives the distance from pt to path.point(t)
             dist = lambda t: ((a_0 * (t - 1) ** 3 - 3 * a_1 * (
             t - 1) ** 2 * t + 3 * a_2 * (
                                t - 1) * t ** 2 - a_3 * t ** 3 + p) ** 2 + (
                               b_0 * (t - 1) ** 3 - 3 * b_1 * (
                               t - 1) ** 2 * t + 3 * b_2 * (
                               t - 1) * t ** 2 - b_3 * t ** 3 + q) ** 2) ** (
-                             0.5)  # gives the distance from pt to path.point(t)
+                             0.5)
+
+            # coefficients for polynomial (d/dt)dist = (d/dt)|path.point(t)-pt|)
             polycoeffs_dist_deriv = [
                 6 * (a_0 - 3 * a_1 + 3 * a_2 - a_3) ** 2 + 6 * (
                 b_0 - 3 * b_1 + 3 * b_2 - b_3) ** 2,
@@ -249,8 +262,7 @@ def extremePointInPath(pt, path, min_or_max):  # 0=min, 1=max
                 18 * (a_0 - a_1) ** 2 + 12 * (a_0 - 2 * a_1 + a_2) * (
                 a_0 - p) + 18 * (b_0 - b_1) ** 2 + 12 * (
                 b_0 - 2 * b_1 + b_2) * (b_0 - q),
-                -6 * (a_0 - a_1) * (a_0 - p) - 6 * (b_0 - b_1) * (
-                b_0 - q)]  # coefficients for polynomial (d/dt)dist = (d/dt)|path.point(t)-pt|)
+                -6 * (a_0 - a_1) * (a_0 - p) - 6 * (b_0 - b_1) * (b_0 - q)]
             possible_extremizers = list(roots(polycoeffs_dist_deriv)) + [0, 1]
             for t in possible_extremizers:
                 if t.real == t and 0 <= t <= 1:
@@ -277,8 +289,8 @@ def extremePointInPath(pt, path, min_or_max):  # 0=min, 1=max
                 if t.real == t and 0 <= t <= 1:
                     t = t.real
                     try:
-                        if dist(t) * (-1) ** min_or_max < current_extremizer[
-                            0] * (-1) ** min_or_max:
+                        if (dist(t) * (-1) ** min_or_max
+                                < current_extremizer[0] * (-1) ** min_or_max):
                             current_extremizer = (dist(t), t, seg)
                     except:
                         if current_extremizer == None:
@@ -292,12 +304,15 @@ def extremePointInPath(pt, path, min_or_max):  # 0=min, 1=max
 
 
 def closestPointInPath(pt, path):
-    # returns (|path.seg.point(t)-pt|,t,seg) where t minimizes the distance between pt and curve path.point(t) for t in [0,1]
+    """returns (|path.seg.point(t)-pt|,t,seg) where t minimizes the distance
+    between pt and curve path.point(t) for t in [0,1]"""
     return extremePointInPath(pt, path, 0)
 
 
 def closestPath(pt, path_list):
-    # returns (|path.seg.point(t)-pt|,t,seg,path) where t minimizes the distance between pt and curve path.point(t) for 0<=t<=1 and path the closest path to pt in path_list
+    """returns (|path.seg.point(t)-pt|,t,seg,path) where t minimizes the
+    distance between pt and curve path.point(t) for 0<=t<=1 and path the
+    closest path to pt in path_list"""
     result_list = []
     for path in path_list:
         (d, t, seg) = closestPointInPath(pt, path)
@@ -306,21 +321,23 @@ def closestPath(pt, path_list):
 
 
 def minRadius(origin, path):
-    # returns |path.seg.point(t)-pt| where t minimizes the distance between origin and curve path.point(t) for 0<=t<=1
+    """returns |path.seg.point(t)-pt| where t minimizes the distance between
+    origin and curve path.point(t) for 0<=t<=1"""
     return extremePointInPath(origin, path, 0)[0]
 
 
 def maxRadius(origin, path):
-    # returns |path.seg.point(t)-pt| where t maximizes the distance between pt and curve path.point(t) for 0<=t<=1
+    """returns |path.seg.point(t)-pt| where t maximizes the distance between
+    pt and curve path.point(t) for 0<=t<=1"""
     return extremePointInPath(origin, path, 1)[0]
 
 
 def segDerivative(seg, t):
-    '''
+    """
     This returns the derivative of seg at t
     Note: This will be a positive scalar multiple of the derivative of the Path
     seg is part of (at the corresponding T)
-    '''
+    """
     if isinstance(seg, CubicBezier):
         P = (seg.start, seg.control1, seg.control2, seg.end)
         return 3 * (P[1] - P[0]) * (1 - t) ** 2 + 6 * (P[2] - P[1]) * (
@@ -332,11 +349,11 @@ def segDerivative(seg, t):
         raise Exception("First argument must be a Line or a CubicBezier.")
 
 
-def segUnitTangent(seg, t):
+def segUnitTangent(seg, t, dt=1e-2):
     assert 0 <= t <= 1
     dseg = segDerivative(seg, t)
     try:
-        tangent = (dseg + 0.0) / abs(dseg)
+        return (dseg + 0.0) / abs(dseg)
     except ZeroDivisionError:
         from andysmod import limit
         def tangentfunc(tval):
@@ -346,14 +363,19 @@ def segUnitTangent(seg, t):
         if isclose(t, 0):
             side = 1
             delta0 = .01
+            fudge = dt
         elif isclose(t, 1):
             side = -1
             delta0 = .01
+            fudge = -dt
         else:
             side = 0
             delta0 = min(0.01, 1 - t, t)
-        tangent = limit(tangentfunc, t, side=side, delta0=delta0)
-    return tangent
+            fudge = dt
+        try:
+            return limit(tangentfunc, t, side=side, delta0=delta0)
+        except:
+            return segUnitTangent(seg, t + fudge)
 
 
 def unitTangent(path_or_seg, T_or_t):
