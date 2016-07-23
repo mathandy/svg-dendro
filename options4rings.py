@@ -43,10 +43,7 @@ generate_evenly_spaced_transects = True
 find_areas = True
 
 # This isn't really an option (unless you're sure rings are sorted in SVG)
-if generate_evenly_spaced_transects or find_areas:
-    sort_rings_on = True
-else:
-    sort_rings_on = True
+sort_rings_on = True
 
 
 ###############################################################################

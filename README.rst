@@ -28,10 +28,19 @@ To Run
 
 $ python svgtree.py
 
-This will extract data from any SVG files in the `.../SVGTree/input/` folder and store output in the `.../SVGTree/output/` folder.
+This will extract data from any SVG files in the `.../SVGTree/input/` folder and store output (by default, areas, and 50 evenly space transects) in the `.../SVGTree/output/` folder.
+
 
 Options
 -------
+**To increase/decrease the number of transects found**, use the -n <number> flag
+
+$ python svgtree.py -n 500
+
+**To turn off area calculations**, use the -a flag
+
+$ python svgtree.py -n 500 -a
+
 **To specify the input/output directories:**
 
 $ python svgtree.py -i "your_svg_file.svg" -o "your_desired_output_directory"

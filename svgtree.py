@@ -65,7 +65,9 @@ def get_user_args():
         default=not opt.generate_evenly_spaced_transects,
         action='store_true',
         help='If this flag is included, the transects found will be '
-             'random as oppposed to evenly spaced.',
+             'random as oppposed to evenly spaced.'
+             'NOTE:  BROKEN... this is currently broken, but is a '
+             'simple feature.  If anyone wants to use it, let me know.',
         # metavar='RANDOM_TRANSECTS'
         )
 
@@ -166,6 +168,7 @@ if __name__ == '__main__':
     opt.N_transects = int(user_args.n_transects)
     opt.find_areas = user_args.no_areas
     opt.generate_evenly_spaced_transects = not user_args.random_transects
+    # opt.use_ring_sort_4transects = not user_args.random_transects
     opt.assume_svg_is_fixed = user_args.assume_fixed
     opt.ignore_extant_pickle_file = not user_args.use_pickle_files
     opt.ignore_extant_sorted_pickle_file = not user_args.use_pickle_files
@@ -432,7 +435,7 @@ for svgfile in svgfiles:
 print("")
 
 error_log = os_path.join(opt.output_directory, "error_list.txt")
-print "error_list ouput to:\n{}".format(error_log)
+print("error_list ouput to:\n{}".format(error_log))
 with open(error_log, 'wt') as outf:
     for svgname, err in error_list:
         outf.write('#'*50 + '\n')
