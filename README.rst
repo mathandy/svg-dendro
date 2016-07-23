@@ -8,10 +8,9 @@ Input Data Format
 -----------------
 SVGTree can take in any svg sketch drawn using paths of Bezier curves (and/or lines, polylines, and polygons) on the following two conditions:
 
-1) There must be a closed path surrounding a **blue line**.  The midpoint of 
-this line will be used as the starting point of all transects.
+1. There must be a closed path surrounding a **blue line**.  The midpoint of this line will be used as the starting point of all transects.
 
-2) There must be a closed path surrounding all other paths.
+2. There must be a closed path surrounding all other paths.
 
 In other words, the inner-most ring and the outer-most ring must be closed 
 loops and there should be a blue line inside the inner-most ring to mark where
