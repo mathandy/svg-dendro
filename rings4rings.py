@@ -28,18 +28,20 @@ class Ring(object):
         self._path = path
         self.path_before_removing_intersections = None
         if opt.save_path_length_in_pickle:
-            self.path._calc_lengths() #Calculate lengths of segments in path so this info gets stored in pickle file (time consuming)
+            #Calculate lengths of segments in path so this info gets stored in
+            # pickle file (time consuming)
+            self.path._calc_lengths()
         self.minR = minRadius(self.center,self.path)
         self.maxR = maxRadius(self.center,self.path)
         self.isAbove = set()
         self.isBelow = set()
         self.sort_index = None  # flattened sort index (unique numerical)
         self.psort_index = None  # partial sort index (alphanumeric string)
-        self.wasClosed = None #records the closure before removing intersections (shouldn't ever differ from isClosed())
+        self.wasClosed = None # records the closure before removing intersections (shouldn't ever differ from isClosed())
         self.svgname = None
-        self.nL2bdry_a = None #Path(Line(curve_pt,bdry_pt))
-        self.nL2bdry_b = None #Path(Line(curve_pt,bdry_pt))
-        self.pathAroundBdry = None #closed path given by path+l2b1+bdry_path+l2b0
+        self.nL2bdry_a = None # Path(Line(curve_pt,bdry_pt))
+        self.nL2bdry_b = None # Path(Line(curve_pt,bdry_pt))
+        self.pathAroundBdry = None # closed path given by path+l2b1+bdry_path+l2b0
 
     @property
     def path(self):
@@ -190,52 +192,94 @@ class IncompleteRing(object):
         self.up_ladders = sortby(self.up_ladders,1)
         self.up_ladders.reverse()
 
+# this as my newer cleaned up version, but I broke it i think (7-19-16)
+    # def addSegsToCP(self, segs, tol_closure=opt.tol_isApproxClosedPath):
+    #     """input a list of segments to append to self.completed_path
+    #     this function will stop adding segs if a seg endpoint is near the
+    #     completed_path startpoint"""
+    #     if len(segs)==0:
+    #         raise Exception("No segs given to insert")
+    #
+    #     # Iterate through segs to check if segments join together nicely
+    #     # and (fix them if need be and) append them to completed_path
+    #     for seg in segs:
+    #         # This block checks if cp is (nearly) closed.
+    #         # If so, closes it with a Line, and returns the fcn
+    #         if len(self.completed_path)!=0:
+    #             cp_start, cp_end = self.completed_path[0].start, self.completed_path[-1].end
+    #             if abs(cp_start - cp_end) < tol_closure:
+    #                 if cp_start==cp_end:
+    #                 # then do nothing else and return
+    #                     return
+    #                 else:
+    #                 # then close completed_path with a line and return
+    #                     self.completed_path.append(Line(cp_start, cp_end))
+    #                     return
+    #
+    #             elif seg.start != self.completed_path[-1].end:
+    #                 # then seg does not start at the end of completed_path,
+    #                 # fix it then add it on
+    #                 current_endpoint = self.completed_path[-1].end
+    #                 if abs(seg.start - current_endpoint) <  tol_closure:
+    #                     # then seg is slightly off from current end of
+    #                     # completed_path, fix seg and insert it into
+    #                     # completed_path
+    #                     if isinstance(seg, CubicBezier):
+    #                         P0, P1, P2, P3 = seg.bpoints()
+    #                         newseg = CubicBezier(current_endpoint, P1, P2, P3)
+    #                     elif isinstance(seg, Line):
+    #                         newseg = Line(current_endpoint, seg.end)
+    #                     else:
+    #                         raise Exception('Path segment is neither Line '
+    #                                         'object nor CubicBezier object.')
+    #                     self.completed_path.insert(len(self.completed_path), newseg)
+    #                 else:
+    #                     raise Exception("Segment being added to path does not "
+    #                                     "start at path endpoint.")
+    #             else:
+    #                 # then seg does not need to be fixed, so go ahead and insert it
+    #                 self.completed_path.insert(len(self.completed_path), seg)
+
     def addSegsToCP(self, segs, tol_closure=opt.tol_isApproxClosedPath):
-        """input a list of segments to append to self.completed_path
-        this function will stop adding segs if a seg endpoint is near the
-        completed_path startpoint"""
+    #input a list of segments to append to self.completed_path
+    #this function will stop adding segs if a seg endpoint is near the completed_path startpoint
         if len(segs)==0:
             raise Exception("No segs given to insert")
 
-        # Iterate through segs to check if segments join together nicely
-        # and (fix them if need be and) append them to completed_path
+        #Iterate through segs to check if segments join together nicely
+        #and (fix them if need be and) append them to completed_path
         for seg in segs:
-            # This block checks if cp is (nearly) closed.
-            # If so, closes it with a Line, and returns the fcn
+            #This block checks if cp is (nearly) closed.
+            #If so, closes it with a Line, and returns the fcn
             if len(self.completed_path)!=0:
                 cp_start, cp_end = self.completed_path[0].start, self.completed_path[-1].end
                 if abs(cp_start - cp_end) < tol_closure:
                     if cp_start==cp_end:
-                    # then do nothing else and return
+                    #then do nothing else and return
                         return
                     else:
-                    # then close completed_path with a line and return
-                        self.completed_path.append(Line(cp_start, cp_end))
+                    #then close completed_path with a line and return
+                        self.completed_path.append(Line(cp_start,cp_end))
                         return
 
-                elif seg.start != self.completed_path[-1].end:
-                    # then seg does not start at the end of completed_path,
-                    # fix it then add it on
-                    current_endpoint = self.completed_path[-1].end
-                    if abs(seg.start - current_endpoint) <  tol_closure:
-                        # then seg is slightly off from current end of
-                        # completed_path, fix seg and insert it into
-                        # completed_path
-                        if isinstance(seg, CubicBezier):
-                            P0, P1, P2, P3 = seg.bpoints()
-                            newseg = CubicBezier(current_endpoint, P1, P2, P3)
-                        elif isinstance(seg, Line):
-                            newseg = Line(current_endpoint, seg.end)
-                        else:
-                            raise Exception('Path segment is neither Line '
-                                            'object nor CubicBezier object.')
-                        self.completed_path.insert(len(self.completed_path), newseg)
+            if len(self.completed_path)!=0 and seg.start != self.completed_path[-1].end:
+            #then seg does not start at the end of completed_path, fix it then add it on
+                current_endpoint = self.completed_path[-1].end
+                if abs(seg.start - current_endpoint) <  tol_closure:
+                #then seg is slightly off from current end of completed_path, fix seg and insert it into completed_path
+                    if isinstance(seg,CubicBezier):
+                        P0,P1,P2,P3 = cubPoints(seg)
+                        newseg = CubicBezier(current_endpoint,P1,P2,P3)
+                    elif isinstance(seg,Line):
+                        newseg = Line(current_endpoint,seg.end)
                     else:
-                        raise Exception("Segment being added to path does not "
-                                        "start at path endpoint.")
+                        raise Exception('Path segment is neither Line object nor CubicBezier object.')
+                    self.completed_path.insert(len(self.completed_path),newseg)
                 else:
-                    # then seg does not need to be fixed, so go ahead and insert it
-                    self.completed_path.insert(len(self.completed_path), seg)
+                    raise Exception("Segment being added to path does not start at path endpoint.")
+            else:
+            #then seg does not need to be fixed, so go ahead and insert it
+                self.completed_path.insert(len(self.completed_path),seg)
 
     def addConnectingPathToCP(self, connecting_path, seg0, t0, seg1, t1):
         # first find orientation by checking whether t0 is closer to start or end.
@@ -309,7 +353,7 @@ class IncompleteRing(object):
 
         # first seg
         if isDegenerateSegment(startSeg):
-            tmpSeg = copyobject(self.ring.path[i0+1])
+            tmpSeg = copyobject(self.ring.path[i0 + 1])
             tmpSeg.start = startSeg.start
             startSeg = tmpSeg
             i0 += 1
@@ -618,16 +662,36 @@ class IncompleteRing(object):
         return transect_info
 
     def findTransects2endpointsFromInnerPath_normal(self,irORcr_innerPath,innerPath):
-    #Finds transects to both endpoints (not just that specified by endBin - see outdated description below)
-    #Note: This fcn will attempt to find transects for endpoints where the transects have not been found and will return (False, False, False) for those that have
-    #Returns: (irORcr,nL,seg_irORcr,t_irORcr) where irORcr is the inner path that the transect, nL, leaves from and seg_irORcr and t_irORcr correspond to innerPath and nL points from seg_irORcr.point(t_irORcr) to the desired endpoint
-    #Note: irORcr will differ from irORcr_innerPath in the case where irORcr_innerPath admits a transect but this transect intersects with a (less-inner) previously failed path.  The less-inner path is then output.
+        """Finds transects to both endpoints (not just that specified by
+        endBin - see outdated description below)
+        Note: This fcn will attempt to find transects for endpoints where the
+        transects have not been found and will return (False, False, False)
+        for those that have.
+        Returns: (irORcr,nL,seg_irORcr,t_irORcr) where irORcr is the inner
+        path that the transect, nL, leaves from and seg_irORcr and t_irORcr
+        correspond to innerPath and nL points from seg_irORcr.point(t_irORcr)
+        to the desired endpoint.
+        Note: irORcr will differ from irORcr_innerPath in the case where
+        irORcr_innerPath admits a transect but this transect intersects with a
+        (less-inner) previously failed path.  The less-inner path is then
+        output."""
+        #Outdated Instructions
+        #This fcn is meant to find the transect line from (and normal to) the
+        # inner path that goes through OuterPt.  It does this using the
+        # bisection method.
+        #INPUT: innerPath and outerPath are Path objects, center is a point
+        # representing the core, endBin specifies which end point in outerPath
+        # we hope to find the transect headed towards (so must be a 0 or a 1)
+        #OUTPUT: Returns (transect_Line,inner_seg,inner_t) where normal_line
+        # is the transverse Line object normal to innerPath intersecting
+        # outerPath at outerPt or, if such a line does not exist, returns
+        # (False,False,False,False)
+        # inner_seg is the segment of innerPath that this normal transect line
+        # begins at, s.t. seg.point(inner_t) = transect_Line.point(0)
+
         outerPath = self.ring.path
         center = self.ring.center
-    #This fcn is meant to find the transect line from (and normal to) the inner path that goes through OuterPt.  It does this using the bisection method.
-    #INPUT: innerPath and outerPath are Path objects, center is a point representing the core, endBin specifies which end point in outerPath we hope to find the transect headed towards (so must be a 0 or a 1)
-    #OUTPUT: Returns (transect_Line,inner_seg,inner_t) where normal_line is the transverse Line object normal to innerPath intersecting outerPath at outerPt or, if such a line does not exist, returns (False,False,False,False)
-    # inner_seg is the segment of innerPath that this normal transect line begins at, s.t. seg.point(inner_t) = transect_Line.point(0)
+
         tol_numberDetectionLines_transectLine_normal = 20 ##### tolerance
         N = tol_numberDetectionLines_transectLine_normal
 
@@ -638,12 +702,16 @@ class IncompleteRing(object):
 #        if self.transect0found and self.transect1found:
 #            raise Exception("Both transects already found... this is a bug.")
 
-        #For a visual explanation of the following code block and the six cases, see Andy's "Gap Analysis of Transects to Endpoints"
-        (nL_from0,seg_from0,t_from0) = normalLineAtT_toInner_intersects_withOuter(0,innerPath,outerPath,center) #check if transect from innerPath.point(0) intersect with outerPath
+        # For a visual explanation of the following code block and the six
+        # cases, see Andy's "Gap Analysis of Transects to Endpoints"
+
+        # check if transect from innerPath.point(0) intersect with outerPath
+        nL_from0, seg_from0, t_from0 = normalLineAtT_toInner_intersects_withOuter(0, innerPath, outerPath, center)
         if isApproxClosedPath(innerPath):
             (nL_from1,seg_from1,t_from1) = (nL_from0,seg_from0,t_from0)
         else:
-            (nL_from1,seg_from1,t_from1) = normalLineAtT_toInner_intersects_withOuter(1,innerPath,outerPath,center) #check if transect from innerPath.point(1) intersect with outerPath
+            #check if transect from innerPath.point(1) intersect with outerPath
+            nL_from1, seg_from1, t_from1 = normalLineAtT_toInner_intersects_withOuter(1, innerPath, outerPath, center)
         #Case: TF
         if nL_from0 and not nL_from1:
             return (False,False,False,False), self.findTransect2endpointFromInnerPath_normal(irORcr_innerPath,innerPath,(0,1),True,1)
@@ -651,7 +719,8 @@ class IncompleteRing(object):
         if (not nL_from0) and nL_from1:
             return self.findTransect2endpointFromInnerPath_normal(irORcr_innerPath,innerPath,(0,1),False,0), (False,False,False,False)
 
-        #determine All, None, or Some (see notes in notebook on this agorithm for explanation)
+        # determine All, None, or Some (see notes in notebook on this agorithm
+        # for explanation)
         max_pass_Tk = 0
         min_pass_Tk = 1
         max_fail_Tk = 0
@@ -661,7 +730,7 @@ class IncompleteRing(object):
         dT = float(1)/(N-1)
         for k in range(1,N-1):
             Tk = k*dT
-            (nLk,outer_segk,outer_tk) = normalLineAtT_toInner_intersects_withOuter(Tk,innerPath,outerPath,center)
+            nLk, outer_segk, outer_tk = normalLineAtT_toInner_intersects_withOuter(Tk, innerPath, outerPath, center)
             if nLk != False:
                 somePass = True
                 if Tk > max_pass_Tk:
@@ -697,14 +766,17 @@ class IncompleteRing(object):
                     print Ttestindex
                     print T2test
                     raise Exception()
-            tmp1 = self.findTransect2endpointFromInnerPath_normal(irORcr_innerPath,innerPath,Trange0,Tpf0,0)
-            tmp2 = self.findTransect2endpointFromInnerPath_normal(irORcr_innerPath,innerPath,Trange1,Tpf1,1)
-            return tmp1,tmp2
+            args = irORcr_innerPath, innerPath, Trange0, Tpf0, 0
+            tmp1 = self.findTransect2endpointFromInnerPath_normal(*args)
+            args = irORcr_innerPath, innerPath, Trange1, Tpf1, 1
+            tmp2 = self.findTransect2endpointFromInnerPath_normal(*args)
+            return tmp1, tmp2
         #Cases: (TT & all) or (FF & none)    [note: TT & all iff TT & T0<T1]
         else:
-            return (False,False,False,False),(False,False,False,False)
+            return (False, False, False, False), (False, False, False, False)
 
-class CompleteRing(object): #this must remain fast to initialize
+
+class CompleteRing(object):  # this must remain fast to initialize
     def __init__(self, innerRing, outerRing, *internalRings):
         self.inner = innerRing
         self.outer = outerRing
@@ -720,154 +792,108 @@ class CompleteRing(object): #this must remain fast to initialize
     def sortIRs(self):
         self.ir_boolset = sorted(self.ir_boolset, key = lambda ir: ir.ring.sort_index)
 
-#    def makeConnectingPath4JumpingIR(self,ir,irORcr0,path0,t0,irORcr1,path1,t1): #DEPRECATED - moved to IncompleteRing
-#        #start with path0, go to nearest (with t> t0) up-ladder or if no up-ladder then go down to lower ring and repeat until getting to path1
-#        tol_maxIts = 100 ####
-#        connecting_path = []
-#        iters = 0
-#        (irORcr_new,t_new) = (irORcr1,t1)
-#        doneyet = False
-#        while iters < tol_maxIts and not doneyet:
-#            iters =iters+ 1
-#            (traveled_path,irORcr_new,t_new) = self.followPath2Ladder(irORcr_new,t_new)
-#            connecting_path += traveled_path
-#            if irORcr_new == irORcr0:
-#                doneyet = True
-#                break
-#            if iters >= tol_maxIts-1:
-#                raise Exception("makeConnectingPath4JumpingIR reached maxIts")
-#        return connecting_path
-
-#    def hardComplete_ir_obsolete(self, ir, irORcr0,path0,seg0,t0, T0, irORcr1,path1,seg1, t1, T1): #DEPRECATED - replaced by IncompleteRing.hardComplete() #for use when the closest rings end and start are NOT the same ring
-#        #First, figure out which endpoints need transects (don't intersect) and if they need to be trimmed down to an intersection point
-#        intersections0 = pathXpathIntersections(path0,ir.ring.path)
-#        intersections1 = pathXpathIntersections(path1,ir.ring.path)
-#        if len(intersections0) == 1 and len(intersections1) == 1:
-#            (cp_seg_a,se_seg_a,cp_t_a,se_t_a) = intersections0[0]
-#            p_a = se_seg_a.point(se_t_a)
-#            (cp_seg_b,se_seg_b,cp_t_b,se_t_b) = intersections1[0]
-#            p_b = se_seg_b.point(se_t_b)
-#
-#            if isNotTooFarFrom(p_a,ir.ir_start) and isNotTooFarFrom(p_b,ir.ir_end):
-#                ir.corrected_start = (p_a,se_seg_a,se_t_a)
-#                ir.corrected_end = (p_b,se_seg_b,se_t_b)
-#            elif isNotTooFarFrom(p_a,ir.ir_end) and isNotTooFarFrom(p_b,ir.ir_start):
-#                ir.corrected_start = (p_b,se_seg_b,se_t_b)
-#                ir.corrected_end = (p_a,se_seg_a,se_t_a)
-#            else:
-#                raise Exception("Incomplete Ring intesects with closest other ring in a place not near either endpoint.")
-#        elif len(intersections0) == 1 and intersections1==[]:
-#            (cp_seg,se_seg,cp_t,se_t) = intersections0[0]
-#            p = se_seg.point(se_t)
-#            if isNotTooFarFrom(p,ir.ir_start): #use intersection at start, transect at end
-#                ir.corrected_start = (p,se_seg,se_t)
-#            elif isNotTooFarFrom(p,ir.ir_end): #use intesection at end, transect at start
-#                ir.corrected_end = (p,se_seg,se_t)
-#            else:
-#                raise Exception("Incomplete Ring intesects with closest other ring in a place not near either endpoint.")
-#        elif intersections0 == [] and intersections1==1:
-#            (cp_seg,se_seg,cp_t,se_t) = intersections1[0]
-#            p = se_seg.point(se_t)
-#            if isNotTooFarFrom(p,ir.ir_start): #use intersection at start, transect at end
-#                ir.corrected_start = (p,se_seg,se_t)
-#            elif isNotTooFarFrom(p,ir.ir_end): #use intesection at end, transect at start
-#                ir.corrected_end = (p,se_seg,se_t)
-#            else:
-#                raise Exception("Incomplete Ring intesects with closest other ring in a place not near either endpoint.")
-#        elif intersections0 != [] or intersections1 != []:
-#            print("Error in completing jumping IR:+++++++++++++++++++++++++++++++++++++++++++++++")
-#            print("intersections found with ring0: "+str(len(intersections0)))
-#            print("intersections found with ring1: "+str(len(intersections1)))
-#            raise Exception("Incomplete Ring intersects with closest other ring in more than two places.")
-#        ir.trimAndAddTransectsBeforeCompletion(path0.seg0.point(t0),path1.seg1.point(t1))
-#        new_connecting_path_component = self.makeConnectingPath4JumpingIR(irORcr0,path0,T0,irORcr1,path1,T1) #this is a Path object
-#        ir.addConnectingPathToCP(new_connecting_path_component,seg0,t0,seg1,t1)
-
     def completeIncompleteRings(self):
-    #This fcn takes each ir included in self and makes a closed path to use for its area computation.
-        self.sortIRs() #make sure ir_boolset is sorted (by sort index found in topological sort)
+        """This fcn takes each ir included in self and makes a closed path to
+        use for its area computation."""
+
+        # make sure ir_boolset is sorted (by sort index found in topological sort)
+        self.sortIRs()
 
         if len(self.ir_boolset) == 0:
             return
-        #iterate through IRs to complete them one by one, inner-most to outer-most
-        for i,ir in enumerate(self.ir_boolset):
-            potential_rings = [self.inner] + [x.ring for x in self.ir_boolset[0:i]] #try all more-inner IRs (and the inner CR) starting with most-outer among them - this is for finding transects. Note: #poten[j] = ir_boolset[j-1].ring for j=1,...,i
 
-            #Find transects from the endpoints of ir to the next most-Outer of the more-inner acceptable rings
-            #Note: the ir's are sorted, but need to make sure each transect is well-defined (i.e. check the potential connecting ir does in fact travel "below" that endpoint)
-            #Note: findTransects fcn used below will return (False,False,False,False) for any transects already found
-            nextRing2Try_index = i #note this is right, not i-1 cause potential rings has self.inner at beginning
+        # iterate through IRs to complete them one by one, inner-most to outer-most
+        for i,ir in enumerate(self.ir_boolset):
+            # try all more-inner IRs (and the inner CR) starting with
+            # most-outer among them - this is for finding transects.
+            # Note: #poten[j] = ir_boolset[j-1].ring for j=1,...,i
+            potential_rings = [self.inner] + [x.ring for x in self.ir_boolset[0:i]]
+
+            # Find transects from the endpoints of ir to the next most-Outer
+            # of the more-inner acceptable rings
+            # Note: the ir's are sorted, but need to make sure each transect
+            # is well-defined (i.e. check the potential connecting ir does in
+            # fact travel "below" that endpoint)
+            # Note: findTransects fcn used below will return
+            # (False, False, False, False) for any transects already found
+            nextRing2Try_index = i  # note this is right, not i-1 cause potential rings has self.inner at beginning
             while not (ir.transect0found and ir.transect1found) and nextRing2Try_index >= 0:
                 nextRing2Try = potential_rings[nextRing2Try_index]
                 if nextRing2Try_index == 0:
                     irORcr_2Try = self
                 else:
                     irORcr_2Try = self.ir_boolset[nextRing2Try_index-1]
-                (irORcr0,tL0,seg0,t0),(irORcr1,tL1,seg1,t1) = ir.findTransects2endpointsFromInnerPath_normal(irORcr_2Try,nextRing2Try.path)
-                #check if nextRing2Try is has a transect going to the startpoint, if so we're done with this endpoint
+
+                tmp = ir.findTransects2endpointsFromInnerPath_normal(irORcr_2Try, nextRing2Try.path)
+                (irORcr0, tL0, seg0, t0), (irORcr1, tL1, seg1, t1) = tmp
+
+                # check if nextRing2Try is has a transect going to the
+                # startpoint, if so we're done with this endpoint
                 if tL0 != False:
-                    T0 = segt2PathT(irORcr0.ORring.path,seg0,t0) #ring.path.point(T0) is where the transect, tL, meets this ring
-                    irORcr0.up_ladders.append((ir,T0)) #record up-ladder on the ring the transect connects to (and t-val it connects at)
-                    ir.down_ladder0 = (irORcr0,T0) #record startpoint down-ladder on this ir and (and t-val on connecting ring it connects at)
+                    # ring.path.point(T0) is where the transect, tL, meets
+                    # this ring
+                    T0 = segt2PathT(irORcr0.ORring.path,seg0,t0)
+
+                    # record up-ladder on the ring the transect connects to
+                    # (and t-val it connects at)
+                    irORcr0.up_ladders.append((ir,T0))
+
+                    # record startpoint down-ladder on this ir and (and t-val
+                    # on connecting ring it connects at)
+                    ir.down_ladder0 = (irORcr0,T0)
                     if not ir.transect0found:
                         ir.transect0found = True
                 else:
                     ir.transect0fails.append(irORcr_2Try)
 
-                #check if nextRing2Try has a transect going to the endpoint, if so we're done with this endpoint
+                # check if nextRing2Try has a transect going to the endpoint,
+                # if so we're done with this endpoint
                 if tL1 != False:
-                    T1 = segt2PathT(irORcr1.ORring.path,seg1,t1) #ring.path.point(T0) is where the transect, tL, meets this ring
-                    irORcr1.up_ladders.append((ir,T1)) #record up-ladder on the ring the transect connects to (and t-val it connects at)
-                    ir.down_ladder1 = (irORcr1,T1) #record startpoint down_ladder on this ir and (and t-val on connecting ring it connects at)
+                    # ring.path.point(T0) is where the transect, tL, meets
+                    # this ring
+                    T1 = segt2PathT(irORcr1.ORring.path, seg1, t1)
+
+                    # record up-ladder on the ring the transect connects to
+                    # (and t-val it connects at)
+                    irORcr1.up_ladders.append((ir, T1))
+
+                    # record startpoint down_ladder on this ir and (and t-val
+                    # on connecting ring it connects at)
+                    ir.down_ladder1 = (irORcr1, T1)
+
                     if not ir.transect1found:
                         ir.transect1found = True
                 else:
                     ir.transect1fails.append(irORcr_2Try)
 
-#                    ###DEBUG asdflkjas;dlfkj;;;
-#                    pt1 = ir.down_ladder1[0].ORring.path.point(ir.down_ladder1[1])
-#                    pt0 = ir.down_ladder0[0].ORring.path.point(ir.down_ladder0[1])
-#                    if isNear(pt0,pt1):
-#                        dL0 = Path(Line(ir.ring.path[0].start,pt0))
-#                        dL1 = Path(Line(ir.ring.path[-1].end,pt1))
-#                        p2d=[ir.ring.path,dL0,dL1]
-#                        p2dc=['green','blue','blue']
-#                        for inr in self.ir_boolset:
-#                            p2d+=[inr.ring.path]
-#                            p2dc+=['black']
-#                        disvg(p2d,p2dc,openInBrowser=True)
-#                        print "rings4rings: asdflkjas;dlfkj;;;"
-#                        raise Exception("down_ladder0 is very close to down_ladder1")
-#                    ###end of DEBUG asdflkjas;dlfkj;;;
+                # unsuccessful while-loop termination conditions
+                if (nextRing2Try_index == 0 and
+                    not (ir.transect0found and ir.transect1found)):
 
-                #unsuccessful while-loop termination conditions
-                if nextRing2Try_index == 0 and not (ir.transect0found and ir.transect1found):
                     printPath(ir.ring.path)
                     print(i)
                     colors = ['blue']*(len(self.ir_boolset)+2) + ['red']
-                    disvg([self.inner.path] + [x.ring.path for x in self.ir_boolset] + [self.outer.path] + [ir.ring.path],colors)
-                    raise Exception("acceptable more-inner ring could not be found.")
+                    paths2disp = ([self.inner.path] +
+                                 [x.ring.path for x in self.ir_boolset] +
+                                 [self.outer.path] +
+                                 [ir.ring.path])
+                    disvg(paths2disp, colors)
+                    raise Exception("Acceptable more-inner ring could not be "
+                                    "found.")
                 else:
                     nextRing2Try_index -= 1
-        #Now that all up/down ladders are set in this CR, iterate through IRs again and create completed_path for each
+
+        # Now that all up/down ladders are set in this CR, iterate through IRs
+        # again and create completed_path for each
         for ir in self.ir_boolset:
             try:
                 ir.hardComplete()
             except:
                 from options4rings import colordict
-                ir.ring.color = colordict['safe1'] #highlight ir in output SVG containing troubled section (see area4rings)
+                # highlight ir in output SVG containing troubled section
+                # (see area4rings)
+                ir.ring.color = colordict['safe1']
                 raise
-
-
-#                ###DEBUG asdffggasdfa
-#                from andysSVGpathTools import disvg
-#                paths2disp = [ir_tmp.ring.path for ir_tmp in self.ir_boolset if ir_tmp != ir]
-#                path_colors = ['blue']*len(paths2disp)+['yellow']*2+['red']
-#                paths2disp += [self.inner.path,self.outer.path]
-#                paths2disp.append(ir.completed_path)
-#                disvg(paths2disp,path_colors)
-#                raw_input("Press enter to continue:")
-#                ###End of DEBUG asdffggasdfa
 
 #                #record this info to use after done with all IRs in this self
 #                ir_info_list.append((ir,info0,info1))
@@ -920,24 +946,27 @@ class CompleteRing(object): #this must remain fast to initialize
 
     def area(self):
         for iring in self.ir_boolset:
-            if not isinstance(iring.completed_path, Path) or iring.area() == "Fail":
+            if (not isinstance(iring.completed_path, Path)) or (iring.area() == "Fail"):
                 return "Fail"
         return self.areaIgnoringIRs() - sum([iring.area() for iring in self.ir_boolset])
 
-    def type(self,colordict):
+    def type(self, colordict):
         for (key,val) in colordict.items():
             if self.inner.color == val:
-                innerkey=key
+                innerkey = key
             if self.outer.color == val:
                 outerkey = key
         try:
             return innerkey + "-" + outerkey
         except:
-            raise Exception("inner ring color or outer ring color not in colordict... you shouldn't have gotten this far.  Bug detected.")
+            raise Exception("inner ring color or outer ring color not in "
+                            "colordict... you shouldn't have gotten this "
+                            "far.  In other words, bug detected.")
 
 #    def info(self, cp_index):
 #        ###### "complete ring index, complete?, inner BrookID, outer BrookID, inner color, outer color, area, area Ignoring IRs, averageRadius, minR, maxR, IRs contained"
 #        return str(cp_index) + "," + "True" + self.inner.brook_tag + ", " + self.outer.brook_tag + "," + self.inner.color + ", " + self.outer.color +"," + str(self.area()) +", "+ str(self.areaIgnoringIRs())+","+str(self.aveR())+","+str(self.minR)+","+str(self.maxR)+","+str(len(self.ir_boolset))
+
     def info(self,cp_index,colordict):
         ###### "complete ring index, type, # of IRs contained, minR, maxR, aveR, area, area Ignoring IRs"
         outputString = str(cp_index)+","+self.type(colordict)+","+str(len(self.ir_boolset))+","+str(self.minR())+","+str(self.maxR())+","+str(self.aveR())+","+str(self.area())+","+str(self.areaIgnoringIRs())
@@ -945,36 +974,6 @@ class CompleteRing(object): #this must remain fast to initialize
             outputString += "\n"+ir.info(cp_index,colordict)
         return outputString
 
-#class PartialRing(object):
-#    def __init__(self, ring,t0,t1):
-#        self.ring = ring
-#        self.t0 = t0
-#        self.t1 = t1
-#
-#
-#    def set_inner(self, ring):
-#        self.inner = ring
-#    def set_outer(self, ring):
-#        self.outer = ring
-#
-#
-#    def __repr__(self):
-#        return '<PartialRing based with t0 = %s and t1 = %s, based on path %s>' %(self.t0,self.t1,self.path)
-#
-#    def __eq__(self, other):
-#        if not isinstance(other, PartialRing):
-#            return NotImplemented
-#        if self.t0 != other.t0 or self.t1!=other.t1 or self.path !=other.path:
-#            return False
-#        return True
-#
-#    def __ne__(self, other):
-#        if not isinstance(other, PartialRing):
-#            return NotImplemented
-#        return not self == other
-#
-#    def point(self, pos):
-#        return self.path.point(pos)
 
 class CP_BoolSet(boolset):
     def cpUpdate(self,new_cp):

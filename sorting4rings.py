@@ -2,7 +2,7 @@ from __future__ import division
 from andysmod import format_time, topo_sorted, createOrderingMatrix, flattenList
 from andysSVGpathTools import disvg, ptInsideClosedPath
 from misc4rings import normalLineAtT_toInner_intersects_withOuter, pathXpathIntersections, display2rings4user, dis
-from options4rings import basic_output_on, use_alternative_sorting_method, alt_sort_N, percentage_for_disagreement, look4ordering_matrices
+from options4rings import basic_output_on, use_alternative_sorting_method, alt_sort_N, percentage_for_disagreement, look_for_user_sort_input
 import options4rings as opt
 from svgpathtools import Path, CubicBezier,Line
 from time import sleep, time as current_time
@@ -186,9 +186,9 @@ def ask_user_to_sort(i,j,ring_list,make_svg=True,ask_later=True):#returns 1 if r
 #    if i>j:
 #        return -1*ask_user_to_sort(j,i,ring_list) #prevents asking user about same set of rings twice
     if ask_later: #save an svg for "interactive sorting" and return NaN
-        from options4rings import outputFolder
+        from options4rings import output_directory
         from os import path as os_path
-        save_loc = os_path.join(outputFolder,'interactive_sorting',
+        save_loc = os_path.join(output_directory,'interactive_sorting',
                                 ring_list[i].svgname,'cmp_%s-%s.svg'%(i,j))
         disvg([ring_list[i].path,ring_list[j].path],['green','red'],
               nodes=[ring_list[i].center],filename=save_loc)
@@ -414,9 +414,9 @@ def sort_rings(ring_list, om_pickle_file):
 #
 #    disvg([ring_list[k].path for k in sorted_closedRingIndices[1:n]],[ring_list[k].color for k in sorted_closedRingIndices[1:n]],openInBrowser=True)###DEBUG
 #    from os import path as os_path
-#    from options4rings import outputFolder
+#    from options4rings import output_directory
 #    from andysSVGpathTools import svgSlideShow
-#    save_dir = os_path.join(outputFolder,'debug','ring_sort_slideshow_closed_pairs')
+#    save_dir = os_path.join(output_directory,'debug','ring_sort_slideshow_closed_pairs')
 #
 #    used_rings = []
 #    pathcolortuplelist = []
@@ -480,9 +480,9 @@ def sort_rings(ring_list, om_pickle_file):
 #    ###DEBUG ONLY TEST slideshow (of which rings are put in which closed ring pairs)
 #    basic_output_on.dprint("creating slideshow of which rings are located between which closed ring pairs...",'nr')
 #    from os import path as os_path
-#    from options4rings import outputFolder
+#    from options4rings import output_directory
 #    from andysSVGpathTools import svgSlideShow
-#    save_dir = os_path.join(outputFolder,'debug','slideshow_closed_pair_inclusions')
+#    save_dir = os_path.join(output_directory,'debug','slideshow_closed_pair_inclusions')
 #    pathcolortuplelist = []
 #    paths = [ring.path for ring in ring_list]
 #    for cp in closed_pairs:
@@ -500,7 +500,7 @@ def sort_rings(ring_list, om_pickle_file):
     start_time = current_time()
     
     ordering_matrices_pickle_extant = False
-    if look4ordering_matrices:
+    if look_for_user_sort_input:
         try:
             ordering_matrices = pickle.load(open(om_pickle_file, "rb"))
             ordering_matrices_pickle_extant = True
@@ -570,10 +570,10 @@ def sort_rings(ring_list, om_pickle_file):
             basic_output_on.dprint("%s percent complete. Time Elapsed = %s | ETR = %s"%(int(percent_complete*100),format_time(et),format_time(etr)))
 
     #Output problem cases for manual sorting
-    from options4rings import outputFolder
+    from options4rings import output_directory
     from os import path as os_path
     from andysmod import output2file
-    manual_sort_csvfile = os_path.join(outputFolder,"interactive_sorting",ring_list[0].svgname,"manual_comparisons.csv")
+    manual_sort_csvfile = os_path.join(output_directory,"interactive_sorting",ring_list[0].svgname,"manual_comparisons.csv")
     str_out = ''
     if flag_count:
         pickle.dump(cp_oms, open(om_pickle_file, "wb"))
@@ -586,7 +586,7 @@ def sort_rings(ring_list, om_pickle_file):
                 str_out+='%s,%s,\n'%(idx_i,idx_j)
             output2file(str_out,filename=manual_sort_csvfile,mode='a')
 
-        raise Exception("There are %s rings pairs that need to be manually sorted.  Please set 'look4ordering_matrices=True' and run this svg again.  Note: When you run again, there will be an interactive interface to help you sort, but it may be easier to manually enter the needed comparisons in\n%s"%(flag_count,manual_sort_csvfile))
+        raise Exception("There are %s rings pairs that need to be manually sorted.  Please set 'look_for_user_sort_input=True' and run this svg again.  Note: When you run again, there will be an interactive interface to help you sort, but it may be easier to manually enter the needed comparisons in\n%s"%(flag_count,manual_sort_csvfile))
     basic_output_on.dprint("Done with inner ring sorting (in %s).  Finished with %s error flags."%(format_time(current_time()-start_time),flag_count))
 
     # Note: sort_lvl info records the number of other rings in the same 

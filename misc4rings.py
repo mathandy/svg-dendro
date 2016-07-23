@@ -496,7 +496,7 @@ def displaySVGPaths_transects_old(ringList,data_transects,transect_angles,filena
 
 def displaySVGPaths_transects(ring_list, data_transects, transect_angles, skipped_angle_indices, fn=None):
     if not fn:
-        filename = opt.outputFolder + ring_list[0].svgname
+        filename = opt.output_directory + ring_list[0].svgname
     else:
         filename = fn
 

@@ -270,7 +270,7 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
                 s_rel = bdry_ring.path.length(T1=T) / bdry_ring.path.length()
                 from os import path as os_path
                 fn = sorted_ring_list[0].svgname + "_partial_transect_%s.svg" % s_rel
-                fn = os_path.join(opt.outputFolder, fn)
+                fn = os_path.join(opt.output_directory, fn)
                 wsvg([r.path for r in sorted_ring_list],
                       nodes=[tr[0] for tr in transect_info], filename=fn)
                 warn("\nNo transect exists ending at relative arc "

@@ -327,7 +327,7 @@ def visual_test_of_closed_ring_sort(ring_list):
 def visual_test_of_ring_sort(ring_list):
     from andysSVGpathTools import svgSlideShow
     from os import path as os_path
-    fileloc = os_path.join(opt.outputFolder,'debug','ring_sort_slideshow')
+    fileloc = os_path.join(opt.output_directory,'debug','ring_sort_slideshow')
     opt.basic_output_on.dprint("Creating SVG slideshow showing ring sorting...",'nr')
 
     #create svg for each image in slideshow

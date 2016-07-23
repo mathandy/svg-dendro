@@ -5,31 +5,28 @@ from os import getcwd
 #### Input and Output directories
 
 # Mac/Linux example:
-# input_directory = '/Users/Andy/Desktop/samples/' 
+# input_directory = '/Users/Andy/Desktop/input_svgs/'
 
 # Windows example:
-# input_directory = "C:\\Users\\Andy\\Desktop\\samples\\" 
+# input_directory = "C:\\Users\\Andy\\Desktop\\input_svgs\\"
 
 # Run just two simple examples
-input_directory = os_path.join(getcwd(), 'samples')
-
-# Run fake/test sample SVGs
-# input_directory = os_path.join(getcwd(), 'samples', 'tests')
+input_directory = os_path.join(getcwd(), 'input')
 
 # Run all real sample SVGs
-input_directory = os_path.join(getcwd(),'samples','reals')
+# input_directory = os_path.join(getcwd(), 'input', 'examples', 'real_examples', 'problemsome')
 
 ### Output directory
-outputFolder = os_path.join(getcwd(), 'output')
+output_directory = os_path.join(getcwd(), 'output')
 
 
 ###############################################################################
 ###Easy Run Options ###########################################################
 ###############################################################################
-if_file_throws_error_skip_and_move_to_next_file = False
+if_file_throws_error_skip_and_move_to_next_file = True
 
 # 0 is first file, 1 is second, etc.
-start_at_file_number = 0  
+start_at_file_number = 0
 
 # number of transects to generate; set to zero if none are desired
 N_transects = 50
@@ -43,7 +40,7 @@ N_transects = 50
 generate_evenly_spaced_transects = True
 
 # Find the area
-find_areas = False
+find_areas = True
 
 # This isn't really an option (unless you're sure rings are sorted in SVG)
 if generate_evenly_spaced_transects or find_areas:
@@ -67,7 +64,7 @@ create_fixed_svg = True
 
 # folder to store pickle files (which saves some progress in case the program
 # needs to be re-run). By default, these pickle files are NOT used.
-outputFolder_pickles = os_path.join(outputFolder, "pickle_files")
+pickle_dir = os_path.join(output_directory, "pickle_files")
 ignore_extant_pickle_file = True
 ignore_extant_sorted_pickle_file = True
 
@@ -122,12 +119,12 @@ rings_may_contain_intersections = False
 
 # If True then if the orientation of any paths cannot be determined automatically, 
 # will wait for input from user (after outputing an svg to help user decide).
-manually_fix_orientations = True  
+manually_fix_orientations = True
 
-# If paths are not close to being convex (and orientation fails to be determined 
-# automatically and manually_fix_orientations = False) then this assumption will 
+# If paths are not close to being convex (and orientation fails to be determined
+# automatically and manually_fix_orientations = False) then this assumption will
 # be used.  If set to False, then assumes paths were traced in Clockwise fashion.
-when_orientation_cannot_be_determined_assume_CCW = True 
+when_orientation_cannot_be_determined_assume_CCW = False
 
 # Sometimes the user will be asked for input based on an output (regarding 
 # sorting or orientation issues).  If true, the program will attemp to display 
@@ -140,10 +137,10 @@ try_to_open_svgs_in_browser = True
 remove_curly_ends = True
 
 # Ignore curly ends where entire segment violates curvature tolerance
-ignore_long_curls = True  
+# ignore_long_curls = True
 
 # If necessary, stop and ask user if curly end can be cropped
-manually_curly_end = False
+# manually_curly_end = True
 
 # (user assistance required unless force_remove_self_intersections) if true, 
 # the program check for self-intersections in open rings and if found will 
@@ -153,23 +150,25 @@ remove_self_intersections = True
 # If true will assume user always answers yes.
 force_remove_self_intersections = True 
 
-# Check if rings is improperly closed so that ends overlap
-# (w/o self-intersection)
-check4overlappingends = True
+# Check if rings is improperly closed so that last segment is outward or
+# inward of the first segment
+# NOTE: this may be buggy and should maybe be False
+check4overlappingends = False
 
-# To remove rings to small to be intentional
+# To remove rings too small to be intentional
 remove_inappropriately_short_rings = True
 appropriate_ring_length_minimum = 2.5 * tol_isNear
 
 dont_remove_closed_inappropriately_short_rings = True
 create_svg_highlighting_inappropriately_short_rings = True
 
+
 ###############################################################################
 ###Debug options: (Note: These will slow down the program significantly.  They 
 # should all be False unless you are debugging code.)
 ###############################################################################
 # folder to store debugging output in
-outputFolder_debug  = os_path.join(outputFolder, "debug") 
+output_directory_debug  = os_path.join(output_directory, "debug")
 debugging_mode_on = False
 
 # This produces and SVG slideshow showing the ring ordering found.
@@ -178,12 +177,12 @@ create_SVG_showing_ring_sort = False
 sort_debug_mode_on = False
 sort_debug_3_on = False
 transect_debug_mode_on = False
-transect_debug_mode_output_folder = os_path.join(outputFolder, "debug")
+transect_debug_mode_output_folder = os_path.join(output_directory, "debug")
 
 # This produces and SVG slideshow showing how the transect is formed.  
 # You should set N_transects=1 above when using this.
 unsorted_transect_debug_on = False 
-unsorted_transect_debug_output_folder = os_path.join(outputFolder, "debug", "transect_slides")
+unsorted_transect_debug_output_folder = os_path.join(output_directory, "debug", "transect_slides")
 
 
 ###############################################################################
@@ -246,8 +245,8 @@ show_transect_progress = OutputBoolean(True) # Only applies to inverse transects
 # Sometimes the automatic sorting has issues due to overlapping paths in input 
 # svg file.  You can check for issues using the visual_test_of_all_ring_sort_on 
 # option, or you can just fix the sorting manually with this feature.
-manually_fix_sorting = False  
-look4ordering_matrices = False
+manually_fix_sorting = True
+look_for_user_sort_input = False
 
 
 ###############################################################################

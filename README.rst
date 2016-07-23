@@ -19,15 +19,29 @@ the transects will start.
 
 To Run
 ------
-1. Follow the setup instructions below.
+1. Follow the instructions below to install any prerequisites needed.
 
-2. Download and then unzip SVGTree.
+2. Download and unzip SVGTree.
 
-3. Read through the file "options.py".  This is where you point the code to where you're storing the SVGs you'd like to input, and explains all the options available.  If you have any questions, feel free to ask me (AndyAPort@gmail.com).
+3. Move some SVG files you want to extract information from to the input folder (found inside the SVGTree folder that you just unzipped).
 
 4. Open a terminal/command-prompt, navigate into the SVGTree folder and enter the following command (without the $).
 
 $ python svgtree.py
+
+This will extract data from any SVG files in the `.../SVGTree/input/` folder and store output in the `.../SVGTree/output/` folder.
+
+Options
+-------
+**To specify the input/output directories:**
+
+$ python svgtree.py -i "your_svg_file.svg" -o "your_desired_output_directory"
+
+**For more basic options**, enter the command:
+
+$ python svgtree.py -h
+
+**For advanced options**, read through the file "options4rings.py".
 
 Prerequisites
 -------------

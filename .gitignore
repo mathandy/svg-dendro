@@ -1,6 +1,7 @@
 *.pyc
 .*
 /tests
+/input/examples/real_examples/problemsome
 /output/*
-!/output/*.txt
+!/output/placeholder.txt
 !/.gitignore
