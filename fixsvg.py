@@ -331,30 +331,10 @@ def fix_svg(ring_list, center, svgfile):
 
     # Trim paths with high curvature (i.e. curly) ends
     if opt.remove_curly_ends:
-        def kappa(seg, t):
-            try:
-                return seg.curvature(t)
-            except ValueError:
-                return np.inf
-
-
         print("Trimming high curvature ends...")
         for ring in ring_list:
             if ring.isClosed():
                 continue
-
-#             # Find estimate of max curvature of inner part of ring
-#             segCurvatures = []
-#             for seg in ring.path[1:-1]:
-#                 segCurvatures.append(max(seg.length/kappa(seg, t) for
-#                                          t in np.linspace(.1, .9, 10)))
-#             for seg in [ring.path[0], ring.path[-1]]:
-#                 segCurvatures.append(max(seg.length*kappa(seg, t) for
-#                                          t in np.linspace(.2, .8, 5) ))
-# #                    aveCurvature = aveCurvature/(len(ring.path)*10)
-#
-#             tol_curvature = 20 * max(segCurvatures)  #####Tolerance
-
 
             # 90 degree turn in distance of opt.tol_isNear
             tol_curvature = 2**.5 / opt.tol_isNear  #####Tolerance
@@ -371,7 +351,7 @@ def fix_svg(ring_list, center, svgfile):
                 dx, dy = x.deriv(), y.deriv()
                 ddx, ddy = dx.deriv(), dy.deriv()
 
-                p = (dx**2 + dy**2)**3 - kappa*(dx*ddy - ddx*dy)**2
+                p = kappa**2*(dx**2 + dy**2)**3 - (dx*ddy - ddx*dy)**2
                 return polyroots01(p)
 
             # For first segment
@@ -392,105 +372,11 @@ def fix_svg(ring_list, center, svgfile):
             else:
                 T1 = 1
 
-            # ###DEBUG
-            # if T0 != 0 or T1 != 1:
-            #     print("about to crop:")
-            #     print("curvature({}) = {}".format(T0, ring.path.curvature(T0)))
-            #     print("ring.path.length(0, T0) =", ring.path.length(0, T0))
-            #     print("curvature({}) = {}".format(T1, ring.path.curvature(T1)))
-            #     print("ring.path.length(T1, 1) =", ring.path.length(T1, 1))
-            #     try:
-            #         input()
-            #     except:
-            #         pass
-            #
-            # ###End of debug
-
             # crop (if necessary)
             if T0 != 0 or T1 != 1:
                 ring.path = ring.path.cropped(T0, T1)
 
         print("Done trimming.")
-
-
-
-
-
-
-
-
-        #     # Initialize variables used to remember where to crop
-        #     t0, t1 = 0, 1
-        #
-        #     mes2 = ("  Set manually_curly_end=True to fix this ring.")
-        #
-        #     # check first segment in each ring
-        #     mes1 = ("A curl has been detected that lasts for most or all the "
-        #             "first segment!")
-        #     startseg = ring.path[0]
-        #     for k in range(0, 50):
-        #         t = 0.5 - k/100
-        #         if kappa(startseg, t) > tol_curvature:
-        #             if k < 10:
-        #                 if opt.manually_curly_end:
-        #                     print(mes1)
-        #                     print("Should I remove this red segment?")
-        #                     if len(ring.path) != 1:
-        #                         greenpath = Path(*ring.path[1:])
-        #                         redpath = startseg
-        #                     else:
-        #                         greenpath = startseg.cropped(t, 1)
-        #                         redpath = startseg.cropped(0, t)
-        #                     disvg([greenpath, redpath], ['green', 'red'],
-        #                           nodes=[redpath.start, redpath.end])
-        #                     if inputyn():
-        #                         t0 = t
-        #                 elif opt.ignore_long_curls:
-        #                     warn(mes1 + mes2 + "  Continuing... and hoping "
-        #                         "this doesn't cause any problems.")
-        #                 else:
-        #                     raise Exception(mes1 + mes2)
-        #             else:
-        #                 t0 = t
-        #     T0 = ring.path.t2T(0, t0)
-        #
-        #     # check last segment in each ring
-        #     mes1 = ("A curl has been detected that lasts for most or all "
-        #                 "the last segment!")
-        #     endseg = ring.path[-1]
-        #     for k in range(0, 50):
-        #         t = k/100
-        #         try:
-        #             endseg_curvature = endseg.curvature(t)
-        #             flag = False
-        #         except ValueError:
-        #             flag = True
-        #         if flag or endseg_curvature > tol_curvature:
-        #             if k < 10:
-        #                 if opt.manually_curly_end:
-        #                     print (mes1)
-        #                     print("Should I remove this red segment?")
-        #                     if len(ring.path) != 1:
-        #                         greenpath = Path(*ring.path[:-1])
-        #                         redpath = endseg
-        #                     else:
-        #                         greenpath = endseg.cropped(0, t)
-        #                         redpath = endseg.cropped(t, 1)
-        #                     disvg([greenpath, redpath], ['green', 'red'],
-        #                           nodes=[redpath.start, redpath.end])
-        #                     if inputyn():
-        #                         t1 = t
-        #                 elif opt.ignore_long_curls:
-        #                     warn(mes1 + mes2 + "Continuing... and hoping "
-        #                          "this doesn't cause any problems.")
-        #                 else:
-        #                     raise Exception(mes1 + mes2)
-        #             else:
-        #                 t1 = t
-        #     T1 = ring.path.t2T(len(ring.path) - 1, t1)
-        #     if T0 != 0 or T1 != 1:
-        #         ring.path = ring.path.cropped(T0, T1)
-        # print("Done trimming.")
 
 
     # Check that there are no rings end outside the boundary ring (note
