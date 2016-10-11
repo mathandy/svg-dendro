@@ -90,7 +90,6 @@ def get_user_args():
         help='If this flag is included, SVGTree will attempt to save time by '
              'loading the sorting informationing extracted from an SVG on a '
              'previous run.',
-        # metavar='ASSUME_SVG_IS_FIXED'
     )
 
     parser.add_argument(
@@ -122,7 +121,6 @@ def get_user_args():
         help="If this flag is included, SVGTree run fake data samples in the "
              "test_examples folder:\n{}\nNote: overrides --input_directory flag."
              "".format(os_path.join(getcwd(), 'input', 'examples', 'test_examples')),
-        # metavar='STOP_ON_ERROR'
     )
 
     parser.add_argument(
@@ -134,7 +132,6 @@ def get_user_args():
              "stored in the real_examples folder:\n{}\n"
              "Note: overrides --input_directory and --fakes flags."
              "".format(os_path.join(getcwd(), 'input', 'examples', 'real_examples')),
-        # metavar='STOP_ON_ERROR'
     )
 
     return parser.parse_args()
