@@ -1,7 +1,7 @@
-SVGTree
-============
+SVG Dendro (formerly SVGTree)
+=============================
 
-SVGTree is open-source dendrochronology software which takes in an SVG sketch
+SVG Dendro is open-source dendrochronology software which takes in an SVG sketch
 of tree rings and returns the areas of the rings, computer generated transects, and more.
 
 Input Data Format
@@ -20,15 +20,15 @@ To Run
 ------
 1. Follow the instructions below to install any prerequisites needed.
 
-2. Download and unzip SVGTree.
+2. Download and unzip SVG Dendro.
 
-3. Move some SVG files you want to extract information from to the input folder (found inside the SVGTree folder that you just unzipped).
+3. Move some SVG files you want to extract information from to the input folder (found inside the SVG Dendro folder that you just unzipped).
 
-4. Open a terminal/command-prompt, navigate into the SVGTree folder and enter the following command (without the $).
+4. Open a terminal/command-prompt, navigate into the SVG Dendro folder and enter the following command (without the $).
 
 $ python svgtree.py
 
-This will extract data from any SVG files in the `.../SVGTree/input/` folder and store output (by default, areas, and 50 evenly space transects) in the `.../SVGTree/output/` folder.
+This will extract data from any SVG files in the `<SVG Dendro Folder>/input` folder and store output (by default, areas, and 50 evenly space transects) in the `<SVG Dendro Folder>/output` folder.
 
 
 Options
