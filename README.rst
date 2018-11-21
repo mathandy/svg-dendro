@@ -26,9 +26,9 @@ To Run
 
 4. Open a terminal/command-prompt, navigate into the SVG Dendro folder and enter the following command (without the $).
 
-$ python svgtree.py
+$ python svgtree.py -i input/examples/real_examples/
 
-This will extract data from any SVG files in the `<SVG Dendro Folder>/input` folder and store output (by default, areas, and 50 evenly space transects) in the `<SVG Dendro Folder>/output` folder.
+This will extract data from any SVG files in the `<SVG Dendro Folder>/input/examples/real_examples` folder and store output (by default, areas, and 50 evenly space transects) in the `<SVG Dendro Folder>/output` folder.
 
 
 Options
