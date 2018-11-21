@@ -178,7 +178,8 @@ def svgtree(svgfile, error_list):
     file_start_time = current_time()
 
     SVGfileLocation = os_path.join(opt.input_directory, svgfile)
-    svgname = nt_path_basename(SVGfileLocation)[0:-4]
+    # svgname = nt_path_basename(SVGfileLocation)[0:-4]
+    svgname = os_path.splitext(os_path.basename(SVGfileLocation))[0]
 
     # Name pickle Files
     pickle_file = os_path.join(opt.pickle_dir, svgname + "-ring_list.p")
@@ -292,7 +293,8 @@ def svgtree(svgfile, error_list):
 
         # show them (this creates an svg file in the output folder)
         if opt.create_SVG_picture_of_transects:
-            svgname = svgfile[0:len(svgfile)-4]
+            # svgname = svgfile[0:len(svgfile)-4]
+            svgname = os_path.splitext(os_path.basename(svgfile))[0]
             svg_trans = os_path.join(opt.output_directory,
                                      svgname + "_transects.svg")
             displaySVGPaths_transects(ring_list, data, angles,
@@ -390,7 +392,7 @@ if os_path.isdir(opt.input_directory):
     svgfiles = listdir(opt.input_directory)
 else:
     svgfiles = [opt.input_directory]
-    opt.input_directory = os_path.pardir(opt.input_directory)
+    opt.input_directory = os_path.join(opt.input_directory, os_path.pardir)
 
 for svgfile in svgfiles:
 
