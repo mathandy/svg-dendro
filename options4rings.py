@@ -264,10 +264,21 @@ percentage_for_disagreement = 0.15
 ###############################################################################
 ###Colors #####################################################################
 ###############################################################################
-colordict = {'center':'#0000FF'}  # blue
-colordict.update({'complete':'#FF0000'})  # red
-colordict.update({'incomplete':'#FFFF00'})  # yellow
-colordict.update({'boundary':'#00FF00'})  # green
-colordict.update({'safe1':'#FF9900'})  # used by program to highlight problems.
-colordict.update({'safe2':'#00FFCC'})  # used by program to highlight problems.
+
+# old colors
+# colordict = {'center': '#0000FF'}  # blue
+# colordict.update({'complete': '#FF0000'})  # red
+# colordict.update({'incomplete': '#FFFF00'})  # yellow
+# colordict.update({'boundary': '#00FF00'})  # green
+# colordict.update({'safe1': '#FF9900'})  # used by program to highlight problems.
+# colordict.update({'safe2': '#00FFCC'})  # used by program to highlight problems.
+# auto_fix_ring_colors = True
+
+# new colors
+colordict = {'center': '#0000FF'}  # blue
+colordict.update({'complete': '#FF0000'})  # red
+colordict.update({'incomplete': '#00FF00'})  # green
+colordict.update({'boundary': '#000000'})  # black
+colordict.update({'safe1': '#FF9900'})  # used by program to highlight problems.
+colordict.update({'safe2': '#00FFCC'})  # used by program to highlight problems.
 auto_fix_ring_colors = True

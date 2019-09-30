@@ -789,7 +789,7 @@ def save_transect_summary(filepath, ring_list, data,
 
     normalized_arrow_distances = dict((a, []) for a in flatten(arrow_guides))
     for key, val in zip(flatten(arrow_guides), flatten(normalized_distance_time_series)):
-        normalized_arrow_distances += [val]
+        normalized_arrow_distances[key] += [val]
 
     # get means
     arrow_means_wo_zeros = \
