@@ -1,18 +1,30 @@
-# External Dependencies
 from __future__ import division
-from math import sqrt
-from numpy import poly1d
-from warnings import warn
+
+# Internal Dependencies
+from andysmod import eucnormalize_numpy, flattenList as flatten, Timer, format_time, format001
+from andysSVGpathTools import pathT2tseg, segDerivative, pathlistXlineIntersections
+import options4rings as opt
+from options4rings import (
+    basic_output_on, warnings_output_on, N_transects, colordict,
+    unsorted_transect_debug_output_folder, unsorted_transect_debug_on
+)
+from misc4rings import transect_from_angle, normalLineAt_t_toInnerSeg_intersects_withOuter
+
+# External Dependencies
 from svgpathtools import (Path, Line, CubicBezier, polyroots, real,
                           imag, disvg, wsvg)
 from svgpathtools.misctools import isclose
+from math import sqrt
+from numpy import poly1d
+from warnings import warn
+import operator
+from operator import itemgetter
+from random import uniform
+from time import time as current_time
+
+
 poly_imag_part = imag
 poly_real_part = real
-
-# Internal Dependencies
-from andysSVGpathTools import pathT2tseg, segDerivative, isClosed
-import options4rings as opt
-from misc4rings import normalLineAtT_toInner_intersects_withOuter
 
 
 def isPointOutwardOfSeg_old(pt, seg):
@@ -202,6 +214,7 @@ def isPointOutwardOfPath(pt, path, outerRing=None, justone=False):
 #             raise Exception("Something went wrong finding inverse transect.")
 #     return transect_info
 
+
 def invTransect(T, sorted_ring_list, warnifnotunique=True):
     """Finds a transect that ends at T.  In the case there are more than one, if
     warnifnotunique=True, user will be warned, but this may slow down transect
@@ -296,114 +309,144 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
         cur_pt = transect_info[-1][0]
         cur_idx = wr_idx
 
-        #Erroneous Termination
+        # Erroneous Termination
         if cur_idx < 0 and sorted_ring_list.index(cur_ring) != 0:
             disvg([r.path for r in sorted_ring_list],
-                  nodes=[tr[0] for tr in transect_info]) # DEBUG line
+                  nodes=[tr[0] for tr in transect_info])  # DEBUG line
             bdry_ring = sorted_ring_list[-1]
             s_rel = bdry_ring.path.length(T1=T) / bdry_ring.path.length()
             raise Exception("Something went wrong finding inverse transect at "
                             "relative arc length %s." % s_rel)
     return transect_info
-    
+
+
 def generate_inverse_transects(ring_list, Tvals):
-    """The main purpose of this function is to run invTransect for all Tvals 
-    and format the data"""
-    tmp = sorted([(i,r) for i,r in enumerate(ring_list)],
-                 key = lambda tup: tup[1].sort_index)
+    """Find the inverse transect ending at each boundary pt in `Tvals`
+
+    Args:
+        ring_list (list): a list of `Ring` objects.
+        Tvals (list): A list of floats in [0, 1] specifying the outer
+            endpoints of the transects to be generated.
+
+    Returns:
+        `data`, list of list of points -- for each transect, the points
+            it's formed from
+        `data_indices` list of list of indices, for point in `data` this gives
+            the index (in `ring_list`) of the ring that point lies on.
+        `skipped_angle_indices`:
+
+    """
+
+    # get sorted ring list and `get_index_in_ring_list` to invert sorting
+    tmp = sorted([(i, r) for i, r in enumerate(ring_list)],
+                 key=lambda tup: tup[1].sort_index)
     ring_sorting, sorted_ring_list = zip(*tmp)
-    unsorted_index = lambda idx: ring_sorting[idx]
+
+    def get_index_in_ring_list(sorted_idx):
+        """returns index of corresporting ring in (unsorted) `ring_list`.
+
+        I.e. returns the `idx` such that
+            `ring_list[idx] == sorted_ring_list[sorted_idx]
+        """
+        return ring_sorting[sorted_idx]
+
     data = []
     data_indices = []
     skipped_angle_indices = []
     for T_idx, T in enumerate(Tvals):
-        # opt.show_transect_progress.dprint("%s / %s transects completed." % (), 'cr')
-        # try:
         tran_info = invTransect(T, sorted_ring_list, opt.warn_if_not_unique)
 
         if not tran_info and opt.skip_transects_that_dont_exist:
             skipped_angle_indices.append(T_idx)
             continue
-        # print "%s / %s transects found." % (T_idx, len(Tvals))
 
-        # except:
-        #     if opt.if_transect_fails_continue:
-        #         bdry_ring = sorted_ring_list[-1]
-        #         sidx, t = bdry_ring.path.T2t(T)
-        #         tran_info = [bdry_ring.path.point(T), sidx, t] + [0, 0, 0]
-        #         warn("The inverse transect ending at angle %s failed to be "
-        #              "generated." % (bdry_ring.path.length(t1=T) /
-        #                              bdry_ring.path.length()))
-        #     else:
-        #         raise
         transect = []
         transect_rings = []
         for pt, ring_idx, seg_idx, t in tran_info:
             transect.append(pt)
-            transect_rings.append(unsorted_index(ring_idx))
+            transect_rings.append(get_index_in_ring_list(ring_idx))
+
         transect.append(sorted_ring_list[0].center)
         transect_rings.append('core')
+
         transect.reverse()
         transect_rings.reverse()
+
         data.append(transect)
         data_indices.append(transect_rings)
-    return data, data_indices, skipped_angle_indices
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-def generate_unsorted_transects(ring_list, center):
-    from options4rings import basic_output_on, warnings_output_on, N_transects, unsorted_transect_debug_output_folder, unsorted_transect_debug_on, colordict
-    from misc4rings import transect_from_angle, normalLineAt_t_toInnerSeg_intersects_withOuter
-    from andysSVGpathTools import pathlistXlineIntersections
-    from andysmod import Timer
-    import operator
-    from random import uniform
 
-    #Find outer boundary ring
+    return data, data_indices, skipped_angle_indices
+
+
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+def generate_unsorted_transects(ring_list, center):
+
+    # Find outer boundary ring
     for r in ring_list:
         if r.color == colordict['boundary']:
             boundary_ring = r
             break
     else:
-        warnings_output_on.dprint("[Warning:] Having trouble finding outer boundary - it should be color %s.  Will now search for a ring of a similar color and if one is found, will use that.\n"%colordict['boundary'])
+        warnings_output_on.dprint(
+            "[Warning:] Having trouble finding outer boundary - it "
+            "should be color %s.  Will now search for a ring of a "
+            "similar color and if one is found, will use that.\n"
+            "" % colordict['boundary'])
         from misc4rings import closestColor
         for r in ring_list:
             if colordict['boundary'] == closestColor(r.color,colordict):
                 boundary_ring = r
-                basic_output_on.dprint("Found a ring of color %s, using that one."%r.color)
+                basic_output_on.dprint(
+                    "Found a ring of color %s, using that one."%r.color)
                 break
         else:
-            warnings_output_on.dprint("[Warning:] Outer boundary could not be found by color (or similar color).  This is possibly caused by the outer boundary ring not being closed - in this case you'd be able to see a (possibly quite small) gap between it's startpoint and endpoint. Using the ring of greatest maximum radius as the boundary ring (and hoping if there is a gap none of the transects hit it).\n")
-            keyfcn = lambda x: x.maxR
-            boundary_ring = max(ring_list,key=keyfcn)
+            warnings_output_on.dprint(
+                "[Warning:] Outer boundary could not be found by color "
+                "(or similar color).  This is possibly caused by the "
+                "outer boundary ring not being closed - in this case "
+                "you'd be able to see a (possibly quite small) gap "
+                "between it's startpoint and endpoint. Using the ring "
+                "of greatest maximum radius as the boundary ring (and "
+                "hoping if there is a gap none of the transects hit it).\n")
+            boundary_ring = max(ring_list, key=lambda x: x.maxR)
 
-    #Find transects
-    from time import time as current_time
-    from andysmod import format_time
+    # Find transects
     tr_gen_start_time = current_time()
     data = []
     data_indices = []
     angles = []
-    for dummy_index in range(N_transects): #dummy_index only used to create loop
-        #estimate time remaining
+    for dummy_index in range(N_transects):
+
+        # estimate time remaining
         if dummy_index != 0:
             total_elapsed_time = current_time() - tr_gen_start_time
-            estimated_time_remaining = (N_transects - dummy_index)*total_elapsed_time/dummy_index
-            timer_str = 'Transect %s of %s || Est. Remaining Time = %s || Elapsed Time = %s'%(dummy_index+1,N_transects,format_time(estimated_time_remaining),format_time(total_elapsed_time))
+            estimated_time_remaining = \
+                (N_transects - dummy_index)*total_elapsed_time/dummy_index
+            timer_str = 'Transect %s of %s || ' \
+                        'Est. Remaining Time = %s || ' \
+                        'Elapsed Time = %s' \
+                        '' % (dummy_index+1,
+                              N_transects,
+                              format_time(estimated_time_remaining),
+                              format_time(total_elapsed_time))
             overwrite_progress = True
         else:
-            timer_str = 'transect %s of %s'%(dummy_index+1,N_transects)
+            timer_str = 'transect %s of %s' % (dummy_index+1, N_transects)
             overwrite_progress = False
             print('')
 
-        #generate current transect
+        # generate current transect
         with Timer(timer_str, overwrite=overwrite_progress):
             if unsorted_transect_debug_on:
                 print('')
@@ -412,21 +455,27 @@ def generate_unsorted_transects(ring_list, center):
             angles.append(test_angle)
             transect = [center]
             transect_rings = ['core']
-            unused_ring_indices = range(len(ring_list)) #used to keep track of which rings I've used and thus don't need to be checked in the future
+
+            # for keeping track of which rings I've used and thus don't
+            # need to be checked in the future
+            unused_ring_indices = range(len(ring_list))
 
             # Find first transect segment (from core/center)
             # normal line to use to find intersections (from center to boundary ring)
-            nl2bdry, seg_outer, t_outer = transect_from_angle(test_angle, center, boundary_ring.path, 'debug')
-            #make normal line a little longer
+            nl2bdry, seg_outer, t_outer = transect_from_angle(
+                test_angle, center, boundary_ring.path, 'debug')
+
+            # make normal line a little longer
             nl2bdry = Line(nl2bdry.start, nl2bdry.start + 1.5*(nl2bdry.end-nl2bdry.start))
-            tmp = pathlistXlineIntersections(nl2bdry, [ring_list[i].path for i in unused_ring_indices])
-            (tl,path_index,seg,tp) = min(tmp, key=operator.itemgetter(0)) #(tl,path_index,seg,tp)
+            tmp = pathlistXlineIntersections(
+                nl2bdry, [ring_list[i].path for i in unused_ring_indices])
+            tl, path_index, seg, tp = min(tmp, key=operator.itemgetter(0))
 
             transect.append(nl2bdry.point(tl))
             transect_rings.append(unused_ring_indices[path_index])
             del unused_ring_indices[path_index]
 
-            #now for the rest of the transect
+            # now for the rest of the transect
             num_rings_checked = 0
             while (ring_list[transect_rings[-1]] != boundary_ring and 
                    num_rings_checked < len(ring_list)):  # < is correct, already did first
@@ -435,121 +484,152 @@ def generate_unsorted_transects(ring_list, center):
                 inner_t = tp
                 inner_seg = seg
                 
-                # normal line to use to find intersections (from center to boundary ring)
-                nl2bdry, seg_outer, t_outer = normalLineAt_t_toInnerSeg_intersects_withOuter(inner_t, inner_seg, boundary_ring.path, center, 'debug') 
+                # normal line to use to find intersections
+                # (from center to boundary ring)
+                nl2bdry, seg_outer, t_outer = \
+                    normalLineAt_t_toInnerSeg_intersects_withOuter(
+                        inner_t, inner_seg, boundary_ring.path, center, 'debug')
+
                 # make normal line a little longer
-                nl2bdry = Line(nl2bdry.start,nl2bdry.start + 1.5*(nl2bdry.end-nl2bdry.start)) 
+                nl2bdry = Line(nl2bdry.start, nl2bdry.start + 1.5*(nl2bdry.end-nl2bdry.start))
                 
-                normal_line_intersections = pathlistXlineIntersections(nl2bdry, [ring_list[i].path for i in unused_ring_indices])
+                normal_line_intersections = pathlistXlineIntersections(
+                    nl2bdry, [ring_list[i].path for i in unused_ring_indices])
                 try:
                     # (tl,path_index,seg,tp)
                     tl, path_index, seg, tp = min(normal_line_intersections,
                                                   key=operator.itemgetter(0))
                 except ValueError:
                     raise
+
                 if unsorted_transect_debug_on:
-                    from andysmod import format001
                     inner_path_index = transect_rings[-1]
-                    used_ring_paths = [r.path for i,r in enumerate(ring_list) if i not in unused_ring_indices+[inner_path_index]]
+                    used_ring_paths = [r.path for i, r in enumerate(ring_list)
+                                       if i not in unused_ring_indices + [inner_path_index]]
                     used_ring_colors = ['black']*len(used_ring_paths)
                     unused_ring_paths = [ring_list[i].path for i in unused_ring_indices]
                     unused_ring_colors = [ring_list[i].color for i in unused_ring_indices]
-                    transect_so_far = Path(*[Line(transect[i-1],transect[i]) for i in range(1,len(transect))])
-                    paths = used_ring_paths + unused_ring_paths + [transect_so_far] +[inner_path] + [nl2bdry]
-                    colors = used_ring_colors + unused_ring_colors + ['green']+['blue'] + ['black']
+                    transect_so_far = \
+                        Path(*[Line(transect[i-1], transect[i])
+                               for i in range(1, len(transect))])
+
+                    paths = used_ring_paths + unused_ring_paths + \
+                            [transect_so_far] + [inner_path] + [nl2bdry]
+                    colors = used_ring_colors + unused_ring_colors + \
+                             ['green']+['blue'] + ['black']
 
                     nodes_so_far = transect[1:-1]
-                    potential_nodes = [nl2bdry.point(tltmp) for (tltmp,path_indextmp,segtmp,tptmp) in normal_line_intersections]
+                    potential_nodes = \
+                        [nl2bdry.point(x[0]) for x in normal_line_intersections]
                     nodes = nodes_so_far + potential_nodes
                     node_colors = ['red']*len(nodes_so_far) + ['purple']*len(potential_nodes)
-                    save_name = unsorted_transect_debug_output_folder+'unsorted_transect_debug_%s.svg'%format001(3,len(transect))
-                    disvg(paths,colors,nodes=nodes,node_colors=node_colors,center=center,filename=save_name,openInBrowser=False)
-                    print("Done with %s out of (at most) %s transect segments"%(len(transect),len(ring_list)))
+                    save_name = \
+                        unsorted_transect_debug_output_folder + \
+                        'unsorted_transect_debug_%s.svg' \
+                        '' % format001(3, len(transect))
+                    disvg(paths, colors, nodes=nodes, node_colors=node_colors,
+                          center=center, filename=save_name, openInBrowser=False)
+                    print("Done with %s out of (at most) %s transect segments"
+                          "" % (len(transect), len(ring_list)))
+
                 transect.append(nl2bdry.point(tl))
                 transect_rings.append(unused_ring_indices[path_index])
                 del unused_ring_indices[path_index]
+
             data.append(transect)
             data_indices.append(transect_rings)
     return data, data_indices, angles
 
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
 def generate_sorted_transects(ring_list, center, angles2use=None):
-    from options4rings import basic_output_on, N_transects
-    from misc4rings import transect_from_angle, normalLineAt_t_toInnerSeg_intersects_withOuter
-    from andysSVGpathTools import pathlistXlineIntersections
-    from andysmod import Timer, format_time
-    from svgpathtools import Line
-    from random import uniform
-    from time import time as current_time
-    from operator import itemgetter
 
-    tmp = sorted(enumerate(ring_list), key = lambda tup: tup[1].sort_index)
+    # get sorted ring list and `get_index_in_ring_list` to invert sorting
+    tmp = sorted([(i, r) for i, r in enumerate(ring_list)],
+                 key=lambda tup: tup[1].sort_index)
     ring_sorting, sorted_ring_list = zip(*tmp)
-    unsorted_index = lambda idx: ring_sorting[idx]
 
-    #Find transects
+    def get_index_in_ring_list(sorted_idx):
+        """returns index of corresporting ring in (unsorted) `ring_list`.
 
+        I.e. returns the `idx` such that
+            `ring_list[idx] == sorted_ring_list[sorted_idx]
+        """
+        return ring_sorting[sorted_idx]
+
+    # Find transects
     tr_gen_start_time = current_time()
     data = []
     data_indices = []
     angles = []
     for dummy_index in range(N_transects):
-        #estimate time remaining
+
+        # estimate time remaining
         if dummy_index != 0:
             total_elapsed_time = current_time() - tr_gen_start_time
             estimated_time_remaining = (N_transects - dummy_index)*total_elapsed_time/dummy_index
-            timer_str = 'Transect %s of %s || Est. Remaining Time = %s || Elapsed Time = %s'%(dummy_index+1,N_transects,format_time(estimated_time_remaining),format_time(total_elapsed_time))
+            timer_str = 'Transect %s of %s || ' \
+                        'Est. Remaining Time = %s || ' \
+                        'Elapsed Time = %s' \
+                        '' % (dummy_index+1,
+                              N_transects,
+                              format_time(estimated_time_remaining),
+                              format_time(total_elapsed_time))
             overwrite_progress = True
         else:
-            timer_str = 'transect %s of %s'%(dummy_index+1,N_transects)
+            timer_str = 'transect %s of %s' % (dummy_index+1, N_transects)
             overwrite_progress = False
             print('')
 
-        #generate current transect
-        with Timer(timer_str,overwrite=overwrite_progress):
-#            sorted_closed_rings = (r for r in sorted_ring_list if r.isClosed())
+        # generate current transect
+        with Timer(timer_str, overwrite=overwrite_progress):
+            # sorted_closed_rings = (r for r in sorted_ring_list if r.isClosed())
             if angles2use:
                 test_angle = angles2use[dummy_index]
             else:
-                test_angle = uniform(0,1)
-#                        test_angle = 0.408
+                test_angle = uniform(0, 1)
+
             angles.append(test_angle)
             transect = [center]
             transect_rings = ['core']
             
             # find first (innermost) closed ring
-#            next_closed_ring = sorted_closed_rings.next()
+            # next_closed_ring = sorted_closed_rings.next()
             next_closed_ring = next(r for r in sorted_ring_list if r.isClosed())
             next_closed_ring_sidx = next_closed_ring.sort_index
 
-            #Find first transect segment (from core/center)
+            # Find first transect segment (from core/center)
             # Start by finding line that leaves center at angle and goes to 
             # the first closed ring
-            nl2bdry, seg_outer, t_outer = transect_from_angle(test_angle, center, next_closed_ring.path, 'debug') 
+            nl2bdry, seg_outer, t_outer = transect_from_angle(
+                test_angle, center, next_closed_ring.path, 'debug')
+
             # Make normal line a little longer
             end2use = nl2bdry.start + 1.5*(nl2bdry.end - nl2bdry.start)
             nl2bdry = Line(nl2bdry.start, end2use) 
             pot_paths = [r.path for r in sorted_ring_list[0:next_closed_ring_sidx + 1]]
                 
-            #Note: intersections returned as (tl, path_index, seg, tp)
+            # Note: intersections returned as (tl, path_index, seg, tp)
             pot_path_inters = pathlistXlineIntersections(nl2bdry, pot_paths) 
             tl, path_index, seg, tp = min(pot_path_inters, key=itemgetter(0))
 
-            #updates
+            # updates
             transect.append(nl2bdry.point(tl))
-            transect_rings.append(unsorted_index(path_index))
+            transect_rings.append(get_index_in_ring_list(path_index))
             cur_pos_si = path_index
-            next_closed_ring = next(r for r in sorted_ring_list 
-                                       if (r.sort_index > cur_pos_si and 
-                                           r.isClosed()))
-#            next_closed_ring = sorted_closed_rings.next()
+            next_closed_ring = \
+                next(r for r in sorted_ring_list
+                     if (r.sort_index > cur_pos_si and r.isClosed()))
+            # next_closed_ring = sorted_closed_rings.next()
             next_closed_ring_sidx = next_closed_ring.sort_index
 
-            #now for the rest of the transects
+            # now for the rest of the transects
             num_rings_checked = 0
             while (cur_pos_si < len(ring_list) - 1 and 
                    num_rings_checked < len(ring_list)):  # < is correct, already did first
@@ -559,41 +639,65 @@ def generate_sorted_transects(ring_list, center, angles2use=None):
                 
                 # Find outwards normal line from current position to the next 
                 # closed ring
-                nl2bdry, seg_outer, t_outer = normalLineAt_t_toInnerSeg_intersects_withOuter(inner_t, inner_seg, next_closed_ring.path, center, 'debug') 
+                nl2bdry, seg_outer, t_outer = normalLineAt_t_toInnerSeg_intersects_withOuter(
+                    inner_t, inner_seg, next_closed_ring.path, center, 'debug')
                 # Make the normal line a bit longer to avoid numerical error
                 end2use = nl2bdry.start + 1.5*(nl2bdry.end - nl2bdry.start)
                 nl2bdry = Line(nl2bdry.start, end2use)
 
-                pot_paths = [r.path for r in sorted_ring_list[cur_pos_si+1:next_closed_ring_sidx+1]]
-                tl, path_index, seg, tp = min(pathlistXlineIntersections(nl2bdry,pot_paths), key=itemgetter(0))
+                pot_paths = [r.path for r in sorted_ring_list[cur_pos_si+1: next_closed_ring_sidx+1]]
+                tl, path_index, seg, tp = \
+                    min(pathlistXlineIntersections(nl2bdry, pot_paths),
+                        key=itemgetter(0))
 
-                #updates
+                # updates
                 transect.append(nl2bdry.point(tl))
                 cur_pos_si += path_index + 1
-                transect_rings.append(unsorted_index(cur_pos_si))
+                transect_rings.append(get_index_in_ring_list(cur_pos_si))
                 if cur_pos_si < len(ring_list)-1:
-#                    next_closed_ring = sorted_closed_rings.next()
-                    next_closed_ring = next(r for r in sorted_ring_list 
-                                               if (r.sort_index > cur_pos_si and 
-                                                   r.isClosed()))
+                    # next_closed_ring = sorted_closed_rings.next()
+                    next_closed_ring = \
+                        next(r for r in sorted_ring_list
+                             if (r.sort_index > cur_pos_si and r.isClosed()))
                     next_closed_ring_sidx = next_closed_ring.sort_index
 
             data.append(transect)
             data_indices.append(transect_rings)
     return data, data_indices, angles
 
-###==========================================================================================================================
-###$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-def save_transect_data(outputFile_transects, ring_list, data, data_indices, angles, skipped_angles):
+
+# ##====================================================================
+# ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+def save_transect_data(filepath, ring_list, data,
+                       data_indices, angles, skipped_angles):
+    """Create/write transect data output file.
+
+    Args:
+        filepath:
+        ring_list:
+        data (list): list of list of points -- for each transect, the
+            points it's formed from
+        data_indices (list): list of list of indices, for point in
+            `data` this gives the index (in `ring_list`) of the ring
+            that point lies on.
+        angles:
+        skipped_angles:
+
+    """
     from options4rings import basic_output_on
-    with open(outputFile_transects,"wt") as out_file:
+    with open(filepath, "wt") as out_file:
         out_file.write("transect angle, number of rings counted by transect, "
                        "distance time series... total number of svg paths = "
                        "%s\n" % (len(ring_list) + 1))
         for k in range(len(data)):
             distances = [abs(data[k][i+1]-data[k][i])
                          for i in range(len(data[k]) - 1)]
-            rings_counted_by_transect = len(distances) #number of rings counted (i.e. number of little lines this transect is made of)
+
+            # number of rings counted (i.e. number of little lines this
+            # transect is made of)
+            rings_counted_by_transect = len(distances)
             
             # Convert data_indices to sort_index indices
             indices = []
@@ -615,112 +719,150 @@ def save_transect_data(outputFile_transects, ring_list, data, data_indices, angl
             out_file.write(row + '\n' + row2 + '\n')
 
     basic_output_on.dprint("Data from %s transects saved to:" % len(data))
-    basic_output_on.dprint(outputFile_transects)
+    basic_output_on.dprint(filepath)
 
-def save_transect_summary(outputFile_transect_summary, ring_list, data, data_indices, angles):
-#this records averages of all transect distances going from ring1 to ring2
-    from options4rings import basic_output_on
-    from andysmod import eucnormalize_numpy, flattenList
+
+def save_transect_summary(filepath, ring_list, data,
+                          data_indices, angles):
+    """Create/write transect summary output file.
+
+    This mainly computes the following.  For each arrow (see
+    "Terminology below"), this computes the mean length of the transect
+    segments which share that arrow.
+
+    The following four different means are recorded
+      means_wo_zeros:
+        [sum(lengths) / len(lengths) for each arrow]
+      means_w_zeros:
+        [sum(lengths) / len(angles) for each arrow]
+      normalized_means_wo_zeros:
+        [sum(normalized_lengths) / len(lengths) for each arrow]
+      normalized_means_w_zeros:
+        [sum(normalized_lengths) / len(angles) for each arrow]
+
+    Args:
+        filepath:
+        ring_list:
+        data (list): list of list of points -- for each transect, the
+            points it's formed from
+        data_indices (list): list of list of indices, for point in
+            `data` this gives the index (in `ring_list`) of the ring
+            that point lies on.
+        angles:
+
+    Terminology:
+        Note, the term "arrow" is loosely used here to describe a pair of
+        rings that bound a transect segment.
+
+    """
     num_transects = len(angles)
 
-    def collect(some_dict,key,val):
-        try:
-            some_dict.update({key :[val]+some_dict[key]})
-        except KeyError:
-            some_dict.update({key : [val]})
-
-    distance_time_series = [[abs(tr[i] - tr[i-1]) for i in range(1, len(tr))] 
-                            for tr in data]
+    distance_time_series = \
+        [[abs(tr[i] - tr[i-1]) for i in range(1, len(tr))] for tr in data]
     
-    arrow_guides = [[(tr[i-1],tr[i]) for i in range(1,len(tr))]
-                    for tr in data_indices]
-#    def f(ridx):
-#        if isinstance(ridx, str):
-#            return ridx
-#        else:
-#            return ring_list[ridx].psort_index
-#    psorted_arrow_guides = [[(f(x), f(y)) for (x, y) in aguide] 
-#                        for aguide in arrow_guides]
-    def g(ridx):
-        if isinstance(ridx, str):
+    arrow_guides = \
+        [[(tr[i-1], tr[i]) for i in range(1, len(tr))] for tr in data_indices]
+
+    def get_sort_index(ridx):
+        if isinstance(ridx, str):  # for case when `ridx == 'core'`
             return ridx
         else:
             return ring_list[ridx].sort_index
-    sorted_arrow_guides = [[(g(x), g(y)) for (x, y) in aguide] 
-                           for aguide in arrow_guides]
-                        
+
+    sorted_arrow_guides = \
+        [[(get_sort_index(x), get_sort_index(y)) for x, y in aguide]
+         for aguide in arrow_guides]
+
     def normalized(vec):
         mag = sqrt(sum(x*x for x in vec))
         return [x/mag for x in vec]
     
-    normalized_distance_time_series = [normalized(tr) for tr in distance_time_series]
+    normalized_distance_time_series = \
+        [normalized(tr) for tr in distance_time_series]
 
-    #initialize some dictionaries (there names explain them)
-    raw_distances_for_arrow = dict(); normalized_distances_for_arrow = dict() #arrow -> list of distances (without zeros)
+    # get list of lengths of all transect segments that share the same
+    # starting and ending ring, i.e. the same "arrow"
+    # result is a dictionary: arrow -> list of lengths
+    arrow_distances = dict((a, []) for a in flatten(arrow_guides))
+    for key, val in zip(flatten(arrow_guides), flatten(distance_time_series)):
+        arrow_distances[key] += [val]
 
-    #put data in the above dictionaries
-    [collect(raw_distances_for_arrow,*item) for item in zip(flattenList(arrow_guides),flattenList(distance_time_series))]
-    [collect(normalized_distances_for_arrow,*item) for item in zip(flattenList(arrow_guides),flattenList(normalized_distance_time_series))]
+    normalized_arrow_distances = dict((a, []) for a in flatten(arrow_guides))
+    for key, val in zip(flatten(arrow_guides), flatten(normalized_distance_time_series)):
+        normalized_arrow_distances += [val]
 
-    # initialize some more dictionaries (there names explain them)
-    # arrow -> list of distances (without zeros)
-    raw_distance_average_for_arrow_woZeros = dict()
-    normalized_distance_average_for_arrow_woZeros = dict() 
-    # arrow -> list of distances (with zeros)
-    raw_distance_average_for_arrow_wZeros = dict()
-    normalized_distance_average_for_arrow_wZeros = dict()
+    # get means
+    arrow_means_wo_zeros = \
+        dict((arrow, sum(lengths) / len(lengths))
+             for arrow, lengths in arrow_distances.items())
 
-    #put data in the above dictionaries
-    [[raw_distance_average_for_arrow_woZeros.update({arrow:sum(dlist)/len(dlist)}) for (arrow,dlist) in raw_distances_for_arrow.items()]]
-    [[raw_distance_average_for_arrow_wZeros.update({arrow:sum(dlist)/num_transects}) for (arrow,dlist) in raw_distances_for_arrow.items()]] #note: len(angles) = the number of transects generated
-    [[normalized_distance_average_for_arrow_woZeros.update({arrow:sum(dlist)/len(dlist)}) for (arrow,dlist) in normalized_distances_for_arrow.items()]]
-    [[normalized_distance_average_for_arrow_wZeros.update({arrow:sum(dlist)/num_transects}) for (arrow,dlist) in normalized_distances_for_arrow.items()]] #note: len(angles) = the number of transects generated
+    arrow_means_w_zeros = \
+        dict((arrow, sum(lengths) / num_transects)
+             for arrow, lengths in arrow_distances.items())
 
-    #in order to display averaged time series in order of length... here's the permutation
-    keyfcn = lambda k: len(distance_time_series[k])
-    order2printTimeSeries = sorted(range(num_transects),key=keyfcn,reverse=True)
+    normalized_arrow_means_wo_zeros = \
+        dict((arrow, sum(lengths) / len(lengths))
+             for arrow, lengths in normalized_arrow_distances.items())
 
-    def deliminate_and_write(out_file,*args):#insert delimeters between args and output string
-        output = str(args[0]).replace(',',';')
+    normalized_arrow_means_w_zeros = \
+        dict((arrow, sum(lengths) / num_transects)
+             for arrow, lengths in normalized_arrow_distances.items())
+
+    # in order to display averaged time series in order of length...
+    # here's the permutation
+    order2printTimeSeries = sorted(range(num_transects),
+                                   key=lambda i: len(distance_time_series[i]),
+                                   reverse=True)
+
+    def deliminate_and_write(out_file, *args):
+        """insert delimeters between args and output string"""
+        output = str(args[0]).replace(',', ';')
         for k in range(len(args)):
-            output += ', '+str(args[k]).replace(',',';')
+            output += ', ' + str(args[k]).replace(',', ';')
         out_file.write(output + '\n')
 
-    with open(outputFile_transect_summary,"wt") as out_file:
-        out_file.write("Number of path objects counted in SVG: %s\n"%len(ring_list))
-        out_file.write("Max number of rings counted by a transect: %s\n\n"%(max([len(transect) for transect in data])-1))
+    with open(filepath, "wt") as out_file:
+        out_file.write("Number of path objects counted in SVG: %s\n"
+                       "" % len(ring_list))
+        out_file.write("Max number of rings counted by a transect: %s\n\n"
+                       "" % (max([len(transect) for transect in data])-1))
         out_file.write("angle arrow guide is based on, type of timeseries, time series..."+'\n')
-        #record data without zeros
+
+        # record data without zeros
         for k in order2printTimeSeries:
             angle = angles[k]
             arrow_guide = arrow_guides[k]
             sorted_arrow_guide = sorted_arrow_guides[k]
-            closure_guide  = [('core',ring_list[arrow_guide[0][1]].isApproxClosedRing())] + [(ring_list[i].isApproxClosedRing(),ring_list[j].isApproxClosedRing()) for (i,j) in arrow_guide[1:len(arrow_guide)]]
-            try: #DEBUG ONLY
-                raw_woZeros = [raw_distance_average_for_arrow_woZeros[arrow] for arrow in arrow_guide]
-                raw_wZeros = [raw_distance_average_for_arrow_wZeros[arrow] for arrow in arrow_guide]
-                normalized_woZeros = [normalized_distance_average_for_arrow_woZeros[arrow] for arrow in arrow_guide]
-                normalized_wZeros = [normalized_distance_average_for_arrow_wZeros[arrow] for arrow in arrow_guide]
 
-                deliminate_and_write(out_file,angle,'arrow guide',*sorted_arrow_guide)
-                deliminate_and_write(out_file,angle,'closure',*closure_guide)
-                deliminate_and_write(out_file,angle,'raw w/o zeros',*raw_woZeros)
-                deliminate_and_write(out_file,angle,'raw with zeros',*raw_wZeros)
-                deliminate_and_write(out_file,angle,'normalized w/o zeros',*normalized_woZeros)
-                deliminate_and_write(out_file,angle,'normalized with zeros',*normalized_wZeros)
+            closure_guide = [('core', ring_list[arrow_guide[0][1]].isApproxClosedRing())]
+            for i, j in arrow_guide[1:]:
+                closure_guide.append((ring_list[i].isApproxClosedRing(),
+                                      ring_list[j].isApproxClosedRing()))
 
-                deliminate_and_write(out_file,angle,'renormalized raw w/o zeros',*eucnormalize_numpy(raw_woZeros))
-                deliminate_and_write(out_file,angle,'renormalized raw with zeros',*eucnormalize_numpy(raw_wZeros))
-                deliminate_and_write(out_file,angle,'renormalized normalized w/o zeros',*eucnormalize_numpy(normalized_woZeros))
-                deliminate_and_write(out_file,angle,'renormalized normalized with zeros',*eucnormalize_numpy(normalized_wZeros))
+            try:
+                raw_woZeros = [arrow_means_wo_zeros[arrow] for arrow in arrow_guide]
+                raw_wZeros = [arrow_means_w_zeros[arrow] for arrow in arrow_guide]
+                normalized_woZeros = [normalized_arrow_means_wo_zeros[arrow] for arrow in arrow_guide]
+                normalized_wZeros = [normalized_arrow_means_w_zeros[arrow] for arrow in arrow_guide]
+
+                deliminate_and_write(out_file, angle, 'arrow guide', *sorted_arrow_guide)
+                deliminate_and_write(out_file, angle, 'closure', *closure_guide)
+                deliminate_and_write(out_file, angle, 'raw w/o zeros', *raw_woZeros)
+                deliminate_and_write(out_file, angle, 'raw with zeros', *raw_wZeros)
+                deliminate_and_write(out_file, angle, 'normalized w/o zeros', *normalized_woZeros)
+                deliminate_and_write(out_file, angle, 'normalized with zeros', *normalized_wZeros)
+
+                deliminate_and_write(out_file, angle, 'renormalized raw w/o zeros', *eucnormalize_numpy(raw_woZeros))
+                deliminate_and_write(out_file, angle, 'renormalized raw with zeros', *eucnormalize_numpy(raw_wZeros))
+                deliminate_and_write(out_file, angle, 'renormalized normalized w/o zeros', *eucnormalize_numpy(normalized_woZeros))
+                deliminate_and_write(out_file, angle, 'renormalized normalized with zeros', *eucnormalize_numpy(normalized_wZeros))
                 out_file.write("\n")
             except:
                 from traceback import format_exc
                 from sys import stdout
                 stdout.write(format_exc())
                 print("-"*75)
-                bla=1
                 raise
 
     basic_output_on.dprint("Summary of transect results saved to:")
-    basic_output_on.dprint(outputFile_transect_summary)
+    basic_output_on.dprint(filepath)
