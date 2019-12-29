@@ -79,7 +79,12 @@ def svg2rings(SVGfileLocation):
     if counter>0 and not centerFound:
         opt.warnings_output_on.dprint("[Warning:] No line objects in the svg were found matching the center color (%s).  Now searching for lines of a color closer to center color than other colors."%counter)
         for elem in doc.getElementsByTagName('line'):
-            if closestColor(getStroke(elem),colordict) == colordict['center']:
+            elem_stroke = getStroke(elem)
+            if len(elem_stroke) == 0:
+                opt.warnings_output_on.dprint(
+                    '[Warning:] stroke has no length -- make a "stroke" '
+                    'attribute is included and no CSS classes are being used.')
+            elif closestColor(getStroke(elem),colordict) == colordict['center']:
                 center = 0.5*float(elem.getAttribute('x1'))+0.5*float(elem.getAttribute('x2')) + 0.5*float(elem.getAttribute('y1'))*1j +0.5*float(elem.getAttribute('y2'))*1j
                 rad = Radius(center)
                 centerFound = True
