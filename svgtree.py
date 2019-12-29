@@ -91,7 +91,7 @@ def get_user_args():
         default= not opt.ignore_extant_sorted_pickle_file,
         action='store_true',
         help='If this flag is included, SVGTree will attempt to save time by '
-             'loading the sorting informationing extracted from an SVG on a '
+             'loading the sorting information extracted from an SVG on a '
              'previous run.',
     )
 
