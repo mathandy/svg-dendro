@@ -3,7 +3,10 @@ from __future__ import division
 from os import listdir, makedirs as os_makedirs, path as os_path, getcwd
 from ntpath import basename as nt_path_basename
 import argparse
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except:
+    import _pickle as pickle
 from time import time as current_time
 import numpy as np
 
