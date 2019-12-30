@@ -185,27 +185,29 @@ def path_isbelow_point(path, pt, center):
 #    return derivative(f_real,z) +1j*derivative(f_imag,z)
 
 
-def normalLineAtT_toInner_intersects_withOuter(innerT, inner_path, outer_path, center, debug=False, testlength=None):
-    """this fcn is meant to be used by
-    IncompleteRing.findTransects2endpointsFromInnerPath_normal method, it returns
-    the Line object normal to innerPath beginning at the innerPath.point(innerT)
-    and ending wherever it intersect with outerPath or, if such a line does not
-    exist, returns (False,False,False)
-    Returns (normal_Line,outer_seg,outer_t) where normal_Line is the Line object
-    normal to innerPath beginning at innerPath.point(innerT) and ending at
-    outer_seg.point(outer_t) or, in the case that the normal line never intersects
-    outerPath, returns (False,False,False)"""
+def normalLineAtT_toInner_intersects_withOuter(
+        innerT, inner_path, outer_path, center, debug=False, testlength=None):
+    """ Finds normal line to `inner_path` at `innerT`
+
+    Note: This fcn is meant to be used by the
+    `IncompleteRing.findTransects2endpointsFromInnerPath_normal` method
+
+    Returns:
+        (normal_Line, outer_seg, outer_t) where normal_Line is the Line
+            object normal to `inner_path` beginning at
+            `inner_path.point(innerT)` and ending at `outer_seg.point(outer_t)`
+            or, in the case that the normal line never intersects `outer_path`,
+            returns (False, False, False)."""
     assert 0 <= innerT <= 1
     if isApproxClosedPath(inner_path) and innerT == 1:
         innerT = 0
 
     if innerT == 0:
-        inner_pt=inner_path[0].start
+        inner_pt = inner_path[0].start
     elif innerT == 1:
-        inner_pt=inner_path[-1].end
+        inner_pt = inner_path[-1].end
     else:
         inner_pt = inner_path.point(innerT)
-
 
     try:
         n_vec = inner_path.normal(innerT)
