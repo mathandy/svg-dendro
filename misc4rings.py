@@ -211,6 +211,8 @@ def normalLineAtT_toInner_intersects_withOuter(
 
     try:
         n_vec = inner_path.normal(innerT)
+        if abs(n_vec) == 0:
+            raise
     except:
         # This is an adhoc fix for when (?precision?) issues cause nvec to be
         # ill-defined
@@ -231,21 +233,22 @@ def normalLineAtT_toInner_intersects_withOuter(
     if testlength:
         long_mag = testlength
     else:
+        # find the max length to the outer
         long_mag = 1.1 * outer_path.radialrange(inner_pt)[1][0]
-        # long_mag = 1.1 * abs(extremePointInPath(inner_pt, outer_path, 1)[0])  # find the max length to the outer
     long_norm_line = Line(inner_pt, inner_pt + long_mag*n_vec)
     long_norm_path = Path(long_norm_line)
     intersec = sortby(pathXpathIntersections(long_norm_path, outer_path), 2)
     if intersec:
-        #this tests if the normal line intersect with the inner (other than at its startpoint) before hitting the outer
-        #note: pathxpath returns (seg1,seg2,t1,t2)
-        intersec_withInner = sortby(pathXpathIntersections(Path(long_norm_line), inner_path), 2)
+        # this tests if the normal line intersect with the inner (other
+        # than at its startpoint) before hitting the outer
+        # note: pathxpath returns (seg1,seg2,t1,t2)
+        intersec_withInner = \
+            sortby(pathXpathIntersections(Path(long_norm_line), inner_path), 2)
         if len(intersec_withInner) > 1 and intersec_withInner[1][2] < intersec[0][2]:
             if debug:
                 return long_norm_line, False, False
             else:
                 return False, False, False
-                # intersec_withInner = sortby(pathXpathIntersections(Path(long_norm_line), inner_path), 2)
 
         # this block tests if the normal line goes through the center (roughly
         # speaking) and finds a false intersection with outer on the other
@@ -253,15 +256,24 @@ def normalLineAtT_toInner_intersects_withOuter(
         path_is_a_line = (len(inner_path) == 1 and isinstance(inner_path[0], Line))
         if not inner_path.isclosed() and not path_is_a_line:
             innerClosingLine = Line(inner_path[0].start, inner_path[-1].end)
-            closingLine_self_intersections = pathXpathIntersections(inner_path, Path(innerClosingLine))
+            closingLine_self_intersections = \
+                pathXpathIntersections(inner_path, Path(innerClosingLine))
             bad_close = False
             for inters in closingLine_self_intersections:
                 pt = inters[0].point(inters[2])
-                if not (isNear(pt, inner_path[0].start) or isNear(pt, inner_path[-1].end)):
+                if not (isNear(pt, inner_path[0].start) or
+                        isNear(pt, inner_path[-1].end)):
                     bad_close = True
             if not bad_close:
-                intersec_withClosingLine = sortby(pathXpathIntersections(Path(long_norm_line), Path(innerClosingLine)), 2)
-                if intersec_withClosingLine and intersec_withClosingLine[0][2]<intersec[0][2] and not isNear(inner_pt,intersec_withClosingLine[0][1].point(intersec_withClosingLine[0][3])):
+                intersec_withClosingLine = \
+                    sortby(pathXpathIntersections(Path(long_norm_line),
+                                                  Path(innerClosingLine)), 2)
+
+                ipt = intersec_withClosingLine[0][1].point(
+                    intersec_withClosingLine[0][3])
+                if (intersec_withClosingLine and
+                        intersec_withClosingLine[0][2] < intersec[0][2] and
+                        not isNear(inner_pt, ipt)):
                     if debug:
                         return long_norm_line, False, False
                     else:

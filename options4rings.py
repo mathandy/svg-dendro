@@ -103,7 +103,7 @@ tol_intersections = 1e-4
 
 # remove segments from rings shorter than this (and fix path to be continuous 
 # after removal)... it's probably a bad idea for this not to be zero
-min_relative_segment_length = 0  
+min_relative_segment_length = 0
 
 
 ###############################################################################

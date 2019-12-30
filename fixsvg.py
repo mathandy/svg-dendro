@@ -14,6 +14,17 @@ from transects4rings import isPointOutwardOfPath
 import options4rings as opt
 
 
+def crop_to_unit_interval(tval, tol=opt.tol_intersections):
+    # assert almost tval in [0, 1] or close enough
+    assert 0 <= tval <= 1 or abs(tval) < tol or abs(tval - 1) < tol
+    if tval <= 0:
+        return 0
+    elif tval >= 1:
+        return 1
+    else:
+        return tval
+
+
 def fix_svg(ring_list, center, svgfile):
     """Check for human errors and create more perfect SVG"""
     # Discard inappropriately short rings
@@ -97,7 +108,7 @@ def fix_svg(ring_list, center, svgfile):
         del _new_path[_seg_idx]
         return _new_path
 
-    if opt.min_relative_segment_length:
+    if opt.min_relative_segment_length > 0:
         for r_idx, r in enumerate(ring_list):
             min_seg_length = r.path.length() * opt.min_relative_segment_length
             new_path = [s for s in r.path]
@@ -155,16 +166,6 @@ def fix_svg(ring_list, center, svgfile):
                     fixable_count += 1
                 T1, seg1, t1 = inters[0][0]
                 T2, seg2, t2 = inters[0][1]
-
-                def crop_to_unit_interval(tval, tol=opt.tol_intersections):
-                    if tval < 0:
-                        assert abs(tval - 0) < tol
-                        return 0
-                    elif tval > 1:
-                        assert abs(tval - 1) < tol
-                        return 1
-                    else:
-                        return tval
 
                 T1 = crop_to_unit_interval(T1)
                 T2 = crop_to_unit_interval(T2)
