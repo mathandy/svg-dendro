@@ -1,7 +1,6 @@
 # External Dependencies
 from __future__ import division
-from os import listdir, makedirs as os_makedirs, path as os_path, getcwd
-from ntpath import basename as nt_path_basename
+import os
 import argparse
 import cPickle as pickle
 from time import time as current_time
@@ -21,12 +20,12 @@ def get_user_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        '-i', '--input_directory',
-        dest='input_directory',
-        default=opt.input_directory,
+        '-i', '--input_path',
+        dest='input_path',
+        default=opt.input_path,
         help='The directory or single svg file to input (defaults to {}).  '
              'Use quotes for file/directory locations containing spaces)'
-             ''.format(opt.input_directory),
+             ''.format(opt.input_path),
         # metavar='INPUT_DIRECTORY'
         )
 
@@ -119,8 +118,9 @@ def get_user_args():
         default=False,
         action='store_true',
         help="If this flag is included, SVGTree run fake data samples in the "
-             "test_examples folder:\n{}\nNote: overrides --input_directory flag."
-             "".format(os_path.join(getcwd(), 'input', 'examples', 'test_examples')),
+             "test_examples folder:\n{}\nNote: overrides --input_path flag."
+             "".format(os.path.join(
+            os.getcwd(), 'input', 'examples', 'test_examples')),
     )
 
     parser.add_argument(
@@ -130,8 +130,9 @@ def get_user_args():
         action='store_true',
         help="If this flag is included, SVGTree run the real data samples "
              "stored in the real_examples folder:\n{}\n"
-             "Note: overrides --input_directory and --fakes flags."
-             "".format(os_path.join(getcwd(), 'input', 'examples', 'real_examples')),
+             "Note: overrides --input_path and --fakes flags."
+             "".format(os.path.join(
+            os.getcwd(), 'input', 'examples', 'real_examples')),
     )
 
     return parser.parse_args()
@@ -140,19 +141,16 @@ def get_user_args():
 def svgtree(svgfile, error_list):
 
     file_start_time = current_time()
-
-    SVGfileLocation = os_path.join(opt.input_directory, svgfile)
-    # svgname = nt_path_basename(SVGfileLocation)[0:-4]
-    svgname = os_path.splitext(os_path.basename(SVGfileLocation))[0]
+    svgname = os.path.splitext(os.path.basename(svgfile))[0]
 
     # Name pickle Files
-    pickle_file = os_path.join(opt.pickle_dir, svgname + "-ring_list.p")
-    sorted_pickle_file = os_path.join(opt.pickle_dir, svgname + "-sorted-ring_list.p")
-    om_pickle_file = os_path.join(opt.pickle_dir, svgname + "-ordering_matrix.p")
+    pickle_file = os.path.join(opt.pickle_dir, svgname + "-ring_list.p")
+    sorted_pickle_file = os.path.join(opt.pickle_dir, svgname + "-sorted-ring_list.p")
+    om_pickle_file = os.path.join(opt.pickle_dir, svgname + "-ordering_matrix.p")
     # tmp = 'DataFrom-'+ svgname +'_failed_rings.csv'
-    # outputFile_failed_rings = os_path.join(opt.output_directory, tmp)
+    # outputFile_failed_rings = os.path.join(opt.output_directory, tmp)
     # tmp = 'DataFrom-' + svgname + '.csv'
-    # outputFile = os_path.join(opt.output_directory, tmp)
+    # outputFile = os.path.join(opt.output_directory, tmp)
 
     # determine if pickle file exists, if it does,
     # load ring_list and center from it
@@ -179,7 +177,7 @@ def svgtree(svgfile, error_list):
     # If pickle file doesn't exist, create one, and
     # store ring_list and center in it
     if not (pickle_file_exists or sorted_pickle_file_exists):
-        center, ring_list = svg2rings(SVGfileLocation)
+        center, ring_list = svg2rings(svgfile)
         opt.basic_output_on.dprint("Pickling ring_list... ", 'nr')
         pickle.dump((ring_list, center), open(pickle_file, "wb"))
         opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
@@ -202,17 +200,16 @@ def svgtree(svgfile, error_list):
         if not sorted_pickle_file_exists:
             tmp_mes =("Attempting to sort ring_list.  This could take a minute "
                       "(or thirty)...")
-            opt.basic_output_on.dprint(tmp_mes,'nr')
-            #find sorting of ring_list
+            opt.basic_output_on.dprint(tmp_mes, 'nr')
+
+            # find sorting of ring_list
             from sorting4rings import sort_rings
-#                    ring_sorting, psorting = sort_rings(ring_list, om_pickle_file)
             ring_sorting, sort_lvl_info = sort_rings(ring_list, om_pickle_file)
             opt.basic_output_on.dprint("Done sorting ring_list.")
 
-            #record sort index
+            # record sort index
             for i, r_index in enumerate(ring_sorting):
                 ring_list[r_index].sort_index = i
-#                        ring_list[r_index].psort_index = ???
 
             # pickle "sorted" ring_list (not really sorted, but sort_index's
             # are recorded)
@@ -258,8 +255,8 @@ def svgtree(svgfile, error_list):
         # show them (this creates an svg file in the output folder)
         if opt.create_SVG_picture_of_transects:
             # svgname = svgfile[0:len(svgfile)-4]
-            svgname = os_path.splitext(os_path.basename(svgfile))[0]
-            svg_trans = os_path.join(opt.output_directory,
+            svgname = os.path.splitext(os.path.basename(svgfile))[0]
+            svg_trans = os.path.join(opt.output_directory,
                                      svgname + "_transects.svg")
             displaySVGPaths_transects(ring_list, data, angles,
                                       skipped_angle_indices, fn=svg_trans)
@@ -270,9 +267,9 @@ def svgtree(svgfile, error_list):
         from transects4rings import save_transect_data, save_transect_summary
         # Name output csv files
         tmp = 'TransectDataFrom-' + svgname + '.csv'
-        outputFile_transects = os_path.join(opt.output_directory, tmp)
+        outputFile_transects = os.path.join(opt.output_directory, tmp)
         tmp = 'TransectSummary-' + svgname + '.csv'
-        outputFile_transect_summary = os_path.join(opt.output_directory, tmp)
+        outputFile_transect_summary = os.path.join(opt.output_directory, tmp)
         completed_angles = [x for idx, x in enumerate(angles)
                             if idx not in skipped_angle_indices]
         skipped_angles = [angles[idx] for idx in skipped_angle_indices]
@@ -302,7 +299,7 @@ def svgtree(svgfile, error_list):
 
         from misc4rings import displaySVGPaths_numbered
         tmp = svgfile[0:len(svgfile)-4] + "_sort_numbered" + ".svg"
-        svgname = os_path.join(opt.output_directory_debug, tmp)
+        svgname = os.path.join(opt.output_directory_debug, tmp)
         displaySVGPaths_numbered([r.path for r in ring_list], svgname,
                                  [r.color for r in ring_list])
         opt.basic_output_on.dprint("Done.")
@@ -347,18 +344,18 @@ if __name__ == '__main__':
     opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
 
     ####################################################################
-    # Check input directory/file #######################################
+    # Check input path #################################################
     ####################################################################
     if user_args.reals:
-        opt.input_directory = os_path.join(
-            getcwd(), 'input', 'examples', 'real_examples')
+        opt.input_path = os.path.join(
+            os.getcwd(), 'input', 'examples', 'real_examples')
     elif user_args.fakes:
-        opt.input_directory = os_path.join(
-            getcwd(), 'input', 'examples', 'test_examples')
+        opt.input_path = os.path.join(
+            os.getcwd(), 'input', 'examples', 'test_examples')
     else:
-        opt.input_directory = user_args.input_directory
-        assert (os_path.isfile(opt.input_directory) or
-                os_path.isdir(opt.input_directory)), (
+        opt.input_path = user_args.input_path
+        assert (os.path.isfile(opt.input_path) or
+                os.path.isdir(opt.input_path)), (
                 "You're input directory/file must be a valid "
                 "directory (or SVG file).  You could also simply "
                 "put your SVG files in the 'input' folder (inside "
@@ -369,33 +366,36 @@ if __name__ == '__main__':
     # Check if output (sub)directories exist, create subdirs if not ####
     ####################################################################
     # Get output directory
-    assert os_path.isdir(user_args.output_directory)
+    assert os.path.isdir(user_args.output_directory)
     opt.output_directory = user_args.output_directory
+    opt.pickle_dir = os.path.join(opt.output_directory, "pickle_files")
+    opt.output_directory_debug = os.path.join(opt.output_directory, "debug")
+    opt.unsorted_transect_debug_output_folder = os.path.join(
+        opt.output_directory, "debug", "transect_slides")
 
-    assert os_path.exists(opt.output_directory), (
+    assert os.path.exists(opt.output_directory), (
             "\n\nThe output_directory given in options does not exist.  "
             "To fix this change output_directory in options, or "
             "create the folder:\n%s" % opt.output_directory
     )
-    if not os_path.exists(opt.pickle_dir):  # debug folder
-        os_makedirs(opt.pickle_dir)
-    if not os_path.exists(opt.output_directory_debug):  # pickle folder
-        os_makedirs(opt.output_directory_debug)
+    if not os.path.exists(opt.pickle_dir):  # debug folder
+        os.makedirs(opt.pickle_dir)
+    if not os.path.exists(opt.output_directory_debug):  # pickle folder
+        os.makedirs(opt.output_directory_debug)
+    if not os.path.exists(opt.unsorted_transect_debug_output_folder):
+        os.makedirs(opt.unsorted_transect_debug_output_folder)
 
     ####################################################################
     # Batch run all SVG filed in input directory #######################
     ####################################################################
     error_list = []
-    if os_path.isdir(opt.input_directory):
-        svgfiles = listdir(opt.input_directory)
+    if os.path.isdir(opt.input_path):
+        svgfiles = [os.path.join(opt.input_path, fn)
+                    for fn in os.listdir(opt.input_path) if fn.endswith('.svg')]
     else:
-        svgfiles = [opt.input_directory]
-        opt.input_directory = os_path.join(opt.input_directory, os_path.pardir)
+        svgfiles = [opt.input_path]
 
     for svgfile in svgfiles:
-
-        # Get name sans extension
-        # svgname = svgfile[:-4]
 
         #######################################################################
         # Load SVG, extract rings, pickle (or just load pickle if it exists) ##
@@ -431,7 +431,7 @@ if __name__ == '__main__':
             continue
     print("")
 
-    error_log = os_path.join(opt.output_directory, "error_list.txt")
+    error_log = os.path.join(opt.output_directory, "error_list.txt")
     print("error_list ouput to:\n{}".format(error_log))
     with open(error_log, 'wt') as outf:
         for fn, err in error_list:

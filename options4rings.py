@@ -11,7 +11,7 @@ from os import getcwd
 # input_directory = "C:\\Users\\Andy\\Desktop\\input_svgs\\"
 
 # Run just two simple examples
-input_directory = os_path.join(getcwd(), 'input')
+input_path = os_path.join(getcwd(), 'input')
 
 # Run all real sample SVGs
 # input_directory = os_path.join(getcwd(), 'input', 'examples', 'real_examples', 'problemsome')
