@@ -3,10 +3,7 @@ from __future__ import division
 from os import listdir, makedirs as os_makedirs, path as os_path, getcwd
 from ntpath import basename as nt_path_basename
 import argparse
-try:
-    import cPickle as pickle
-except:
-    import _pickle as pickle
+import cPickle as pickle
 from time import time as current_time
 import numpy as np
 
@@ -140,42 +137,6 @@ def get_user_args():
     return parser.parse_args()
 
 
-if __name__ == '__main__':
-    user_args = get_user_args()
-
-    # Get input directory
-    if user_args.reals:
-        opt.input_directory = os_path.join(getcwd(), 'input', 'examples', 'real_examples')
-    elif user_args.fakes:
-        opt.input_directory = os_path.join(getcwd(), 'input', 'examples', 'test_examples')
-    else:
-        try:
-            assert (os_path.isfile(user_args.input_directory) or
-                    os_path.isdir(user_args.input_directory))
-        except AssertionError:
-            raise IOError("You're input directory/file must be a valid "
-                          "directory (or SVG file).  You could also simply "
-                          "put your SVG files in the 'input' folder (inside "
-                          "the SVGTree folder that this code is stored in).")
-
-        opt.input_directory = user_args.input_directory
-
-    # Get output directory
-    assert os_path.isdir(user_args.output_directory)
-    opt.output_directory = user_args.output_directory
-
-    # Get optional parameters
-    opt.N_transects = int(user_args.n_transects)
-    opt.find_areas = user_args.no_areas
-    opt.generate_evenly_spaced_transects = not user_args.random_transects
-    # opt.use_ring_sort_4transects = not user_args.random_transects
-    opt.assume_svg_is_fixed = user_args.assume_fixed
-    opt.ignore_extant_pickle_file = not user_args.use_pickle_files
-    opt.ignore_extant_sorted_pickle_file = not user_args.use_pickle_files
-    opt.look_for_user_sort_input = user_args.look_for_user_sort_input
-    opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
-
-
 def svgtree(svgfile, error_list):
 
     file_start_time = current_time()
@@ -225,7 +186,7 @@ def svgtree(svgfile, error_list):
         opt.basic_output_on.dprint("Done.")
 
     ####################################################################
-    ###fix to record svg names in rings ################################
+    # fix to record svg names in rings #################################
     ####################################################################
     for ring in ring_list:
         ring.svgname = svgfile[:-4]
@@ -234,7 +195,7 @@ def svgtree(svgfile, error_list):
         fix_svg(ring_list, center, svgfile)
 
     ####################################################################
-    ###Sort ############################################################
+    # Sort #############################################################
     ####################################################################
     # sort ring_list from innermost to outermost and record sort index
     if opt.sort_rings_on:
@@ -260,9 +221,9 @@ def svgtree(svgfile, error_list):
             opt.basic_output_on.dprint('pickling complete -> ' +
                                        sorted_pickle_file)
 
-    ###############################################################################
-    ###Generate and Output Transects ##############################################
-    ###############################################################################
+    ####################################################################
+    # Generate and Output Transects ####################################
+    ####################################################################
 
     # generate transects
     skipped_angle_indices = []
@@ -322,7 +283,7 @@ def svgtree(svgfile, error_list):
                               data_indices, completed_angles)
 
     ####################################################################
-    ###Compute Ring Areas ##############################################
+    # Compute Ring Areas ###############################################
     ####################################################################
     if opt.find_areas:
         from area4rings import find_ring_areas
@@ -332,7 +293,7 @@ def svgtree(svgfile, error_list):
         find_ring_areas(sorted_ring_list, center, svgfile)
 
     ####################################################################
-    ###Other (optional) stuff ##########################################
+    # Other (optional) stuff ###########################################
     ####################################################################
 
     # Create SVG showing ring sorting
@@ -347,8 +308,6 @@ def svgtree(svgfile, error_list):
                                  [r.color for r in ring_list])
         opt.basic_output_on.dprint("Done.")
 
-
-
     # test complete ring sort after first sort round
     if opt.visual_test_of_all_ring_sort_on:
         from svg2rings import visual_test_of_ring_sort
@@ -362,7 +321,7 @@ def svgtree(svgfile, error_list):
                                    "automatically and now be visible.)")
 
     ####################################################################
-    ###Report Success/Failure of file ##################################
+    # Report Success/Failure of file ###################################
     ####################################################################
     tmp = (svgfile, format_time(current_time() - file_start_time))
     opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
@@ -374,74 +333,109 @@ def svgtree(svgfile, error_list):
     return
 
 
-########################################################################
-# Check if output (sub)directories exist, create subdirectories if they don't
-# exist
-mes = ("\n\nThe output_directory given in options does not exist.  To fix this "
-      "change output_directory in options, or create the folder:\n"
-       "%s" % opt.output_directory)
-assert os_path.exists(opt.output_directory), mes
-if not os_path.exists(opt.pickle_dir):  # debug folder
-    os_makedirs(opt.pickle_dir)
-if not os_path.exists(opt.output_directory_debug):  # pickle folder
-    os_makedirs(opt.output_directory_debug)
+if __name__ == '__main__':
+    user_args = get_user_args()
 
-
-########################################################################
-###Batch run all SVG filed in input directory ##########################
-########################################################################
-error_list = []
-if os_path.isdir(opt.input_directory):
-    svgfiles = listdir(opt.input_directory)
-else:
-    svgfiles = [opt.input_directory]
-    opt.input_directory = os_path.join(opt.input_directory, os_path.pardir)
-
-for svgfile in svgfiles:
-
-    # Get name sans extension
-    svgname = svgfile[:-4]
-
-    #######################################################################
-    ###Load SVG, extract rings, pickle (or just load pickle if it exists) #
-    #######################################################################
-    if svgfile[len(svgfile) - 3: len(svgfile)] == 'svg':
-        try:
-            print('-' * 40 + '\n' + '~' * 20 +
-                  'attempting {}'.format(svgfile) +
-                  '\n' + '-' * 40)
-
-            # Analyze svgfile
-            svgtree(svgfile, error_list)
-
-        except:
-            print("-"*75)
-            print("!" * 25 + svgfile + " did not finish successfully.")
-            print("Reason:")
-
-            #save error to error_list
-            if opt.if_file_throws_error_skip_and_move_to_next_file:
-                from traceback import format_exc
-                from sys import stdout
-                stdout.write(format_exc())
-                error_list.append((svgfile, format_exc()))
-                print("-"*75)
-                print("VV"*50)
-                print("VV"*50)
-                print("\n\n")
-                continue
-            else:
-                raise
+    # Get input directory
+    if user_args.reals:
+        opt.input_directory = os_path.join(getcwd(), 'input', 'examples', 'real_examples')
+    elif user_args.fakes:
+        opt.input_directory = os_path.join(getcwd(), 'input', 'examples', 'test_examples')
     else:
-        continue
-print("")
+        try:
+            assert (os_path.isfile(user_args.input_directory) or
+                    os_path.isdir(user_args.input_directory))
+        except AssertionError:
+            raise IOError("You're input directory/file must be a valid "
+                          "directory (or SVG file).  You could also simply "
+                          "put your SVG files in the 'input' folder (inside "
+                          "the SVGTree folder that this code is stored in).")
 
-error_log = os_path.join(opt.output_directory, "error_list.txt")
-print("error_list ouput to:\n{}".format(error_log))
-with open(error_log, 'wt') as outf:
-    for svgname, err in error_list:
-        outf.write('#'*50 + '\n')
-        outf.write('### ' + svgname + '\n')
-        outf.write('#'*50 + '\n')
-        outf.write(err + '\n'*3)
-print("All done.")
+        opt.input_directory = user_args.input_directory
+
+    # Get output directory
+    assert os_path.isdir(user_args.output_directory)
+    opt.output_directory = user_args.output_directory
+
+    # Get optional parameters
+    opt.N_transects = int(user_args.n_transects)
+    opt.find_areas = user_args.no_areas
+    opt.generate_evenly_spaced_transects = not user_args.random_transects
+    # opt.use_ring_sort_4transects = not user_args.random_transects
+    opt.assume_svg_is_fixed = user_args.assume_fixed
+    opt.ignore_extant_pickle_file = not user_args.use_pickle_files
+    opt.ignore_extant_sorted_pickle_file = not user_args.use_pickle_files
+    opt.look_for_user_sort_input = user_args.look_for_user_sort_input
+    opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
+
+    ########################################################################
+    # Check if output (sub)directories exist, create subdirectories if they don't
+    # exist
+    mes = ("\n\nThe output_directory given in options does not exist.  To fix this "
+          "change output_directory in options, or create the folder:\n"
+           "%s" % opt.output_directory)
+    assert os_path.exists(opt.output_directory), mes
+    if not os_path.exists(opt.pickle_dir):  # debug folder
+        os_makedirs(opt.pickle_dir)
+    if not os_path.exists(opt.output_directory_debug):  # pickle folder
+        os_makedirs(opt.output_directory_debug)
+
+
+    ########################################################################
+    ###Batch run all SVG filed in input directory ##########################
+    ########################################################################
+    error_list = []
+    if os_path.isdir(opt.input_directory):
+        svgfiles = listdir(opt.input_directory)
+    else:
+        svgfiles = [opt.input_directory]
+        opt.input_directory = os_path.join(opt.input_directory, os_path.pardir)
+
+    for svgfile in svgfiles:
+
+        # Get name sans extension
+        svgname = svgfile[:-4]
+
+        #######################################################################
+        ###Load SVG, extract rings, pickle (or just load pickle if it exists) #
+        #######################################################################
+        if svgfile[len(svgfile) - 3: len(svgfile)] == 'svg':
+            try:
+                print('-' * 40 + '\n' + '~' * 20 +
+                      'attempting {}'.format(svgfile) +
+                      '\n' + '-' * 40)
+
+                # Analyze svgfile
+                svgtree(svgfile, error_list)
+
+            except:
+                print("-"*75)
+                print("!" * 25 + svgfile + " did not finish successfully.")
+                print("Reason:")
+
+                # save error to error_list
+                if opt.if_file_throws_error_skip_and_move_to_next_file:
+                    from traceback import format_exc
+                    from sys import stdout
+                    stdout.write(format_exc())
+                    error_list.append((svgfile, format_exc()))
+                    print("-"*75)
+                    print("VV"*50)
+                    print("VV"*50)
+                    print("\n\n")
+                    continue
+                else:
+                    raise
+        else:
+            continue
+    print("")
+
+    error_log = os_path.join(opt.output_directory, "error_list.txt")
+    print("error_list ouput to:\n{}".format(error_log))
+    with open(error_log, 'wt') as outf:
+        for svgname, err in error_list:
+            outf.write('#'*50 + '\n')
+            outf.write('### ' + svgname + '\n')
+            outf.write('#'*50 + '\n')
+            outf.write(err + '\n'*3)
+    print("All done.")
