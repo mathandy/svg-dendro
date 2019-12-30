@@ -155,6 +155,20 @@ def fix_svg(ring_list, center, svgfile):
                     fixable_count += 1
                 T1, seg1, t1 = inters[0][0]
                 T2, seg2, t2 = inters[0][1]
+
+                def crop_to_unit_interval(tval, tol=opt.tol_intersections):
+                    if tval < 0:
+                        assert abs(tval - 0) < tol
+                        return 0
+                    elif tval > 1:
+                        assert abs(tval - 1) < tol
+                        return 1
+                    else:
+                        return tval
+
+                T1 = crop_to_unit_interval(T1)
+                T2 = crop_to_unit_interval(T2)
+
                 if not opt.force_remove_self_intersections:
                     print("Self-intersection detected!")
                     greenpart = first_half.cropped(0, T1)
@@ -333,10 +347,10 @@ def fix_svg(ring_list, center, svgfile):
             from svgpathtools import real, imag
             from svgpathtools.polytools import polyroots01
 
-            def icurvature(seg, kappa):
+            def icurvature(segment, kappa):
                 """returns a list of t-values such that 0 <= t<= 1 and
                 seg.curvature(t) = kappa."""
-                z = seg.poly()
+                z = segment.poly()
                 x, y = real(z), imag(z)
                 dx, dy = x.deriv(), y.deriv()
                 ddx, ddy = dx.deriv(), dy.deriv()
