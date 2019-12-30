@@ -1,5 +1,7 @@
+*.
+*.DS_Store
+*.idea/
 *.pyc
-.*
 /tests
 /input/examples/real_examples/problemsome
 /output/*
