@@ -19,20 +19,20 @@ def fix_svg(ring_list, center, svgfile):
     # Discard inappropriately short rings
     from options4rings import appropriate_ring_length_minimum
     opt.basic_output_on.dprint("\nChecking for inappropriately short "
-                               "rings...",'nr')
+                               "rings...", 'nr')
     tmp_len = len(ring_list)
     short_rings = [idx for idx, ring in enumerate(ring_list) if
                    ring.path.length() < appropriate_ring_length_minimum]
     opt.basic_output_on.dprint("Done (%s inappropriately short rings "
-                               "found)."%len(short_rings))
+                               "found)." % len(short_rings))
     if short_rings:
         if opt.create_svg_highlighting_inappropriately_short_rings:
             opt.basic_output_on.dprint("\nCreating svg highlighting "
-                                       "inappropriately short rings...",'nr')
+                                       "inappropriately short rings...", 'nr')
             paths = [parse_path(r.string) for r in ring_list]
             colors = [r.color for r in ring_list]
             nodes = [ring_list[idx].path.point(0.5) for idx in short_rings]
-            center_line = [Line(center-1,center+1)]
+            center_line = [Line(center-1, center+1)]
             tmp = svgfile[0:len(svgfile)-4] + "_short-rings.svg"
             shortrings_svg_filename = os_path.join(opt.output_directory, tmp)
             disvg(paths + [center_line], colors + [opt.colordict['center']],
@@ -65,11 +65,11 @@ def fix_svg(ring_list, center, svgfile):
 
         if opt.remove_inappropriately_short_rings:
             opt.basic_output_on.dprint("\nRemoving inappropriately short "
-                                       "rings...",'nr')
-            ring_list = [ring for idx,ring in enumerate(ring_list) if
-                         idx not in short_rings]
+                                       "rings...", 'nr')
+            ring_list = [ring for idx, ring in enumerate(ring_list)
+                         if idx not in short_rings]
             opt.basic_output_on.dprint("Done (%s inappropriately short rings "
-                                       "removed)."%(tmp_len - len(ring_list)))
+                                       "removed)." % (tmp_len - len(ring_list)))
         else:
             warn("{} inappropriately short rings were found, but "
                  "remove_inappropriately_short_rings is set to False."
@@ -326,7 +326,7 @@ def fix_svg(ring_list, center, svgfile):
                 continue
 
             # 90 degree turn in distance of opt.tol_isNear
-            tol_curvature = 2**.5 / opt.tol_isNear  #####Tolerance
+            tol_curvature = 2**.5 / opt.tol_isNear  # #### Tolerance
 
             # Find any points within tol_isNear of start and end that have
             # curvature equal to tol_curvature, later we'll crop them off
@@ -382,7 +382,7 @@ def fix_svg(ring_list, center, svgfile):
                                       boundary_ring.path):
                 outside_mark_indices.append(idx)
     if outside_mark_indices:
-        ring_list = [r for i,r in enumerate(ring_list)
+        ring_list = [r for i, r in enumerate(ring_list)
                      if i not in outside_mark_indices]
         warn("%s paths were found outside the boundary path and will be "
              "ignored." % len(outside_mark_indices))
@@ -392,9 +392,9 @@ def fix_svg(ring_list, center, svgfile):
     if opt.rings_may_contain_intersections:
         print("Removing intersections (between distinct rings)...")
         from noIntersections4rings import remove_intersections_from_rings
-        opt.basic_output_on.dprint("Now attempting to find and remove all "
-                               "intersections from rings (this will take a "
-                               "long time)...")
+        opt.basic_output_on.dprint(
+            "Now attempting to find and remove all intersections from "
+            "rings (this will take a long time)...")
         intersection_removal_start_time = current_time()
 
         ring_list, intersection_count, overlappingClosedRingPairs = \
@@ -402,9 +402,9 @@ def fix_svg(ring_list, center, svgfile):
 
         if not overlappingClosedRingPairs:
             tot_ov_time = format_time(current_time() - intersection_removal_start_time)
-            opt.basic_output_on.dprint("Done (in just %s). Found and removed %s "
-                                   "intersections." % (tot_ov_time,
-                                                       intersection_count))
+            opt.basic_output_on.dprint(
+                "Done (in just %s). Found and removed %s intersections."
+                "" % (tot_ov_time, intersection_count))
         else:
             # fixed_paths = [parse_path(r.string) for r in ring_list]
             fixed_paths = [r.path for r in ring_list]
@@ -414,7 +414,8 @@ def fix_svg(ring_list, center, svgfile):
             for i, j in overlappingClosedRingPairs:
                 fixed_colors[i] = opt.colordict['safe1']
                 fixed_colors[j] = opt.colordict['safe2']
-                inters = pathXpathIntersections(ring_list[i].path,ring_list[j].path)
+                inters = pathXpathIntersections(
+                    ring_list[i].path, ring_list[j].path)
                 nodes += [inter[0].point(inter[2]) for inter in inters]
 
             tmp = svgfile[0:len(svgfile)-4] + "_ClosedRingsOverlap.svg"
@@ -448,7 +449,7 @@ def fix_svg(ring_list, center, svgfile):
         tmp = svgfile[0:len(svgfile)-4] + "_fixed.svg"
         fixed_svg_filename = os_path.join(opt.output_directory, tmp)
         wsvg(fixed_paths + [center_line],
-              fixed_colors + [opt.colordict['center']],
-              filename=fixed_svg_filename)
+             fixed_colors + [opt.colordict['center']],
+             filename=fixed_svg_filename)
         opt.basic_output_on.dprint("Done.  SVG file saved to:\n"
                                    "%s" % fixed_svg_filename)
