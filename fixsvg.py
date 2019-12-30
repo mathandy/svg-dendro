@@ -3,7 +3,6 @@ from __future__ import division, absolute_import, print_function
 from os import path as os_path
 from time import time as current_time
 from warnings import warn
-import numpy as np
 from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,
                           smoothed_path, bezier_segment)
 
@@ -15,12 +14,8 @@ from transects4rings import isPointOutwardOfPath
 import options4rings as opt
 
 
-###############################################################################
-###Check for human errors and create more perfect SVG #########################
-###############################################################################
-
 def fix_svg(ring_list, center, svgfile):
-
+    """Check for human errors and create more perfect SVG"""
     # Discard inappropriately short rings
     from options4rings import appropriate_ring_length_minimum
     opt.basic_output_on.dprint("\nChecking for inappropriately short "
@@ -81,7 +76,6 @@ def fix_svg(ring_list, center, svgfile):
                  "".format(len(ring_list)))
         print("")
 
-
     # Remove very short segments from rings
     def _remove_seg(path, _seg_idx, _newjoint):
         _new_path = [x for x in path]
@@ -102,8 +96,6 @@ def fix_svg(ring_list, center, svgfile):
         # delete the path to be removed
         del _new_path[_seg_idx]
         return _new_path
-
-
 
     if opt.min_relative_segment_length:
         for r_idx, r in enumerate(ring_list):
@@ -221,7 +213,6 @@ def fix_svg(ring_list, center, svgfile):
         print("Done fixing self-intersections ({} detected in {})."
               "".format(fixable_count, et))
 
-
     # Check that all rings are smooth (search for kinks and round them)
     if opt.smooth_rings:
         print("Smoothing paths...")
@@ -268,7 +259,6 @@ def fix_svg(ring_list, center, svgfile):
                             "Output svg saved to:\n"
                             "%s" % fixed_svg_filename)
         print("Done smoothing paths.")
-
 
     # Check for overlapping ends in open rings
     if opt.check4overlappingends:
@@ -328,7 +318,6 @@ def fix_svg(ring_list, center, svgfile):
             raise Exception(tmp_mes)
         print("Done checking for overlapping ends.")
 
-
     # Trim paths with high curvature (i.e. curly) ends
     if opt.remove_curly_ends:
         print("Trimming high curvature ends...")
@@ -343,6 +332,7 @@ def fix_svg(ring_list, center, svgfile):
             # curvature equal to tol_curvature, later we'll crop them off
             from svgpathtools import real, imag
             from svgpathtools.polytools import polyroots01
+
             def icurvature(seg, kappa):
                 """returns a list of t-values such that 0 <= t<= 1 and
                 seg.curvature(t) = kappa."""
@@ -378,7 +368,6 @@ def fix_svg(ring_list, center, svgfile):
 
         print("Done trimming.")
 
-
     # Check that there are no rings end outside the boundary ring (note
     # intersection removal in next step makes this sufficient)
     print("Checking for rings outside boundary ring...")
@@ -398,7 +387,6 @@ def fix_svg(ring_list, center, svgfile):
         warn("%s paths were found outside the boundary path and will be "
              "ignored." % len(outside_mark_indices))
     print("Done removing rings outside of boundary ring.")
-
 
     # Remove intersections (between distinct rings)
     if opt.rings_may_contain_intersections:
@@ -447,7 +435,6 @@ def fix_svg(ring_list, center, svgfile):
                             "Output svg saved to:\n"
                             "%s" % (len(overlappingClosedRingPairs),
                                     fixed_svg_filename))
-
 
     # Output a fixed SVG that is (hopefully) how this SVG would be if humans
     # were perfect
