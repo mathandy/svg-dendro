@@ -224,18 +224,18 @@ def svgtree(svgfile, error_list):
         opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
         opt.basic_output_on.dprint("Done.")
 
-###############################################################################
-###fix to record svg names in rings ###########################################
-###############################################################################
+    ####################################################################
+    ###fix to record svg names in rings ################################
+    ####################################################################
     for ring in ring_list:
         ring.svgname = svgfile[:-4]
 
     if not opt.assume_svg_is_fixed:
         fix_svg(ring_list, center, svgfile)
 
-###############################################################################
-###Sort #######################################################################
-###############################################################################
+    ####################################################################
+    ###Sort ############################################################
+    ####################################################################
     # sort ring_list from innermost to outermost and record sort index
     if opt.sort_rings_on:
         if not sorted_pickle_file_exists:
@@ -260,9 +260,9 @@ def svgtree(svgfile, error_list):
             opt.basic_output_on.dprint('pickling complete -> ' +
                                        sorted_pickle_file)
 
-###############################################################################
-###Generate and Output Transects ##############################################
-###############################################################################
+    ###############################################################################
+    ###Generate and Output Transects ##############################################
+    ###############################################################################
 
     # generate transects
     skipped_angle_indices = []
@@ -321,9 +321,9 @@ def svgtree(svgfile, error_list):
         save_transect_summary(outputFile_transect_summary, ring_list, data,
                               data_indices, completed_angles)
 
-###############################################################################
-###Compute Ring Areas #########################################################
-###############################################################################
+    ####################################################################
+    ###Compute Ring Areas ##############################################
+    ####################################################################
     if opt.find_areas:
         from area4rings import find_ring_areas
         sorted_ring_list = sorted(ring_list, key=lambda rg:rg.sort_index)
@@ -331,9 +331,9 @@ def svgtree(svgfile, error_list):
         # this also completes incomplete rings
         find_ring_areas(sorted_ring_list, center, svgfile)
 
-###############################################################################
-###Other (optional) stuff #####################################################
-###############################################################################
+    ####################################################################
+    ###Other (optional) stuff ##########################################
+    ####################################################################
 
     # Create SVG showing ring sorting
     if opt.create_SVG_showing_ring_sort:
@@ -361,9 +361,9 @@ def svgtree(svgfile, error_list):
         opt.basic_output_on.dprint("Done.  (It should have opened "
                                    "automatically and now be visible.)")
 
-###############################################################################
-###Report Success/Failure of file #############################################
-###############################################################################
+    ####################################################################
+    ###Report Success/Failure of file ##################################
+    ####################################################################
     tmp = (svgfile, format_time(current_time() - file_start_time))
     opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
     opt.basic_output_on.dprint(":)"*50)
@@ -374,7 +374,7 @@ def svgtree(svgfile, error_list):
     return
 
 
-###############################################################################
+########################################################################
 # Check if output (sub)directories exist, create subdirectories if they don't
 # exist
 mes = ("\n\nThe output_directory given in options does not exist.  To fix this "
@@ -387,9 +387,9 @@ if not os_path.exists(opt.output_directory_debug):  # pickle folder
     os_makedirs(opt.output_directory_debug)
 
 
-###############################################################################
-###Batch run all SVG filed in input directory #################################
-###############################################################################
+########################################################################
+###Batch run all SVG filed in input directory ##########################
+########################################################################
 error_list = []
 if os_path.isdir(opt.input_directory):
     svgfiles = listdir(opt.input_directory)
@@ -402,9 +402,9 @@ for svgfile in svgfiles:
     # Get name sans extension
     svgname = svgfile[:-4]
 
-###############################################################################
-###Load SVG, extract rings, pickle (or just load pickle if it exists) #########
-###############################################################################
+    #######################################################################
+    ###Load SVG, extract rings, pickle (or just load pickle if it exists) #
+    #######################################################################
     if svgfile[len(svgfile) - 3: len(svgfile)] == 'svg':
         try:
             print('-' * 40 + '\n' + '~' * 20 +
