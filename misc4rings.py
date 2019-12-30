@@ -197,7 +197,8 @@ def normalLineAtT_toInner_intersects_withOuter(
             object normal to `inner_path` beginning at
             `inner_path.point(innerT)` and ending at `outer_seg.point(outer_t)`
             or, in the case that the normal line never intersects `outer_path`,
-            returns (False, False, False)."""
+            returns (False, False, False).
+    """
     assert 0 <= innerT <= 1
     if isApproxClosedPath(inner_path) and innerT == 1:
         innerT = 0
@@ -269,11 +270,11 @@ def normalLineAtT_toInner_intersects_withOuter(
                     sortby(pathXpathIntersections(Path(long_norm_line),
                                                   Path(innerClosingLine)), 2)
 
-                ipt = intersec_withClosingLine[0][1].point(
-                    intersec_withClosingLine[0][3])
                 if (intersec_withClosingLine and
-                        intersec_withClosingLine[0][2] < intersec[0][2] and
-                        not isNear(inner_pt, ipt)):
+                        intersec_withClosingLine[0][2] < intersec[0][2] and not
+                        isNear(inner_pt,
+                               intersec_withClosingLine[0][1].point(
+                                   intersec_withClosingLine[0][3]))):
                     if debug:
                         return long_norm_line, False, False
                     else:
@@ -289,9 +290,20 @@ def normalLineAtT_toInner_intersects_withOuter(
             return False, False, False
 
 
-def normalLineAt_t_toInnerSeg_intersects_withOuter(inner_t,inner_seg,outerPath,center,*debug): #this is faster than normalLineAtT_toInner_intersects_withOuter
-#this fcn is meant to be used by IncompleteRing.findTransects2endpointsFromInnerPath_normal method, it returns the Line object normal to innerPath beginning at the innerPath.point(innerT) and ending wherever it intersect with outerPath or, if such a line does not exist, returns (False,False,False)
-#Returns (normal_Line,outer_seg,outer_t) where normal_Line is the Line object normal to innerPath beginning at innerPath.point(innerT) and ending at outer_seg.point(outer_t) or, in the case that the normal line never intersects outerPath, returns (False,False,False)
+def normalLineAt_t_toInnerSeg_intersects_withOuter(
+        inner_t, inner_seg, outerPath, center, *debug):
+    """ Faster version of normalLineAtT_toInner_intersects_withOuter
+
+    Note: This fcn is meant to be used by the
+    `IncompleteRing.findTransects2endpointsFromInnerPath_normal` method
+
+    Returns:
+        (normal_Line, outer_seg, outer_t) where normal_Line is the Line
+            object normal to `inner_path` beginning at
+            `inner_path.point(innerT)` and ending at `outer_seg.point(outer_t)`
+            or, in the case that the normal line never intersects `outer_path`,
+            returns (False, False, False).
+    """
     assert 0<= inner_t <= 1
     innerPt = inner_seg.point(inner_t)
     z_deriv = segDerivative(inner_seg,inner_t)
