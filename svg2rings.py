@@ -230,8 +230,20 @@ def svg2rings(SVGfileLocation):
             continue
 
         path = parse_path(dstring)
+
+        if len(path) == 0:
+            continue  # path with single point
+
+        # removed small and repeated segments
         path = remove_degenerate_segments(path)
         path = remove_duplicate_segments(path)
+
+        # check that no too many segments were removed
+        if len(path) == 0:
+            original_path = parse_path(dstring)
+            if original_path.length() > opt.appropriate_ring_length_minimum:
+                raise Exception(
+                    "A path that was acceptable is no longer long enough")
 
         # fix the orientation if path is not CCW (w.r.t. center)
         path_is_ccw = 'unknown'
