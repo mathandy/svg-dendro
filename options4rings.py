@@ -108,7 +108,7 @@ tol_intersections = 1e-4
 # Note: smaller segments may be created in the smoothing process (and
 # will not removed)
 min_relative_segment_length = 0
-min_absolute_segment_length = 1
+min_absolute_segment_length = 1e-4
 
 
 ###############################################################################
