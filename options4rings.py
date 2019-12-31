@@ -97,13 +97,18 @@ tol_isNear = .1
 # tol_isApproxClosedPath.
 tol_isApproxClosedPath = 0.1  
 
-# This will sometimes control how close two rings need to be to be considered 
-# intersecting
+# This will sometimes control how close two rings need to be to be
+# considered intersecting
 tol_intersections = 1e-4
 
-# remove segments from rings shorter than this (and fix path to be continuous 
-# after removal)... it's probably a bad idea for this not to be zero
+# Remove segments from rings shorter than this (and fix path to be
+# continuous after removal).
+# Note: it's probably a bad idea for `min_relative_segment_length` to
+# not be zero
+# Note: smaller segments may be created in the smoothing process (and
+# will not removed)
 min_relative_segment_length = 0
+min_absolute_segment_length = 1
 
 
 ###############################################################################

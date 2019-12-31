@@ -190,20 +190,25 @@ def svg2rings(SVGfileLocation):
                 'x1, x2, y1, y2 values) \n%s\n'
                 '' % (colordict['center'], example_center))
 
+    # ##################################################################
+    # get path data as tuples of form:
+    #   (d-string, stroke, tag, xml)
+    # ##################################################################
+
     # Use minidom to extract path strings from input SVG
-    opt.basic_output_on.dprint("Extracting path_strings from SVG... ", 'nr')
-    path_strings = [(p.getAttribute('d'), getStroke(p),
+    opt.basic_output_on.dprint("Extracting path_data from SVG... ", 'nr')
+    path_data = [(p.getAttribute('d'), getStroke(p),
                      p.parentNode.getAttribute('id'), p.toxml())
                     for p in doc.getElementsByTagName('path')]
 
     # Use minidom to extract polyline strings from input SVG, convert to path strings, add to list
-    path_strings += [
+    path_data += [
         (polylineStr2pathStr(p.getAttribute('points')),
          getStroke(p), p.parentNode.getAttribute('id'), p.toxml())
         for p in doc.getElementsByTagName('polyline')]
 
     # Use minidom to extract polygon strings from input SVG, convert to path strings, add to list
-    path_strings += [
+    path_data += [
         (polylineStr2pathStr(p.getAttribute('points')) + 'z',
          getStroke(p), p.parentNode.getAttribute('id'), p.toxml())
         for p in doc.getElementsByTagName('polygon')]
@@ -211,110 +216,52 @@ def svg2rings(SVGfileLocation):
     doc.unlink()
     opt.basic_output_on.dprint("Done.")
 
-    # Convert path_strings to ring objects
+    # Convert path_data to ring objects
     opt.basic_output_on.dprint(
         "Converting path strings to Ring objects.  "
         "This could take a minute... ", 'nr')
     path2ring_start_time = current_time()
     ring_list = []
     paths_of_unknown_orientation = []
-    for i in range(len(path_strings)):
-        orig_path = parse_path(path_strings[i][0])
-        try:  ### DEBUG ONLY (REMOVE ALL OF TRY/EXCEPT)
-            orig_path[0]
-        except:
-            if len(path_strings[i][0].split(',')) < 3:
-                opt.full_output_on.dprint(
-                    "Found (and skipped) single point path: %s"
-                    "" % path_strings[i][0])
-                continue
-            else:
-                raise
+    for k, (dstring, stroke, tag, xml) in enumerate(path_data):
 
-        # fix degenerate segments here
-        for index, seg in enumerate(orig_path):
-            if abs(seg.start - seg.end) < 1:
-                old_end = seg.end
-                old_start = seg.start
-                opt.full_output_on.dprint(
-                    "Found degenerate seg in path %s: %s" % (i, seg))
-                del orig_path[index]
-                if index == len(orig_path):  # deleted last path
-                    orig_path[-1].end = old_end
-                elif index == 0:
-                    orig_path[0].start = old_start
-                else:
-                    orig_path[index].start = orig_path[index - 1].end
-                opt.full_output_on.dprint(
-                    "Deleted above degenerate segment and fixed gap.")
+        # skip center line
+        if stroke == opt.colordict['center']:
+            continue
 
-        # check for doubled over segments
-        nostupidsfound = False
-        while not nostupidsfound and len(orig_path) > 1:
-            for indst in range(len(orig_path) - 1):
-                if (orig_path[indst] == orig_path[indst + 1] or
-                        orig_path[indst] == orig_path[indst + 1].reversed()):
-                    del orig_path[indst + 1]
-                    opt.warnings_output_on.dprint(
-                        "[Warning:] " + "stupidsfound" * 50)
-            else:
-                nostupidsfound = True
+        path = parse_path(dstring)
+        path = remove_degenerate_segments(path)
+        path = remove_duplicate_segments(path)
 
-        # Now fix the orientation if path is not CCW (w.r.t. center)
+        # fix the orientation if path is not CCW (w.r.t. center)
+        path_is_ccw = 'unknown'
         try:
-            path_is_ccw = isCCW(orig_path, center)
+            path_is_ccw = isCCW(path, center)
         except:
             if opt.manually_fix_orientations:
-                print("\n[Manually Fix Orientations:] As currently drawn, the "
-                      "path starts at the green node/segment and ends at the "
-                      "red (if you don't see one of these nodes, it's likely "
-                      "cause the path is very short and thus they are on top "
-                      "of each other).  Does the path in "
-                      "'temporary_4manualOrientation.svg' appear to be drawn "
-                      "in a clockwise fashion?")
-                if len(orig_path) == 1:
-                    disp_paths = [orig_path]
-                    disp_path_colors = ['blue']
-                elif len(orig_path) == 2:
-                    disp_paths = [Path(orig_path[0]), Path(orig_path[1])]
-                    disp_path_colors = ['green', 'red']
-                elif len(orig_path) > 2:
-                    disp_paths = [Path(orig_path[0]),
-                                  Path(orig_path[1:-1]),
-                                  Path(orig_path[-1])]
-                    disp_path_colors = ['green', 'blue', 'red']
-                else:
-                    raise Exception("This path is empty... this should never "
-                                    "happen.  Tell Andy.")
-                for ring in ring_list:
-                    disp_paths.append(ring.path)
-                    disp_path_colors.append('black')
-
-                nodes = [orig_path[0].start, orig_path[-1].end] + [center]
-                node_colors = ['green', 'red'] + [colordict['center']]
-                disvg(disp_paths, disp_path_colors, nodes=nodes, node_colors=node_colors,
-                      filename='temporary_4manualOrientation.svg')
-
-                # svg display reverses orientation so a respose of
-                # 'yes' means path is actually ccw and thus sets
-                # path_is_ccw = True
-                path_is_ccw = askUserOrientation()
-                if path_is_ccw == 'remove':
-                    print("OK, this path will be ignored... moving onto the rest.")
-                    continue
+                path_is_ccw = \
+                    resolve_orientation_manually(path, center, ring_list)
             else:
-                path_is_ccw = opt.when_orientation_cannot_be_determined_assume_CCW
-                paths_of_unknown_orientation.append(path_strings[i])
+                paths_of_unknown_orientation.append((dstring, stroke, tag, xml))
+                if opt.when_orientation_cannot_be_determined_assume_CCW:
+                    path_is_ccw = True
+
         if not path_is_ccw:
-            path2record = orig_path.reversed()
+            path = path.reversed()
             opt.full_output_on.dprint(
-                "Path %s was not oriented CCW, but is now." % i)
-        else:
-            path2record = orig_path
-        ring_list.append(
-            Ring(path_strings[i][0], path_strings[i][1],
-                 path_strings[i][2], rad, path2record, xml=path_strings[i][3]))
-        opt.full_output_on.dprint("Ring %s ok" % i)
+                "Path %s was not oriented CCW, but is now." % k)
+        elif path_is_ccw == 'remove':
+            continue  # don't include this path in ring_list
+        elif path_is_ccw == 'unknown':
+            pass  # include this path and hope everything is ok
+
+        ring_list.append(Ring(path_string=dstring,
+                              color=stroke,
+                              brook_tag=tag,
+                              rad=rad,
+                              path=path,
+                              xml=xml))
+        opt.full_output_on.dprint("Ring %s ok" % k)
 
     if len(paths_of_unknown_orientation) > 0:
         from andysmod import ifelse
@@ -346,6 +293,119 @@ def svg2rings(SVGfileLocation):
     opt.basic_output_on.dprint(
         "Completed extracting rings from SVG. %s rings detected." % len(ring_list))
     return center, ring_list
+
+
+def remove_degenerate_segments(path):
+    """remove degenerate segments, making sure path remains continuous
+
+    Args:
+        path: A Path object or list of segment objects
+
+    Returns:
+        Path object with degenerate segments removed
+
+    """
+
+    # remove degenerate segments, making sure path remains continuous
+    degenerate_segment_indices = []
+    for k, seg in enumerate(path):
+        if abs(seg.start - seg.end) < opt.min_absolute_segment_length:
+            degenerate_segment_indices.append(k)
+
+            # fix discontinuities caused by removing degenerate segment
+            prev_seg_index = (k - 1) % len(path)
+            next_seg_index = (k + 1) % len(path)
+            prev_seg, next_seg = path[prev_seg_index], path[next_seg_index]
+            if prev_seg.end == seg.start and seg.end == next_seg.start:
+                # continuous from prev_seg through next_seg
+                prev_seg.end = next_seg.start
+            elif prev_seg.end == seg.start:
+                prev_seg.end = seg.end
+            elif seg.end == next_seg.start:
+                next_seg.start = seg.start
+
+    if len(degenerate_segment_indices) > 0:
+        opt.full_output_on.dprint(
+            "[Warning:] Found removing the following degenerate "
+            "segments:\n%s"
+            "" % '\n'.join(str(path[k]) for k in degenerate_segment_indices)
+        )
+        path = Path(*[seg for k, seg in enumerate(path)
+                      if k not in degenerate_segment_indices])
+    return path
+
+
+def remove_duplicate_segments(path):
+    """Remove check repeated and doubled-over segments
+
+    Args:
+        path: A Path object or list of segment objects
+
+    Returns:
+        Path object with duplicate segments removed
+    """
+
+    # check for repeated and doubled-over segments
+    duplicate_segment_indices = []
+    for k, seg in enumerate(path):
+        next_seg_index = (k + 1) % len(path)
+        next_seg = path[next_seg_index]
+
+        if seg == next_seg or seg == next_seg.reversed():
+            duplicate_segment_indices.append(next_seg_index)
+
+    if len(duplicate_segment_indices) > 0:
+        opt.full_output_on.dprint(
+            "[Warning:] Found and removing the following duplicate or "
+            "doubled-over segments:\n%s"
+            "" % '\n'.join(str(path[k]) for k in duplicate_segment_indices)
+        )
+        path = Path(*[seg for k, seg in enumerate(path)
+                      if k not in duplicate_segment_indices])
+    return path
+
+
+def resolve_orientation_manually(path, center, ring_list):
+
+    print("\n[Manually Fix Orientations:] As currently drawn, the "
+          "path starts at the green node/segment and ends at the "
+          "red (if you don't see one of these nodes, it's likely "
+          "cause the path is very short and thus they are on top "
+          "of each other).  Does the path in "
+          "'temporary_4manualOrientation.svg' appear to be drawn "
+          "in a clockwise fashion?")
+    if len(path) == 1:
+        disp_paths = [path]
+        disp_path_colors = ['blue']
+    elif len(path) == 2:
+        disp_paths = [Path(path[0]), Path(path[1])]
+        disp_path_colors = ['green', 'red']
+    elif len(path) > 2:
+        disp_paths = [Path(path[0]),
+                      Path(path[1:-1]),
+                      Path(path[-1])]
+        disp_path_colors = ['green', 'blue', 'red']
+    else:
+        raise Exception("This path is empty... this should never "
+                        "happen.  Tell Andy.")
+    for ring in ring_list:
+        disp_paths.append(ring.path)
+        disp_path_colors.append('black')
+
+    nodes = [path[0].start, path[-1].end] + [center]
+    node_colors = ['green', 'red'] + [colordict['center']]
+    disvg(disp_paths, disp_path_colors, nodes=nodes, node_colors=node_colors,
+          filename='temporary_4manualOrientation.svg')
+
+    # svg display reverses orientation so a response of
+    # 'yes' means path is actually ccw and thus sets
+    # path_is_ccw = True
+    path_is_ccw = askUserOrientation()
+
+    if path_is_ccw == 'remove':
+        print("OK, this path will be ignored... moving onto the rest.")
+
+    return path_is_ccw
 
 
 def palette_check(ring_list):
