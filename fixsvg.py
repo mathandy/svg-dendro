@@ -29,10 +29,8 @@ def crop_to_unit_interval(tval, tol=opt.tol_intersections):
         return tval
 
 
-def fix_svg(ring_list, center, svgfile):
+def fix_svg(ring_list, center, svgname):
     """Check for human errors and create more perfect SVG"""
-
-    svgname, _ = os.path.splitext(os.path.basename(svgfile))
 
     # Discard inappropriately short rings
     opt.basic_output_on.dprint("\nChecking for inappropriately short "

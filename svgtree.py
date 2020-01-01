@@ -16,18 +16,18 @@ from fixsvg import fix_svg
 import options4rings as opt
 
 
-def svgtree(svgfile, error_list):
+def svgtree(filename, error_list):
 
     file_start_time = current_time()
-    svgname = os.path.splitext(os.path.basename(svgfile))[0]
+    svg_name = os.path.splitext(os.path.basename(filename))[0]
 
     # Name pickle Files
     pickle_file = os.path.join(
-        opt.pickle_dir, svgname + "-ring_list.p")
+        opt.pickle_dir, svg_name + "-ring_list.p")
     sorted_pickle_file = os.path.join(
-        opt.pickle_dir, svgname + "-sorted-ring_list.p")
+        opt.pickle_dir, svg_name + "-sorted-ring_list.p")
     om_pickle_file = os.path.join(
-        opt.pickle_dir, svgname + "-ordering_matrix.p")
+        opt.pickle_dir, svg_name + "-ordering_matrix.p")
 
     # load rings and compute center (possible from
     loaded_from_pickle = False
@@ -53,7 +53,7 @@ def svgtree(svgfile, error_list):
     if not loaded_from_pickle and not loaded_from_sorted_pickle:
         # If pickle file doesn't exist, create one, and
         # store ring_list and center in it
-        center, ring_list = svg2rings(svgfile)
+        center, ring_list = svg2rings(filename)
         opt.basic_output_on.dprint("Pickling ring_list... ", 'nr')
         pickle.dump((ring_list, center), open(pickle_file, "wb"))
         opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
@@ -63,10 +63,10 @@ def svgtree(svgfile, error_list):
     # hack to record svg names in rings ################################
     ####################################################################
     for ring in ring_list:
-        ring.svgname = os.path.splitext(os.path.basename(svgfile))[0]
+        ring.svgname = svg_name
 
     if not opt.assume_svg_is_fixed:
-        fix_svg(ring_list, center, svgfile)
+        fix_svg(ring_list, center, svg_name)
 
     ####################################################################
     # Sort #############################################################
@@ -130,9 +130,9 @@ def svgtree(svgfile, error_list):
 
         # show them (this creates an svg file in the output folder)
         if opt.create_SVG_picture_of_transects:
-            svgname = os.path.splitext(os.path.basename(svgfile))[0]
+            svg_name = os.path.splitext(os.path.basename(filename))[0]
             svg_trans = os.path.join(opt.output_directory,
-                                     svgname + "_transects.svg")
+                                     svg_name + "_transects.svg")
             displaySVGPaths_transects(ring_list, data, angles,
                                       skipped_angle_indices, fn=svg_trans)
             opt.basic_output_on.dprint("\nSVG showing transects generated "
@@ -141,9 +141,9 @@ def svgtree(svgfile, error_list):
         # Save results from transects
         from transects4rings import save_transect_data, save_transect_summary
         # Name output csv files
-        tmp = 'TransectDataFrom-' + svgname + '.csv'
+        tmp = 'TransectDataFrom-' + svg_name + '.csv'
         outputFile_transects = os.path.join(opt.output_directory, tmp)
-        tmp = 'TransectSummary-' + svgname + '.csv'
+        tmp = 'TransectSummary-' + svg_name + '.csv'
         outputFile_transect_summary = os.path.join(opt.output_directory, tmp)
         completed_angles = [x for idx, x in enumerate(angles)
                             if idx not in skipped_angle_indices]
@@ -161,7 +161,7 @@ def svgtree(svgfile, error_list):
         sorted_ring_list = sorted(ring_list, key=lambda rg: rg.sort_index)
 
         # this also completes incomplete rings
-        find_ring_areas(sorted_ring_list, center, svgfile)
+        find_ring_areas(sorted_ring_list, center, filename)
 
     ####################################################################
     # Other (optional) stuff ###########################################
@@ -173,9 +173,9 @@ def svgtree(svgfile, error_list):
             "Attempting to create SVG showing ring sorting...", 'nr')
 
         from misc4rings import displaySVGPaths_numbered
-        tmp = svgfile[0:len(svgfile)-4] + "_sort_numbered" + ".svg"
-        svgname = os.path.join(opt.output_directory_debug, tmp)
-        displaySVGPaths_numbered([r.path for r in ring_list], svgname,
+        tmp = filename[0:len(filename) - 4] + "_sort_numbered" + ".svg"
+        svg_name = os.path.join(opt.output_directory_debug, tmp)
+        displaySVGPaths_numbered([r.path for r in ring_list], svg_name,
                                  [r.color for r in ring_list])
         opt.basic_output_on.dprint("Done.")
 
@@ -194,13 +194,13 @@ def svgtree(svgfile, error_list):
     ####################################################################
     # Report Success/Failure of file ###################################
     ####################################################################
-    tmp = (svgfile, format_time(current_time() - file_start_time))
+    tmp = (filename, format_time(current_time() - file_start_time))
     opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
     opt.basic_output_on.dprint(":)"*50)
     opt.basic_output_on.dprint("<>"*50)
     opt.basic_output_on.dprint("<>"*50)
     opt.basic_output_on.dprint("\n\n")
-    error_list.append((svgfile, "Completed Successfully."))
+    error_list.append((filename, "Completed Successfully."))
     return
 
 

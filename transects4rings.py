@@ -296,7 +296,7 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
         cur_pt = transect_info[-1][0]
         cur_idx = wr_idx
 
-        #Erroneous Termination
+        # Erroneous Termination
         if cur_idx < 0 and sorted_ring_list.index(cur_ring) != 0:
             disvg([r.path for r in sorted_ring_list],
                   nodes=[tr[0] for tr in transect_info]) # DEBUG line
@@ -305,7 +305,8 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
             raise Exception("Something went wrong finding inverse transect at "
                             "relative arc length %s." % s_rel)
     return transect_info
-    
+
+
 def generate_inverse_transects(ring_list, Tvals):
     """The main purpose of this function is to run invTransect for all Tvals 
     and format the data"""
