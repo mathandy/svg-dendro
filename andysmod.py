@@ -42,7 +42,7 @@ def printvars(*vargs):
 
     Args:
         *vargs: variable names as strings
-        
+
     Returns:
         None
     """
@@ -66,28 +66,37 @@ def format__1(digits, num):
     return ' ' * (digits - len(str(num))) + str(num)
 
 
-def printmat(arr, row_labels=[], col_labels=[]):  # pretty print a matrix (nested list or 2d numpy array)
+def printmat(arr, row_labels=[], col_labels=[]):
+    """pretty print a matrix (nested list or 2d numpy array)"""
     try:
         flattenList(arr)
     except TypeError:
         arr = [[x] for x in arr]  # adds support for vectors
     finally:
-        max_chars = max([len(str(item)) for item in flattenList(
-            arr) + col_labels])  # the maximum number of chars required to display any item in list
+        # the maximum number of chars required to display any item in list
+        max_chars = \
+            max([len(str(item)) for item in flattenList(arr) + col_labels])
+
     if row_labels == [] and col_labels == []:
         for row in arr:
             print('[%s]' % (' '.join(format__1(max_chars, i) for i in row)))
     elif row_labels != [] and col_labels != []:
-        rw = max([len(str(item)) for item in row_labels])  # max char width of row__labels
-        print('%s %s' % (' ' * (rw + 1), ' '.join(format__1(max_chars, i) for i in col_labels)))
+
+        # max char width of row__labels
+        rw = max([len(str(item)) for item in row_labels])
+
+        print('%s %s' % (' ' * (rw + 1),
+                         ' '.join(format__1(max_chars, i) for i in col_labels)))
         for row_label, row in zip(row_labels, arr):
-            print('%s [%s]' % (format__1(rw, row_label), ' '.join(format__1(max_chars, i) for i in row)))
+            print('%s [%s]' % (format__1(rw, row_label),
+                               ' '.join(format__1(max_chars, i) for i in row)))
     else:
-        raise Exception(
-            "This case is not implemented...either both row_labels and col_labels must be given or neither.")
+        raise Exception("This case is not implemented...either both "
+                        "row_labels and col_labels must be given or neither.")
 
 
-def eucdist_numpy(l1, l2):  # takes in two lists (or tuples) and returns the euclidian distance between them
+def eucdist_numpy(l1, l2):
+    """euclidian distance between two lists"""
     from numpy import array
     from numpy.linalg import norm
     return norm(array(list(l1)) - array(list(l2)))
@@ -303,7 +312,13 @@ def open_in_browser(file_location):
         warn(mes)
 
 
-class _Getch:  # Gets a single character from standard input.  Does not echo to the screen. (from: https://stackoverflow.com/questions/510357/python-read-a-single-character-from-the-user)
+class _Getch:
+    """Gets a single character from standard input.
+
+    Does not echo to the screen.
+
+    Credit: stackoverflow.com/questions/510357
+    """
     def __init__(self):
         try:
             self.impl = _GetchWindows()
@@ -386,12 +401,16 @@ def topo_sorted(list_of_objects, cmp_fcn, test_symmetry=False,
 
 def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):
     """computes the limit of func(t) as t->t0
+
     Note: The domain of func is assumed to be (t0-delta0,t0),(t0,t0+delta0), or
         the union of these intervals depending on side
     Note: the function will possibly be evaluated n*maxits times
-    INPUT:
-    side - determines whether right (side>0) or left (side<0); two sided if 0
-    delta0 is the initial delta
+
+    Args:
+        side: determines whether
+            right (side > 0) or left (side < 0) or two-sided (side == 0)
+        delta0: is the initial delta
+        
     """
     from random import uniform
     assert epsilon > 0 and delta0 > 0 and maxits > 0
@@ -401,8 +420,11 @@ def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):
     elif side < 0:
         delta = -float(delta0)
     else:
-        posres = limit(func, t0, side=1, epsilon=epsilon, maxits=maxits, delta0=delta0)
-        negres = limit(func, t0, side=-1, epsilon=epsilon, maxits=maxits, delta0=delta0)
+        posres = limit(
+            func, t0, side=1, epsilon=epsilon, maxits=maxits, delta0=delta0)
+        negres = limit(
+            func, t0, side=-1, epsilon=epsilon, maxits=maxits, delta0=delta0)
+
         if abs(posres - negres) <= 2 * epsilon:
             return (posres + negres) / 2
         else:
