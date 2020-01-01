@@ -193,11 +193,11 @@ def get_center(doc):
     return center
 
 
-def svg2rings(SVGfileLocation):
+def svg2rings(filename):
     global already_warned_having_trouble_extracting_ring_colors
     already_warned_having_trouble_extracting_ring_colors = False
 
-    doc = minidom.parse(SVGfileLocation)  # parseString also exists
+    doc = minidom.parse(filename)  # parseString also exists
 
     # find the center mark/line and get its centroid
     center = get_center(doc)
@@ -369,6 +369,9 @@ def remove_duplicate_segments(path):
     Returns:
         Path object with duplicate segments removed
     """
+
+    if len(path) <= 1:
+        return path
 
     # check for repeated and doubled-over segments
     duplicate_segment_indices = []

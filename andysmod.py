@@ -295,7 +295,7 @@ def flattenList(list_2_flatten):
 
 def open_in_browser(file_location):
     """Attempt to open file_location in the default web browser."""
-    
+
     # if just the name of the file was given, check if it's in the CWD
     if not os.path.isfile(file_location):
         file_location = os.path.join(os.getcwd(), file_location)
