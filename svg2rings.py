@@ -36,74 +36,65 @@ def askUserOrientation():
         askUserOrientation()
 
 
-def svg2rings(SVGfileLocation):
-    global already_warned_having_trouble_extracting_ring_colors
-    already_warned_having_trouble_extracting_ring_colors = False
-
-    def getStroke(elem):  # get 'stroke' attribute fom xml object
-        troubleFlag = False
-        stroke = elem.getAttribute('stroke')  # sometimes this works
-        if stroke == '':
-            style = elem.getAttribute('style')
-            hexstart = style.find('stroke')
-            if hexstart == -1:
+def get_stroke(elem):
+    """get 'stroke' attribute fom xml object"""
+    troubleFlag = False
+    stroke = elem.getAttribute('stroke')  # sometimes this works
+    if stroke == '':
+        style = elem.getAttribute('style')
+        hexstart = style.find('stroke')
+        if hexstart == -1:
+            troubleFlag = True
+        else:
+            temp = style[hexstart:]
+            try:
+                stroke = re.search(re.compile('\#[a-fA-F0-9]*'), temp).group()
+            except:
                 troubleFlag = True
-            else:
-                temp = style[hexstart:]
-                try:
-                    stroke = re.search(re.compile('\#[a-fA-F0-9]*'), temp).group()
-                except:
-                    troubleFlag = True
-                    stroke = ''
+                stroke = ''
 
-        if troubleFlag:
-            global already_warned_having_trouble_extracting_ring_colors
-            if not already_warned_having_trouble_extracting_ring_colors:
-                already_warned_having_trouble_extracting_ring_colors = True
-                opt.warnings_output_on.dprint(
-                    "Warning: Having trouble extracting hex colors from svg.  "
-                    "Hopefully this will not matter as the palette check "
-                    "will fix the colors.")
-        return stroke.upper()
+    if troubleFlag:
+        global already_warned_having_trouble_extracting_ring_colors
+        if not already_warned_having_trouble_extracting_ring_colors:
+            already_warned_having_trouble_extracting_ring_colors = True
+            opt.warnings_output_on.dprint(
+                "Warning: Having trouble extracting hex colors from svg.  "
+                "Hopefully this will not matter as the palette check "
+                "will fix the colors.")
+    return stroke.upper()
 
-    example_center = \
-        r'<line fill="none" stroke="#0000FF" stroke-width="0.15" ' \
-        r'x1="246.143" y1="380.017" x2="246.765" y2="380.856"/>'
 
-    doc = minidom.parse(SVGfileLocation)  # parseString also exists
-
-    # Find the center
+def get_center(doc):
+    """Find the center mark/line and return its centroid."""
     counter = 0
     centerFound = False
     for elem in doc.getElementsByTagName('line'):
-        if getStroke(elem) == colordict['center']:
+        if get_stroke(elem) == colordict['center']:
             center = 0.5 * float(elem.getAttribute('x1')) + \
                      0.5 * float(elem.getAttribute('x2')) + \
                      0.5 * float(elem.getAttribute('y1')) * 1j + \
                      0.5 * float(elem.getAttribute('y2')) * 1j
-            rad = Radius(center)
             centerFound = True
             break
         else:
             counter += 1
 
-    if counter > 0 and not centerFound:
+    if not centerFound and counter > 0:
         opt.warnings_output_on.dprint(
             "[Warning:] No line objects in the svg were found matching "
             "the center color (%s).  Now searching for lines of a color "
             "closer to center color than other colors." % counter)
         for elem in doc.getElementsByTagName('line'):
-            elem_stroke = getStroke(elem)
+            elem_stroke = get_stroke(elem)
             if len(elem_stroke) == 0:
                 opt.warnings_output_on.dprint(
                     '[Warning:] stroke has no length -- make a "stroke" '
                     'attribute is included and no CSS classes are being used.')
-            elif closestColor(getStroke(elem), colordict) == colordict['center']:
+            elif closestColor(get_stroke(elem), colordict) == colordict['center']:
                 center = 0.5 * float(elem.getAttribute('x1')) + \
                          0.5 * float(elem.getAttribute('x2')) + \
                          0.5 * float(elem.getAttribute('y1')) * 1j + \
                          0.5 * float(elem.getAttribute('y2')) * 1j
-                rad = Radius(center)
                 centerFound = True
                 counter -= 1
                 break
@@ -111,24 +102,30 @@ def svg2rings(SVGfileLocation):
         opt.warnings_output_on.dprint(
             "[Warning:] There are %s disconnected lines in this SVG not "
             "matching the center color.  They will be ignored." % counter)
-    try:
-        center.real  # test if center exists (should be a complex number object)
-    except:
+
+    if not centerFound:
+        # tell user
+        example_center = \
+            r'<line fill="none" stroke="#0000FF" stroke-width="0.15" ' \
+            r'x1="246.143" y1="380.017" x2="246.765" y2="380.856"/>'
+
         try:
             if counter == 0:
 
                 # Is there a path with the center color?
-                for elem in doc.getElementsByTagName('path') + doc.getElementsByTagName(
-                        'polyline') + doc.getElementsByTagName('polygon'):
-                    if getStroke(elem) == colordict['center']:
+                other_pathlike_elements = doc.getElementsByTagName('path') + \
+                                          doc.getElementsByTagName('polyline') + \
+                                          doc.getElementsByTagName('polygon')
+                for elem in other_pathlike_elements:
+                    if get_stroke(elem) == colordict['center']:
                         if elem in doc.getElementsByTagName('path'):
-                            obtype = 'path';
+                            obtype = 'path'
                             pathstr = elem.getAttribute('d')
                         elif elem in doc.getElementsByTagName('polyline'):
-                            obtype = 'polyline';
+                            obtype = 'polyline'
                             pathstr = polylineStr2pathStr(elem.getAttribute('points'))
                         else:
-                            obtype = 'polygon';
+                            obtype = 'polygon'
                             pathstr = polylineStr2pathStr(elem.getAttribute('points')) + 'z'
                         centerpath = parse_path(pathstr)
                         start, end = centerpath.point(0.25), centerpath.point(0.75)
@@ -148,15 +145,15 @@ def svg2rings(SVGfileLocation):
                 else:
                     for elem in doc.getElementsByTagName('path') + doc.getElementsByTagName(
                             'polyline') + doc.getElementsByTagName('polygon'):
-                        if closestColor(getStroke(elem), colordict) == colordict['center']:
+                        if closestColor(get_stroke(elem), colordict) == colordict['center']:
                             if elem in doc.getElementsByTagName('path'):
-                                obtype = 'path';
+                                obtype = 'path'
                                 pathstr = elem.getAttribute('d')
                             elif elem in doc.getElementsByTagName('polyline'):
-                                obtype = 'polyline';
+                                obtype = 'polyline'
                                 pathstr = polylineStr2pathStr(elem.getAttribute('points'))
                             else:
-                                obtype = 'polygon';
+                                obtype = 'polygon'
                                 pathstr = polylineStr2pathStr(elem.getAttribute('points')) + 'z'
                             centerpath = parse_path(pathstr)
                             start, end = centerpath.point(0.25), centerpath.point(0.75)
@@ -193,6 +190,17 @@ def svg2rings(SVGfileLocation):
                 'for something that looks like (with different '
                 'x1, x2, y1, y2 values) \n%s\n'
                 '' % (colordict['center'], example_center))
+    return center
+
+
+def svg2rings(SVGfileLocation):
+    global already_warned_having_trouble_extracting_ring_colors
+    already_warned_having_trouble_extracting_ring_colors = False
+
+    doc = minidom.parse(SVGfileLocation)  # parseString also exists
+
+    # find the center mark/line and get its centroid
+    center = get_center(doc)
 
     # ##################################################################
     # get path data as tuples of form:
@@ -201,20 +209,20 @@ def svg2rings(SVGfileLocation):
 
     # Use minidom to extract path strings from input SVG
     opt.basic_output_on.dprint("Extracting path_data from SVG... ", 'nr')
-    path_data = [(p.getAttribute('d'), getStroke(p),
-                     p.parentNode.getAttribute('id'), p.toxml())
+    path_data = [(p.getAttribute('d'), get_stroke(p),
+                  p.parentNode.getAttribute('id'), p.toxml())
                     for p in doc.getElementsByTagName('path')]
 
-    # Use minidom to extract polyline strings from input SVG, convert to path strings, add to list
+    # extract polylines
     path_data += [
         (polylineStr2pathStr(p.getAttribute('points')),
-         getStroke(p), p.parentNode.getAttribute('id'), p.toxml())
+         get_stroke(p), p.parentNode.getAttribute('id'), p.toxml())
         for p in doc.getElementsByTagName('polyline')]
 
-    # Use minidom to extract polygon strings from input SVG, convert to path strings, add to list
+    # extract polygons
     path_data += [
         (polylineStr2pathStr(p.getAttribute('points')) + 'z',
-         getStroke(p), p.parentNode.getAttribute('id'), p.toxml())
+         get_stroke(p), p.parentNode.getAttribute('id'), p.toxml())
         for p in doc.getElementsByTagName('polygon')]
 
     doc.unlink()
@@ -274,7 +282,7 @@ def svg2rings(SVGfileLocation):
         ring_list.append(Ring(path_string=dstring,
                               color=stroke,
                               brook_tag=tag,
-                              rad=rad,
+                              rad=Radius(center),
                               path=path,
                               xml=xml))
         opt.full_output_on.dprint("Ring %s ok" % k)
