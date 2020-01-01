@@ -71,10 +71,15 @@ def isPointOutwardOfPath(pt, path, outerRing=None, justone=False):
 
 
 def invTransect(T, sorted_ring_list, warnifnotunique=True):
-    """Finds a transect that ends at T.  In the case there are more than one, if
-    warnifnotunique=True, user will be warned, but this may slow down transect
-    generation.
-    Output: list of tuples (pt, ring_idx, seg_idx, t)"""
+    """Finds a transect that ends at T.
+
+    In the case there are more than one, if warnifnotunique=True,
+    user will be warned, but this may slow down transect generation.
+    IS `warnifnotunique` IMPLEMENTED? Maybe not ...
+
+    Returns:
+        list of tuples of form [(pt, ring_idx, seg_idx, t), ...]
+    """
     cur_ring = sorted_ring_list[-1]
     cur_idx = len(sorted_ring_list) - 2
     init_t, init_seg = pathT2tseg(cur_ring.path, T)
@@ -127,7 +132,8 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
             if opt.skip_transects_that_dont_exist:
                 bdry_ring = sorted_ring_list[-1]
                 s_rel = bdry_ring.path.length(T1=T) / bdry_ring.path.length()
-                fn = sorted_ring_list[0].svgname + "_partial_transect_%s.svg" % s_rel
+                fn = sorted_ring_list[0].svgname + \
+                     "_partial_transect_%s.svg" % s_rel
                 fn = os.path.join(opt.output_directory, fn)
                 wsvg([r.path for r in sorted_ring_list],
                      nodes=[tr[0] for tr in transect_info],
