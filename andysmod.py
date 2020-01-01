@@ -31,13 +31,22 @@ def curvature(func, tval, dt=0.01, num_pts_2use=100):
     dy_dt = np.gradient(a[:, 1])
     d2x_dt2 = np.gradient(dx_dt)
     d2y_dt2 = np.gradient(dy_dt)
-    curvature = np.abs(d2x_dt2 * dy_dt - dx_dt * d2y_dt2) / (dx_dt * dx_dt + dy_dt * dy_dt) ** 1.5
+
+    denom = (dx_dt * dx_dt + dy_dt * dy_dt) ** 1.5
+    curvature = np.abs(d2x_dt2 * dy_dt - dx_dt * d2y_dt2) / denom
     return curvature[n]
 
 
-def printvars(*varnames):  # prints a pasteable "var = var" to paste into your code
-    # INPUT: variable names as strings
-    for varname in varnames:
+def printvars(*vargs):
+    """prints a pasteable "var = var" to paste into your code
+
+    Args:
+        *vargs: variable names as strings
+        
+    Returns:
+        None
+    """
+    for varname in vargs:
         print("print('%s = ' + str(%s))" % (varname, varname))
 
 
@@ -224,13 +233,13 @@ def ask_user(options=None):
         input = raw_input
     except NameError:
         pass
-    print "Enter one of the following options."
+    print("Enter one of the following options.")
     for key in options.keys():
-        print key, ":", dict[key]
+        print(key, ":", dict[key])
     if not options.haskey('q'):
-        print "q : exit this menu"
+        print("q : exit this menu")
     dec = input()
-    print ""
+    print("")
 
     if options.haskey(dec):
         return dec
