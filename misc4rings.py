@@ -5,7 +5,7 @@ from math import sqrt, cos, sin, pi
 from cmath import phase
 from operator import itemgetter
 from os import getcwd, path as os_path
-from andysmod import memoize, bool2bin, eucdist_numpy, argmin
+from andysmod import memoize, bool2bin, eucdist_numpy
 from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg
 
 # Internal Dependencies
@@ -16,11 +16,11 @@ from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,
                                andysSVGpathTools_pathXpathIntersections)
 
 
-def inv_arclength(curve,s):
+def inv_arclength(curve, s):
     return curve.ilength(s)
 
 
-def sortby(x,k):
+def sortby(x, k):
     return sorted(x, key=itemgetter(k))
 
 
@@ -91,8 +91,8 @@ def aveRadiusEnclosed(path, center):
     for seg in path:
         if isinstance(seg,CubicBezier):
             p = (seg.start, seg.control1, seg.control2, seg.end)
-            [a_0,a_1,a_2,a_3] = [z.real for z in p]
-            [b_0,b_1,b_2,b_3] = [z.imag for z in p]
+            a_0, a_1, a_2, a_3 = [z.real for z in p]
+            b_0, b_1, b_2, b_3 = [z.imag for z in p]
 
             # real part of cubic Bezier
             x = lambda t: \
@@ -105,19 +105,19 @@ def aveRadiusEnclosed(path, center):
             # derivative of imaginary part of cubic Bezier
             dy = lambda t: \
                 3*(b_1-b_0)*(1-t)**2 + 6*(b_2-b_1)*t*(1-t) + 3*(b_3-b_2)*t**2
-#            rad = lambda t: sqrt((x(t)-center.real)**2+(y(t)-center.imag)**2)
+
             integrand = lambda t: x(t)*dy(t)
 
-        elif isinstance(seg,Line):
-            x = lambda t: (1-t)*seg.start.real + t*seg.end.real
-            dy = seg.end.imag-seg.start.imag
-            integrand = lambda t: sqrt(x(t)**2+y(t)**2)*x(t)*dy
+        elif isinstance(seg, Line):
+            x = lambda t: (1 - t)*seg.start.real + t*seg.end.real
+            dy = seg.end.imag - seg.start.imag
+            integrand = lambda t: sqrt(x(t)**2 + y(t)**2) * x(t) * dy
         else:
             raise Exception(
                 'Path segment is neither Line object nor CubicBezier object.')
         result = quad(integrand, 0, 1)
-        aveEnclosed +=result[0]
-        aveEnclosed_error +=result[1]
+        aveEnclosed += result[0]
+        aveEnclosed_error += result[1]
 
     # #### Tolerance should be based on native res of SVG
     # (what is area of single pixel)
@@ -137,7 +137,7 @@ def aveRadius_path(path, origin):
         the average distance between origin and path
 
     """
-    (aveRad,aveRad_error) = (0,0)
+    (aveRad,aveRad_error) = (0, 0)
     for seg in path:
         if isinstance(seg, CubicBezier):
             p_0, p_1, p_2, p_3 = seg.start, seg.control1, seg.control2, seg.end
@@ -188,7 +188,11 @@ def centerSquare(c):
     tl = c-1+1j
     br = c+1-1j
     bl = c-1-1j
-    d = "M %s,%s L%s,%s L%s,%s L%s,%sz"%(bl.real,bl.imag,tl.real,tl.imag,tr.real,tr.imag,br.real,br.imag)
+    d = "M %s,%s L%s,%s L%s,%s L%s,%sz" \
+        "" % (bl.real, bl.imag,
+              tl.real, tl.imag,
+              tr.real, tr.imag,
+              br.real, br.imag)
     return d
 
 
@@ -203,6 +207,10 @@ def rgb2hex(rgb):
     # from https://stackoverflow.com/questions/214359
     hcolor = '#%02x%02x%02x'%rgb
     return hcolor.upper()
+
+
+def argmin(somelist):
+    return min(enumerate(somelist), key=itemgetter(1))
 
 
 def closestColor(hexcolor, colordict):
@@ -685,16 +693,8 @@ def displaySVGPaths_named(pathList, name, *colors):
     dwg.save()
 
 
-#def test_displaySVGPaths():
-#    from svgpathtools import Path, Line, CubicBezier
-#    from misc4rings import path2str
-#    ps1 = path2str(Path(Line(1,10+100j)))
-#    ps2 = path2str(Path(Line(10j,10),CubicBezier(10,50j,10+50j,30+100j)))
-#    displaySVGPaths([ps1,ps2])
-
 def plotUnraveledRings(ring_list,center):
     import matplotlib.pyplot as plt
-#    from cmath import phase
     import operator
     fig = plt.figure()
     ax = fig.add_subplot(111)
@@ -823,7 +823,7 @@ class Theta_Tstar(object):
 
 
 def remove_degenerate_segments(path):
-    """This function removes any segment that starts and ends at the same point"""
+    """This function removes segments that start and end at the same point"""
     new_path = Path()
     for seg in path:
         if seg.start != seg.end:

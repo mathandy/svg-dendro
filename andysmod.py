@@ -1,40 +1,8 @@
 from __future__ import division, print_function
-from operator import itemgetter
 import numpy as np
-from itertools import combinations
 import os
 import time
 from sys import stdout
-
-
-def poly_roots(p, condition=lambda r: True, realonly=False):
-    """Find the roots of the polynomial with coefficients given by `p`.
-
-    Args:
-        p: Rank-1 array-like object of polynomial coefficients.
-            p[0] * x**n + p[1] * x**(n-1) + ... + p[n-1]*x + p[n]
-        realonly (bool): If true, only real roots will be returned.
-        condition (callable): boolean-valued function.  Only roots
-            satisfying this will be returned.  If `realonly == True`,
-            these conditions should assume the roots are real.
-
-    Note:  This uses np.isclose and np.roots
-
-    Note: `np.isclose` is equiv. to `abs(r1 - r2) <= (atol + rtol * abs(r2))`
-
-    Returns:
-        list containing the roots of the polynomial.
-    """
-    roots = np.roots(p)
-    if realonly:
-        roots = [r.real for r in roots if np.isclose(r.imag, 0)]
-    roots = [r for r in roots if condition(r)]
-
-    duplicates = []
-    for idx, (r1, r2) in enumerate(combinations(roots, 2)):
-        if np.isclose(r1, r2):
-            duplicates.append(idx)
-    return [r for idx, r in enumerate(roots) if idx not in duplicates]
 
 
 def output2file(string2output, 
@@ -48,10 +16,6 @@ def output2file(string2output,
     
     with open(filename, mode) as fout:
         fout.write(string2output)
-
-
-def argmin(somelist):
-    return min(enumerate(somelist), key=itemgetter(1))
 
 
 def n_choose_k(n, k):
