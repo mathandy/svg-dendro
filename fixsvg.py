@@ -15,7 +15,11 @@ import options4rings as opt
 
 
 def crop_to_unit_interval(tval, tol=opt.tol_intersections):
-    # assert almost tval in [0, 1] or close enough
+    """Ensure tval inside unit interval, [0, 1].
+
+    If outside unit interval, but within `tol` of 0 or 1,
+    set to 0 or 1 respectively.
+    """
     assert 0 <= tval <= 1 or abs(tval) < tol or abs(tval - 1) < tol
     if tval <= 0:
         return 0
