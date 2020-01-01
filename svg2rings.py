@@ -71,18 +71,22 @@ def svg2rings(SVGfileLocation):
         r'x1="246.143" y1="380.017" x2="246.765" y2="380.856"/>'
 
     doc = minidom.parse(SVGfileLocation)  # parseString also exists
+
     # Find the center
     counter = 0
     centerFound = False
     for elem in doc.getElementsByTagName('line'):
         if getStroke(elem) == colordict['center']:
-            center = 0.5 * float(elem.getAttribute('x1')) + 0.5 * float(elem.getAttribute('x2')) + 0.5 * float(
-                elem.getAttribute('y1')) * 1j + 0.5 * float(elem.getAttribute('y2')) * 1j
+            center = 0.5 * float(elem.getAttribute('x1')) + \
+                     0.5 * float(elem.getAttribute('x2')) + \
+                     0.5 * float(elem.getAttribute('y1')) * 1j + \
+                     0.5 * float(elem.getAttribute('y2')) * 1j
             rad = Radius(center)
             centerFound = True
             break
         else:
             counter += 1
+
     if counter > 0 and not centerFound:
         opt.warnings_output_on.dprint(
             "[Warning:] No line objects in the svg were found matching "
