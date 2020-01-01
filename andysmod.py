@@ -295,7 +295,8 @@ def flattenList(list_2_flatten):
 
 def open_in_browser(file_location):
     """Attempt to open file_location in the default web browser."""
-    # if just the name of the file was given, check if it's in the Current Working Directory.
+    
+    # if just the name of the file was given, check if it's in the CWD
     if not os.path.isfile(file_location):
         file_location = os.path.join(os.getcwd(), file_location)
     if not os.path.isfile(file_location):
@@ -307,8 +308,9 @@ def open_in_browser(file_location):
 
     except ImportError:
         from warnings import warn
-        mes = "\nUnable to import webbrowser module.  disvg() fuction will be unable to open created \
-              svg files in web browser automatically.\n"
+        mes = ("\nUnable to import webbrowser module.  disvg() fuction "
+               "will be unable to open created svg files in web "
+               "browser automatically.\n")
         warn(mes)
 
 
@@ -410,7 +412,7 @@ def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):
         side: determines whether
             right (side > 0) or left (side < 0) or two-sided (side == 0)
         delta0: is the initial delta
-        
+
     """
     from random import uniform
     assert epsilon > 0 and delta0 > 0 and maxits > 0
