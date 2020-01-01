@@ -22,11 +22,11 @@ To Run
 
 2. Download and unzip SVG Dendro.
 
-3. Move some SVG files you want to extract information from to the input folder (found inside the SVG Dendro folder that you just unzipped).
+3. Move some SVG files you want to extract information from to the data folder (found inside the SVG Dendro folder that you just unzipped).
 
 4. Open a terminal/command-prompt, navigate into the SVG Dendro folder and enter the following command (without the $).
 
-$ python svgtree.py -i input/examples/real_examples/
+$ python svgtree.py -i data/real_examples/
 
 This will extract data from any SVG files in the `<SVG Dendro Folder>/input/examples/real_examples` folder and store output (by default, areas, and 50 evenly space transects) in the `<SVG Dendro Folder>/output` folder.
 
