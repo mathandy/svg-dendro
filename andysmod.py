@@ -295,17 +295,19 @@ class boolset(list):
     # path_strings += [('M' + p.getAttribute('x1') + ' ' +p.getAttribute('y1') + 'L'+p.getAttribute('x2') + ' ' + p.getAttribute('y2'),p.getAttribute('stroke'), p.parentNode.getAttribute('id')) for p in doc.getElementsByTagName('line')]
     # return path_strings
 
-class OutputBoolean(object):
-    def __init__(self,b):
+
+class ConditionalPrint(object):
+    def __init__(self, b):
         self.b = b
+
     def __repr__(self):
         return str(self.b)
 
-    def dprint(self,s,*nr):
+    def dprint(self, s, *nr):
         if self.b:
             if nr == ('nr',):
                 from sys import stdout
-                stdout.write(s) #does not end the line after printing.
+                stdout.write(s)  # does not end the line after printing.
             else:
                 print(s)
 

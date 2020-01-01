@@ -16,6 +16,194 @@ from fixsvg import fix_svg
 import options4rings as opt
 
 
+def svgtree(svgfile, error_list):
+
+    file_start_time = current_time()
+    svgname = os.path.splitext(os.path.basename(svgfile))[0]
+
+    # Name pickle Files
+    pickle_file = os.path.join(
+        opt.pickle_dir, svgname + "-ring_list.p")
+    sorted_pickle_file = os.path.join(
+        opt.pickle_dir, svgname + "-sorted-ring_list.p")
+    om_pickle_file = os.path.join(
+        opt.pickle_dir, svgname + "-ordering_matrix.p")
+
+    # load rings and compute center (possible from
+    loaded_from_pickle = False
+    loaded_from_sorted_pickle = False
+    if not opt.ignore_extant_sorted_pickle_file:
+        # load ring_list and center from sorted pickle file
+        try:
+            ring_list, center = pickle.load(open(sorted_pickle_file, "rb"))
+            loaded_from_sorted_pickle = True
+        except:
+            pass
+
+    # determine if pickle file exists, if it does,
+
+    if not opt.ignore_extant_pickle_file and not loaded_from_sorted_pickle:
+        # load ring_list and center from unsorted pickle file
+        try:
+            ring_list, center = pickle.load(open(pickle_file, "rb"))
+            loaded_from_pickle = True
+        except:
+            pass
+
+    if not loaded_from_pickle and not loaded_from_sorted_pickle:
+        # If pickle file doesn't exist, create one, and
+        # store ring_list and center in it
+        center, ring_list = svg2rings(svgfile)
+        opt.basic_output_on.dprint("Pickling ring_list... ", 'nr')
+        pickle.dump((ring_list, center), open(pickle_file, "wb"))
+        opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
+        opt.basic_output_on.dprint("Done.")
+
+    ####################################################################
+    # hack to record svg names in rings ################################
+    ####################################################################
+    for ring in ring_list:
+        ring.svgname = svgfile[:-4]
+
+    if not opt.assume_svg_is_fixed:
+        fix_svg(ring_list, center, svgfile)
+
+    ####################################################################
+    # Sort #############################################################
+    ####################################################################
+    # sort ring_list from innermost to outermost and record sort index
+    if opt.sort_rings_on:
+        if not loaded_from_sorted_pickle:
+            opt.basic_output_on.dprint(
+                "Attempting to sort ring_list.  This could take "
+                "a minute (or thirty)...", 'nr')
+
+            # find sorting of ring_list
+            from sorting4rings import sort_rings
+            ring_sorting, sort_lvl_info = sort_rings(ring_list, om_pickle_file)
+            opt.basic_output_on.dprint("Done sorting ring_list.")
+
+            # record sort index
+            for i, r_index in enumerate(ring_sorting):
+                ring_list[r_index].sort_index = i
+
+            # pickle "sorted" ring_list (not really sorted, but sort_index's
+            # are recorded)
+            opt.basic_output_on.dprint("Pickling sorted ring_list... ", 'nr')
+            pickle.dump((ring_list, center), open(sorted_pickle_file, "wb"))
+            opt.basic_output_on.dprint('pickling complete -> ' +
+                                       sorted_pickle_file)
+
+    ####################################################################
+    # Generate and Output Transects ####################################
+    ####################################################################
+
+    # generate transects
+    skipped_angle_indices = []
+    tmp = "Generating the {} requested transects...".format(opt.N_transects)
+    opt.basic_output_on.dprint(tmp, 'nr')
+    if opt.N_transects > 0:
+        if opt.use_ring_sort_4transects:
+            if opt.generate_evenly_spaced_transects:
+                angles = np.linspace(0, 1, opt.N_transects+1)[:-1]
+                bdry_ring = max(ring_list, key=lambda r: r.maxR)
+                bdry_length = bdry_ring.path.length()
+                Tvals = [bdry_ring.path.ilength(s * bdry_length) for s in angles]
+
+                tmp = generate_inverse_transects(ring_list, Tvals)
+                data, data_indices, skipped_angle_indices = tmp
+
+                num_suc = len(data)
+                nums = (num_suc, opt.N_transects, opt.N_transects - num_suc)
+                trmes = ("%s / %s evenly spaced transects successfully "
+                         "generated (skipped %s)." % nums)
+                opt.basic_output_on.dprint(trmes)
+            else:
+                tmp = generate_sorted_transects(ring_list, center,
+                                                angles2use=opt.angles2use)
+                data, data_indices, angles = tmp
+        else:
+            from transects4rings import generate_unsorted_transects
+            tmp = generate_unsorted_transects(ring_list, center)
+            data, data_indices, angles = tmp
+        opt.basic_output_on.dprint("Done generating transects.")
+
+        # show them (this creates an svg file in the output folder)
+        if opt.create_SVG_picture_of_transects:
+            svgname = os.path.splitext(os.path.basename(svgfile))[0]
+            svg_trans = os.path.join(opt.output_directory,
+                                     svgname + "_transects.svg")
+            displaySVGPaths_transects(ring_list, data, angles,
+                                      skipped_angle_indices, fn=svg_trans)
+            opt.basic_output_on.dprint("\nSVG showing transects generated "
+                                       "saved to:\n{}\n".format(svg_trans))
+
+        # Save results from transects
+        from transects4rings import save_transect_data, save_transect_summary
+        # Name output csv files
+        tmp = 'TransectDataFrom-' + svgname + '.csv'
+        outputFile_transects = os.path.join(opt.output_directory, tmp)
+        tmp = 'TransectSummary-' + svgname + '.csv'
+        outputFile_transect_summary = os.path.join(opt.output_directory, tmp)
+        completed_angles = [x for idx, x in enumerate(angles)
+                            if idx not in skipped_angle_indices]
+        skipped_angles = [angles[idx] for idx in skipped_angle_indices]
+        save_transect_data(outputFile_transects, ring_list, data,
+                           data_indices, completed_angles, skipped_angles)
+        save_transect_summary(outputFile_transect_summary, ring_list, data,
+                              data_indices, completed_angles)
+
+    ####################################################################
+    # Compute Ring Areas ###############################################
+    ####################################################################
+    if opt.find_areas:
+        from area4rings import find_ring_areas
+        sorted_ring_list = sorted(ring_list, key=lambda rg: rg.sort_index)
+
+        # this also completes incomplete rings
+        find_ring_areas(sorted_ring_list, center, svgfile)
+
+    ####################################################################
+    # Other (optional) stuff ###########################################
+    ####################################################################
+
+    # Create SVG showing ring sorting
+    if opt.create_SVG_showing_ring_sort:
+        opt.basic_output_on.dprint(
+            "Attempting to create SVG showing ring sorting...", 'nr')
+
+        from misc4rings import displaySVGPaths_numbered
+        tmp = svgfile[0:len(svgfile)-4] + "_sort_numbered" + ".svg"
+        svgname = os.path.join(opt.output_directory_debug, tmp)
+        displaySVGPaths_numbered([r.path for r in ring_list], svgname,
+                                 [r.color for r in ring_list])
+        opt.basic_output_on.dprint("Done.")
+
+    # test complete ring sort after first sort round
+    if opt.visual_test_of_all_ring_sort_on:
+        from svg2rings import visual_test_of_ring_sort
+        visual_test_of_ring_sort(ring_list)
+
+    # plot all rings on a plot with x = theta and y = r
+    if opt.showUnraveledRingPlot:
+        opt.basic_output_on.dprint("Creating unraveled ring plot... ", 'nr')
+        plotUnraveledRings(ring_list, center)
+        opt.basic_output_on.dprint("Done.  (It should have opened "
+                                   "automatically and now be visible.)")
+
+    ####################################################################
+    # Report Success/Failure of file ###################################
+    ####################################################################
+    tmp = (svgfile, format_time(current_time() - file_start_time))
+    opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
+    opt.basic_output_on.dprint(":)"*50)
+    opt.basic_output_on.dprint("<>"*50)
+    opt.basic_output_on.dprint("<>"*50)
+    opt.basic_output_on.dprint("\n\n")
+    error_list.append((svgfile, "Completed Successfully."))
+    return
+
+
 def get_user_args():
     parser = argparse.ArgumentParser()
 
@@ -138,197 +326,6 @@ def get_user_args():
     return parser.parse_args()
 
 
-def svgtree(svgfile, error_list):
-
-    file_start_time = current_time()
-    svgname = os.path.splitext(os.path.basename(svgfile))[0]
-
-    # Name pickle Files
-    pickle_file = os.path.join(opt.pickle_dir, svgname + "-ring_list.p")
-    sorted_pickle_file = os.path.join(opt.pickle_dir, svgname + "-sorted-ring_list.p")
-    om_pickle_file = os.path.join(opt.pickle_dir, svgname + "-ordering_matrix.p")
-    # tmp = 'DataFrom-'+ svgname +'_failed_rings.csv'
-    # outputFile_failed_rings = os.path.join(opt.output_directory, tmp)
-    # tmp = 'DataFrom-' + svgname + '.csv'
-    # outputFile = os.path.join(opt.output_directory, tmp)
-
-    # determine if pickle file exists, if it does,
-    # load ring_list and center from it
-    if opt.ignore_extant_pickle_file:
-        pickle_file_exists = False
-    else:
-        pickle_file_exists = True
-        try:
-            ring_list, center = pickle.load(open(pickle_file, "rb"))
-        except:
-            pickle_file_exists = False
-
-    # determine if sorted pickle file exists, if it does,
-    # load ring_list and center from it (instead of unsorted pickle)
-    if opt.ignore_extant_sorted_pickle_file:
-        sorted_pickle_file_exists = False
-    else:
-        sorted_pickle_file_exists = True
-        try:
-            ring_list, center = pickle.load(open(sorted_pickle_file, "rb"))
-        except:
-            sorted_pickle_file_exists = False
-
-    # If pickle file doesn't exist, create one, and
-    # store ring_list and center in it
-    if not (pickle_file_exists or sorted_pickle_file_exists):
-        center, ring_list = svg2rings(svgfile)
-        opt.basic_output_on.dprint("Pickling ring_list... ", 'nr')
-        pickle.dump((ring_list, center), open(pickle_file, "wb"))
-        opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
-        opt.basic_output_on.dprint("Done.")
-
-    ####################################################################
-    # fix to record svg names in rings #################################
-    ####################################################################
-    for ring in ring_list:
-        ring.svgname = svgfile[:-4]
-
-    if not opt.assume_svg_is_fixed:
-        fix_svg(ring_list, center, svgfile)
-
-    ####################################################################
-    # Sort #############################################################
-    ####################################################################
-    # sort ring_list from innermost to outermost and record sort index
-    if opt.sort_rings_on:
-        if not sorted_pickle_file_exists:
-            tmp_mes =("Attempting to sort ring_list.  This could take a minute "
-                      "(or thirty)...")
-            opt.basic_output_on.dprint(tmp_mes, 'nr')
-
-            # find sorting of ring_list
-            from sorting4rings import sort_rings
-            ring_sorting, sort_lvl_info = sort_rings(ring_list, om_pickle_file)
-            opt.basic_output_on.dprint("Done sorting ring_list.")
-
-            # record sort index
-            for i, r_index in enumerate(ring_sorting):
-                ring_list[r_index].sort_index = i
-
-            # pickle "sorted" ring_list (not really sorted, but sort_index's
-            # are recorded)
-            opt.basic_output_on.dprint("Pickling sorted ring_list... ", 'nr')
-            pickle.dump((ring_list, center), open(sorted_pickle_file, "wb"))
-            opt.basic_output_on.dprint('pickling complete -> ' +
-                                       sorted_pickle_file)
-
-    ####################################################################
-    # Generate and Output Transects ####################################
-    ####################################################################
-
-    # generate transects
-    skipped_angle_indices = []
-    tmp = "Generating the {} requested transects...".format(opt.N_transects)
-    opt.basic_output_on.dprint(tmp, 'nr')
-    if opt.N_transects > 0:
-        if opt.use_ring_sort_4transects:
-            if opt.generate_evenly_spaced_transects:
-                angles = np.linspace(0, 1, opt.N_transects+1)[:-1]
-                bdry_ring = max(ring_list, key=lambda r: r.maxR)
-                bdry_length = bdry_ring.path.length()
-                Tvals = [bdry_ring.path.ilength(s * bdry_length) for s in angles]
-
-                tmp = generate_inverse_transects(ring_list, Tvals)
-                data, data_indices, skipped_angle_indices = tmp
-
-                num_suc = len(data)
-                nums = (num_suc, opt.N_transects, opt.N_transects - num_suc)
-                trmes = ("%s / %s evenly spaced transects successfully "
-                         "generated (skipped %s)." % nums)
-                opt.basic_output_on.dprint(trmes)
-            else:
-                tmp = generate_sorted_transects(ring_list, center,
-                                                angles2use=opt.angles2use)
-                data, data_indices, angles = tmp
-        else:
-            from transects4rings import generate_unsorted_transects
-            tmp = generate_unsorted_transects(ring_list, center)
-            data, data_indices, angles = tmp
-        opt.basic_output_on.dprint("Done generating transects.")
-
-        # show them (this creates an svg file in the output folder)
-        if opt.create_SVG_picture_of_transects:
-            # svgname = svgfile[0:len(svgfile)-4]
-            svgname = os.path.splitext(os.path.basename(svgfile))[0]
-            svg_trans = os.path.join(opt.output_directory,
-                                     svgname + "_transects.svg")
-            displaySVGPaths_transects(ring_list, data, angles,
-                                      skipped_angle_indices, fn=svg_trans)
-            opt.basic_output_on.dprint("\nSVG showing transects generated "
-                                       "saved to:\n{}\n".format(svg_trans))
-
-        # Save results from transects
-        from transects4rings import save_transect_data, save_transect_summary
-        # Name output csv files
-        tmp = 'TransectDataFrom-' + svgname + '.csv'
-        outputFile_transects = os.path.join(opt.output_directory, tmp)
-        tmp = 'TransectSummary-' + svgname + '.csv'
-        outputFile_transect_summary = os.path.join(opt.output_directory, tmp)
-        completed_angles = [x for idx, x in enumerate(angles)
-                            if idx not in skipped_angle_indices]
-        skipped_angles = [angles[idx] for idx in skipped_angle_indices]
-        save_transect_data(outputFile_transects, ring_list, data,
-                           data_indices, completed_angles, skipped_angles)
-        save_transect_summary(outputFile_transect_summary, ring_list, data,
-                              data_indices, completed_angles)
-
-    ####################################################################
-    # Compute Ring Areas ###############################################
-    ####################################################################
-    if opt.find_areas:
-        from area4rings import find_ring_areas
-        sorted_ring_list = sorted(ring_list, key=lambda rg: rg.sort_index)
-
-        # this also completes incomplete rings
-        find_ring_areas(sorted_ring_list, center, svgfile)
-
-    ####################################################################
-    # Other (optional) stuff ###########################################
-    ####################################################################
-
-    # Create SVG showing ring sorting
-    if opt.create_SVG_showing_ring_sort:
-        opt.basic_output_on.dprint(
-            "Attempting to create SVG showing ring sorting...", 'nr')
-
-        from misc4rings import displaySVGPaths_numbered
-        tmp = svgfile[0:len(svgfile)-4] + "_sort_numbered" + ".svg"
-        svgname = os.path.join(opt.output_directory_debug, tmp)
-        displaySVGPaths_numbered([r.path for r in ring_list], svgname,
-                                 [r.color for r in ring_list])
-        opt.basic_output_on.dprint("Done.")
-
-    # test complete ring sort after first sort round
-    if opt.visual_test_of_all_ring_sort_on:
-        from svg2rings import visual_test_of_ring_sort
-        visual_test_of_ring_sort(ring_list)
-
-    # plot all rings on a plot with x = theta and y = r
-    if opt.showUnraveledRingPlot:
-        opt.basic_output_on.dprint("Creating unraveled ring plot... ", 'nr')
-        plotUnraveledRings(ring_list, center)
-        opt.basic_output_on.dprint("Done.  (It should have opened "
-                                   "automatically and now be visible.)")
-
-    ####################################################################
-    # Report Success/Failure of file ###################################
-    ####################################################################
-    tmp = (svgfile, format_time(current_time() - file_start_time))
-    opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
-    opt.basic_output_on.dprint(":)"*50)
-    opt.basic_output_on.dprint("<>"*50)
-    opt.basic_output_on.dprint("<>"*50)
-    opt.basic_output_on.dprint("\n\n")
-    error_list.append((svgfile, "Completed Successfully."))
-    return
-
-
 if __name__ == '__main__':
     user_args = get_user_args()
 
@@ -395,23 +392,23 @@ if __name__ == '__main__':
     else:
         svgfiles = [opt.input_path]
 
-    for svgfile in svgfiles:
+    for svg in svgfiles:
 
         #######################################################################
         # Load SVG, extract rings, pickle (or just load pickle if it exists) ##
         #######################################################################
-        if svgfile[len(svgfile) - 3: len(svgfile)] == 'svg':
+        if svg[len(svg) - 3: len(svg)] == 'svg':
             try:
                 print('-' * 40 + '\n' + '~' * 20 +
-                      'attempting {}'.format(svgfile) +
+                      'attempting {}'.format(svg) +
                       '\n' + '-' * 40)
 
                 # Analyze svgfile
-                svgtree(svgfile, error_list)
+                svgtree(svg, error_list)
 
             except:
                 print("-"*75)
-                print("!" * 25 + svgfile + " did not finish successfully.")
+                print("!" * 25 + svg + " did not finish successfully.")
                 print("Reason:")
 
                 # save error to error_list
@@ -419,7 +416,7 @@ if __name__ == '__main__':
                     from traceback import format_exc
                     from sys import stdout
                     stdout.write(format_exc())
-                    error_list.append((svgfile, format_exc()))
+                    error_list.append((svg, format_exc()))
                     print("-"*75)
                     print("VV"*50)
                     print("VV"*50)

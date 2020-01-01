@@ -1,4 +1,4 @@
-from andysmod import OutputBoolean
+from andysmod import ConditionalPrint
 from os import path as os_path
 from os import getcwd
 
@@ -230,15 +230,15 @@ create_SVG_showing_area_paths = True
 ###############################################################################
 ###console output options #####################################################
 ###############################################################################
-showCurrentFilesProgress = OutputBoolean(True)
+showCurrentFilesProgress = ConditionalPrint(True)
 showUnraveledRingPlot = False
-full_output_on = OutputBoolean(False)
-warnings_output_on = OutputBoolean(True)
-closednessCheck_output_on = OutputBoolean(True)
-basic_output_on = OutputBoolean(True)
-colorcheck_output_on = OutputBoolean(False)
-intersection_removal_progress_output_on = OutputBoolean(True)
-show_transect_progress = OutputBoolean(True) # Only applies to inverse transects.
+full_output_on = ConditionalPrint(False)
+warnings_output_on = ConditionalPrint(True)
+closednessCheck_output_on = ConditionalPrint(True)
+basic_output_on = ConditionalPrint(True)
+colorcheck_output_on = ConditionalPrint(False)
+intersection_removal_progress_output_on = ConditionalPrint(True)
+show_transect_progress = ConditionalPrint(True) # Only applies to inverse transects.
 
 
 ###############################################################################
