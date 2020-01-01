@@ -343,12 +343,11 @@ if __name__ == '__main__':
     ####################################################################
     # Check input path #################################################
     ####################################################################
+    _repo_root = os.path.dirname(os.path.abspath(__file__))
     if user_args.reals:
-        opt.input_path = os.path.join(
-            os.getcwd(), 'input', 'examples', 'real_examples')
+        opt.input_path = os.path.join(_repo_root, 'data', 'real_examples')
     elif user_args.fakes:
-        opt.input_path = os.path.join(
-            os.getcwd(), 'input', 'examples', 'test_examples')
+        opt.input_path = os.path.join(_repo_root, 'data', 'test_examples')
     else:
         opt.input_path = user_args.input_path
         assert (os.path.isfile(opt.input_path) or

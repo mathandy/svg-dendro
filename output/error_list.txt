@@ -1,6 +1,0 @@
-##################################################
-### /Users/Andy/Downloads/svg-dendro/input/examples/test_examples/testTwo.svg
-##################################################
-Completed Successfully.
-
-
