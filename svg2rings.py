@@ -288,9 +288,10 @@ def svg2rings(SVGfileLocation):
         opt.full_output_on.dprint("Ring %s ok" % k)
 
     if len(paths_of_unknown_orientation) > 0:
-        from andysmod import ifelse
-        fashion = ifelse(opt.when_orientation_cannot_be_determined_assume_CCW,
-                         'Counterclockwise', 'Clockwise')
+        if opt.when_orientation_cannot_be_determined_assume_CCW:
+            orientation = 'Counterclockwise'
+        else:
+            orientation = 'Clockwise'
         ccw_warning = "[Warning:] Unable to determine orientation of %s " \
                       "paths.  This is likely because some paths in this " \
                       "sample are far from being convex.  I assumed that " \
@@ -301,7 +302,7 @@ def svg2rings(SVGfileLocation):
                       "will crash or the transect will be visibly messed " \
                       "up in the output 'xxx_transects.svg' (where xxx " \
                       "is the input svg's filename sans extension)." \
-                      "" % (len(paths_of_unknown_orientation), fashion,
+                      "" % (len(paths_of_unknown_orientation), orientation,
                             not opt.when_orientation_cannot_be_determined_assume_CCW)
         opt.warnings_output_on.dprint(ccw_warning)
 
