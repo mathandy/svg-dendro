@@ -63,7 +63,7 @@ def svgtree(svgfile, error_list):
     # hack to record svg names in rings ################################
     ####################################################################
     for ring in ring_list:
-        ring.svgname = svgfile[:-4]
+        ring.svgname = os.path.splitext(os.path.basename(svgfile))[0]
 
     if not opt.assume_svg_is_fixed:
         fix_svg(ring_list, center, svgfile)

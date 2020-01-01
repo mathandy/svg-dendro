@@ -1,6 +1,6 @@
 # External Dependencies
 from __future__ import division, absolute_import, print_function
-from os import path as os_path
+import os
 from time import time as current_time
 from warnings import warn
 from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,
@@ -27,13 +27,15 @@ def crop_to_unit_interval(tval, tol=opt.tol_intersections):
 
 def fix_svg(ring_list, center, svgfile):
     """Check for human errors and create more perfect SVG"""
+
+    svgname, _ = os.path.splitext(os.path.basename(svgfile))
+
     # Discard inappropriately short rings
-    from options4rings import appropriate_ring_length_minimum
     opt.basic_output_on.dprint("\nChecking for inappropriately short "
                                "rings...", 'nr')
     tmp_len = len(ring_list)
     short_rings = [idx for idx, ring in enumerate(ring_list) if
-                   ring.path.length() < appropriate_ring_length_minimum]
+                   ring.path.length() < opt.appropriate_ring_length_minimum]
     opt.basic_output_on.dprint("Done (%s inappropriately short rings "
                                "found)." % len(short_rings))
     if short_rings:
@@ -44,11 +46,13 @@ def fix_svg(ring_list, center, svgfile):
             colors = [r.color for r in ring_list]
             nodes = [ring_list[idx].path.point(0.5) for idx in short_rings]
             center_line = [Line(center-1, center+1)]
-            tmp = svgfile[0:len(svgfile)-4] + "_short-rings.svg"
-            shortrings_svg_filename = os_path.join(opt.output_directory, tmp)
+
+            shortrings_svg_filename = os.path.join(
+                opt.output_directory, svgname + "_short-rings.svg")
             disvg(paths + [center_line], colors + [opt.colordict['center']],
                   nodes=nodes, filename=shortrings_svg_filename)
-            args = appropriate_ring_length_minimum, shortrings_svg_filename
+
+            args = opt.appropriate_ring_length_minimum, shortrings_svg_filename
             mes = ("Done.  SVG created highlighting short rings by placing a "
                    "node at each short ring's midpoint.  Note: since these "
                    "rings are all under {} pixels in length, they may be hard "
@@ -205,8 +209,8 @@ def fix_svg(ring_list, center, svgfile):
                 colors[r_idx] = opt.colordict['safe2']
             node_colors = [opt.colordict['safe1']] * len(nodes)
 
-            tmp = svgfile[0:len(svgfile)-4] + "_SelfIntersections.svg"
-            fixed_svg_filename = os_path.join(opt.output_directory, tmp)
+            tmp = svgname + "_SelfIntersections.svg"
+            fixed_svg_filename = os.path.join(opt.output_directory, tmp)
             disvg(paths + [center_line],
                   colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -254,8 +258,8 @@ def fix_svg(ring_list, center, svgfile):
                 colors[r_idx] = opt.colordict['safe2']
             node_colors = [opt.colordict['safe1']] * len(nodes)
 
-            tmp = svgfile[0:len(svgfile)-4] + "_kinks.svg"
-            fixed_svg_filename = os_path.join(opt.output_directory, tmp)
+            fixed_svg_filename = os.path.join(
+                opt.output_directory, svgname + "_kinks.svg")
             disvg(paths + [center_line],
                   colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -310,8 +314,8 @@ def fix_svg(ring_list, center, svgfile):
                     indicator_lines.append(Line(bad_pt, endpt))
             indicator_cols = [opt.colordict['safe1']] * len(indicator_lines)
 
-            tmp = svgfile[0:len(svgfile)-4] + "_OverlappingEnds.svg"
-            fixed_svg_filename = os_path.join(opt.output_directory, tmp)
+            fixed_svg_filename = os.path.join(opt.output_directory,
+                                              svgname + "_OverlappingEnds.svg")
             disvg(paths + [center_line] + indicator_lines,
                   colors + [opt.colordict['center']] + indicator_cols,
                   filename=fixed_svg_filename)
@@ -433,8 +437,8 @@ def fix_svg(ring_list, center, svgfile):
                     ring_list[i].path, ring_list[j].path)
                 nodes += [inter[0].point(inter[2]) for inter in inters]
 
-            tmp = svgfile[0:len(svgfile)-4] + "_ClosedRingsOverlap.svg"
-            fixed_svg_filename = os_path.join(opt.output_directory, tmp)
+            fixed_svg_filename = os.path.join(
+                opt.output_directory, svgname + "_ClosedRingsOverlap.svg")
             disvg(fixed_paths + [center_line],
                   fixed_colors + [opt.colordict['center']],
                   nodes=nodes,
@@ -454,15 +458,14 @@ def fix_svg(ring_list, center, svgfile):
 
     # Output a fixed SVG that is (hopefully) how this SVG would be if humans
     # were perfect
-    from options4rings import create_fixed_svg
-    if create_fixed_svg:
+    if opt.create_fixed_svg:
         opt.basic_output_on.dprint("Now creating a fixed svg file...", 'nr')
         fixed_paths = [r.path for r in ring_list]
         fixed_colors = [r.color for r in ring_list]
         center_line = Line(center - 1, center + 1)
 
-        tmp = svgfile[0:len(svgfile)-4] + "_fixed.svg"
-        fixed_svg_filename = os_path.join(opt.output_directory, tmp)
+        fixed_svg_filename = os.path.join(opt.output_directory,
+                                          svgname + "_fixed.svg")
         wsvg(fixed_paths + [center_line],
              fixed_colors + [opt.colordict['center']],
              filename=fixed_svg_filename)
