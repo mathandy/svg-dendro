@@ -144,7 +144,7 @@ def remove_intersections_from_rings(rings):
 
     count = 0
     overlappingClosedRingPairs = []
-    for i in xrange(len(rings)):
+    for i in range(len(rings)):
         iring = rings[i]
         ipath = iring.path
         new_ipath = ipath
@@ -152,7 +152,7 @@ def remove_intersections_from_rings(rings):
         iringupdated = False
         num_segs_in_ipath = len(ipath) # for progress output
 
-        for j in xrange(i+1, len(rings)):
+        for j in range(i+1, len(rings)):
             if rings[j].maxR < rings[i].minR or rings[i].maxR < rings[j].minR:
                 continue
             jring = rings[j]

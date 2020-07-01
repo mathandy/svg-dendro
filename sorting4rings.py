@@ -1,15 +1,15 @@
 from __future__ import division
 from andysmod import format_time, topo_sorted, createOrderingMatrix, flattenList
-from andysSVGpathTools import disvg, ptInsideClosedPath
+from andysSVGpathTools import disvg
 from misc4rings import normalLineAtT_toInner_intersects_withOuter, pathXpathIntersections, display2rings4user, dis
 from options4rings import basic_output_on, use_alternative_sorting_method, alt_sort_N, percentage_for_disagreement, look_for_user_sort_input
 import options4rings as opt
-from svgpathtools import Path, CubicBezier,Line
+from svgpathtools import Path, Line, path_encloses_pt
 from time import sleep, time as current_time
 from itertools import combinations
 from numpy import NaN, isnan, where, transpose
 from operator import itemgetter
-import cPickle as pickle
+import _pickle as pickle
 #def find_intersection_of_line_with_cubics_outward_pointing_normal_line_bundle(cub,line):
 ##The goal here is to find global max and min arguments of line (inside [0,1])
 ## at which there is a t in [0,1] s.t. the normal line of cub at t intersects
@@ -182,7 +182,8 @@ def ring1_isabove_ring2_forCertain_cmp(ring1,ring2,sort_round=0,solo_round=False
                     return 1
 
 
-def ask_user_to_sort(i,j,ring_list,make_svg=True,ask_later=True):#returns 1 if ring_list[i] is the more inner ring, -1 if ring_list[j] is and 0 if they are incomparable (or equal)
+def ask_user_to_sort(i,j,ring_list,make_svg=True,ask_later=True):
+    #returns 1 if ring_list[i] is the more inner ring, -1 if ring_list[j] is and 0 if they are incomparable (or equal)
 #    if i>j:
 #        return -1*ask_user_to_sort(j,i,ring_list) #prevents asking user about same set of rings twice
     if ask_later: #save an svg for "interactive sorting" and return NaN
@@ -196,8 +197,7 @@ def ask_user_to_sort(i,j,ring_list,make_svg=True,ask_later=True):#returns 1 if r
     else:
         if make_svg:
             display2rings4user(i,j,ring_list)
-        try: input = raw_input #this try/except is for python 3 compatibility
-        except NameError: pass
+
         s = "Enter 1 if: Green is a more inner ring than red.\n"
         s+= "Enter -1 if: the opposite is true\n"
         s+= "Enter 0 if: neither is more inner according to tracing.\n"
@@ -340,8 +340,12 @@ def ring1_isoutside_ring2_cmp(ring1,ring2,outside_point,bdry_path):
             r2_pt = ring2.path[1].start
         else:
             r2_pt = ring2.path.point(.5)
-        r1_must_be_outside_r2 = ptInsideClosedPath(r1_pt,outside_point,ring2.path_around_bdry(bdry_path))
-        r2_must_be_outside_r1 = ptInsideClosedPath(r2_pt,outside_point,ring1.path_around_bdry(bdry_path))
+
+        r1_must_be_outside_r2 = path_encloses_pt(
+            r1_pt, outside_point, ring2.path_around_bdry(bdry_path))
+        r2_must_be_outside_r1 = path_encloses_pt(
+            r2_pt, outside_point, ring1.path_around_bdry(bdry_path))
+
         if r1_must_be_outside_r2 and not r2_must_be_outside_r1:
             return 1
         elif not r1_must_be_outside_r2 and r2_must_be_outside_r1:
@@ -376,16 +380,17 @@ class Closed_Pair(object):
             if oring.maxR > outer.maxR:
                 return False
             else:
-                if ptInsideClosedPath(pt,self.outside_point,outer.path):
+                if path_encloses_pt(pt, self.outside_point, outer.path):
                     return True
                 else:
                     return False
         else:
             inner = self.ring_list[self.inner_index]
-            if oring.maxR> outer.maxR or oring.minR < inner.minR:
+            if oring.maxR > outer.maxR or oring.minR < inner.minR:
                 return False
             else:
-                if ptInsideClosedPath(pt,self.outside_point,outer.path) and not ptInsideClosedPath(pt,self.outside_point,inner.path):
+                if path_encloses_pt(pt, self.outside_point, outer.path) and \
+                        not path_encloses_pt(pt, self.outside_point, inner.path):
                     return True
                 else:
                     return False
@@ -404,7 +409,7 @@ def sort_rings(ring_list, om_pickle_file):
     outside_point = bdry_ring.center + 2*bdry_ring.maxR #a point known to be outside all rings
     maxRkey = lambda idx: ring_list[idx].maxR
     sorted_closedRingIndices = ['core'] + sorted([rl_ind for rl_ind,r in enumerate(ring_list) if r.isClosed()],key=maxRkey)
-    closed_pairs = [Closed_Pair(ring_list, outside_point, sorted_closedRingIndices[k-1], sorted_closedRingIndices[k]) for k in xrange(1,len(sorted_closedRingIndices))]
+    closed_pairs = [Closed_Pair(ring_list, outside_point, sorted_closedRingIndices[k-1], sorted_closedRingIndices[k]) for k in range(1,len(sorted_closedRingIndices))]
 
 #    ###DEBUG ONLY TEST slideshow (of closed rings)
 #    print [c.inner_index for c in closed_pairs]

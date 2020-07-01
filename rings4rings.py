@@ -763,8 +763,8 @@ class IncompleteRing(object):
                 Tpf1 = True
             for Ttestindex,T2test in enumerate(Trange0 + Trange1): #debugging only
                 if T2test>1 or T2test < 0:
-                    print Ttestindex
-                    print T2test
+                    print(Ttestindex)
+                    print(T2test)
                     raise Exception()
             args = irORcr_innerPath, innerPath, Trange0, Tpf0, 0
             tmp1 = self.findTransect2endpointFromInnerPath_normal(*args)

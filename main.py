@@ -2,7 +2,7 @@
 from __future__ import division
 import os
 import argparse
-import cPickle as pickle
+import _pickle as pickle
 from time import time as current_time
 import numpy as np
 
@@ -41,7 +41,6 @@ def svgtree(filename, error_list):
             pass
 
     # determine if pickle file exists, if it does,
-
     if not opt.ignore_extant_pickle_file and not loaded_from_sorted_pickle:
         # load ring_list and center from unsorted pickle file
         try:
@@ -362,18 +361,16 @@ if __name__ == '__main__':
     # Check if output (sub)directories exist, create subdirs if not ####
     ####################################################################
     # Get output directory
-    assert os.path.isdir(user_args.output_directory)
     opt.output_directory = user_args.output_directory
     opt.pickle_dir = os.path.join(opt.output_directory, "pickle_files")
     opt.output_directory_debug = os.path.join(opt.output_directory, "debug")
     opt.unsorted_transect_debug_output_folder = os.path.join(
         opt.output_directory, "debug", "transect_slides")
-
-    assert os.path.exists(opt.output_directory), (
-            "\n\nThe output_directory given in options does not exist.  "
-            "To fix this change output_directory in options, or "
-            "create the folder:\n%s" % opt.output_directory
-    )
+    # assert os.path.exists(opt.output_directory), (
+    #         "\n\nThe output_directory given in options does not exist.  "
+    #         "To fix this change output_directory in options, or "
+    #         "create the folder:\n%s" % opt.output_directory
+    # )
     if not os.path.exists(opt.pickle_dir):  # debug folder
         os.makedirs(opt.pickle_dir)
     if not os.path.exists(opt.output_directory_debug):  # pickle folder

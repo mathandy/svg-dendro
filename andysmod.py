@@ -202,10 +202,6 @@ def memoize(f):
 
 
 def ignoreCase(*something_to_say):
-    try:
-        input = raw_input
-    except NameError:
-        pass
     dec = input("Press 'i' to ignore or 'r' to remember (or 'exit' to exit): ")
     if dec == 'i':
         return True

@@ -4,12 +4,11 @@ import os
 from time import time as current_time
 from warnings import warn
 from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,
-                          smoothed_path, bezier_segment)
+                          smoothed_path, bezier_segment, path_encloses_pt)
 
 # Internal Dependencies
 from andysmod import format_time, inputyn
 from misc4rings import pathXpathIntersections
-from andysSVGpathTools import ptInsideClosedPath
 from transects4rings import isPointOutwardOfPath
 import options4rings as opt
 
@@ -398,9 +397,9 @@ def fix_svg(ring_list, center, svgname):
     for idx, r in enumerate(ring_list):
         if r is not boundary_ring:
             pt_outside_bdry = center + 2*boundary_ring.maxR
-            if not ptInsideClosedPath(r.path[0].start,
-                                      pt_outside_bdry,
-                                      boundary_ring.path):
+            r_starts_inside_boundary = path_encloses_pt(
+                r.path[0].start, pt_outside_bdry, boundary_ring.path)
+            if not r_starts_inside_boundary:
                 outside_mark_indices.append(idx)
     if outside_mark_indices:
         ring_list = [r for i, r in enumerate(ring_list)

@@ -136,7 +136,7 @@ def smooth_path(path, ignore_unfixable_kinks=False):
         
     sharp_kinks = []
     new_path = [path[0]]
-    for idx in xrange(len(path)):
+    for idx in range(len(path)):
         if idx == len(path)-1:
             if not path.isclosed():
                 continue

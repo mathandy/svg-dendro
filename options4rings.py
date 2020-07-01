@@ -1,6 +1,7 @@
 from andysmod import ConditionalPrint
 from os import path as os_path
 from os import getcwd
+from tempfile import gettempdir
 
 #### Input and Output directories
 
@@ -17,7 +18,7 @@ input_path = os_path.join(getcwd(), 'input')
 # input_directory = os_path.join(getcwd(), 'input', 'examples', 'real_examples', 'problemsome')
 
 ### Output directory
-output_directory = os_path.join(getcwd(), 'output')
+output_directory = os_path.join(gettempdir(), 'svg-dendro-output')
 
 
 ###############################################################################

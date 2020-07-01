@@ -209,7 +209,7 @@ def polylineStr2pathStr(polylineStr):
         else:
             closed = False
     except:
-        print points
+        print(points)
         raise Exception()
     d = 'M' + points.pop(0).replace(',', ' ')
     for p in points:
@@ -473,12 +473,12 @@ def printPath(path):
                   in path]):
             path = Path(*path)
         else:
-            print "This path is not a path... and is neither a Line object nor a CubicBezier object."
+            print("This path is not a path... and is neither a Line object nor a CubicBezier object.")
             return
     try:
         path[0]
     except IndexError:
-        print "This path seems to be empty."
+        print("This path seems to be empty.")
         return
 
     output_string = ""

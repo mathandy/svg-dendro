@@ -11,9 +11,9 @@ from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg
 # Internal Dependencies
 import options4rings as opt
 from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,
-                               closestPointInPath,
-                               pathXpathIntersections as
-                               andysSVGpathTools_pathXpathIntersections)
+                               closestPointInPath, pathXpathIntersections)
+# from andysSVGpathTools import (
+#     pathXpathIntersections as andysSVGpathTools_pathXpathIntersections)
 
 
 def inv_arclength(curve, s):
@@ -169,18 +169,18 @@ def aveRadius_path(path, origin):
     return abs(aveRad)
 
 
-def pathXpathIntersections(path1, path2, justonemode=False):
-    """this fcn is a workaround needed as memoize doesn't like keyword
-    arguments"""
-    return pathXpathIntersections_thefunction(path1, path2, justonemode)
-
-
-@memoize
-def pathXpathIntersections_thefunction(path1, path2, justonemode):
-    """this fcn is a workaround needed as memoize doesn't like keyword
-    arguments"""
-    return andysSVGpathTools_pathXpathIntersections(path1, path2,
-                                                    justonemode=justonemode)
+# def pathXpathIntersections(path1, path2, justonemode=False):
+#     """this fcn is a workaround needed as memoize doesn't like keyword
+#     arguments"""
+#     return pathXpathIntersections_thefunction(path1, path2, justonemode)
+#
+#
+# @memoize
+# def pathXpathIntersections_thefunction(path1, path2, justonemode):
+#     """this fcn is a workaround needed as memoize doesn't like keyword
+#     arguments"""
+#     return andysSVGpathTools_pathXpathIntersections(path1, path2,
+#                                                     justonemode=justonemode)
 
 
 def centerSquare(c):
