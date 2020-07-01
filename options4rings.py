@@ -171,15 +171,15 @@ create_svg_highlighting_inappropriately_short_rings = True
 # should all be False unless you are debugging code.)
 ###############################################################################
 # folder to store debugging output in
-output_directory_debug  = os_path.join(output_directory, "debug")
-debugging_mode_on = False
+output_directory_debug = os_path.join(output_directory, "debug")
+debugging_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 
 # This produces and SVG slideshow showing the ring ordering found.
-visual_test_of_all_ring_sort_on = False 
-create_SVG_showing_ring_sort = False
-sort_debug_mode_on = False
-sort_debug_3_on = False
-transect_debug_mode_on = False
+visual_test_of_all_ring_sort_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
+create_SVG_showing_ring_sort = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
+sort_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
+sort_debug_3_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
+transect_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 transect_debug_mode_output_folder = os_path.join(output_directory, "debug")
 
 # This produces and SVG slideshow showing how the transect is formed.  
@@ -270,10 +270,14 @@ percentage_for_disagreement = 0.15
 ###############################################################################
 ###Colors #####################################################################
 ###############################################################################
-colordict = {'center':'#0000FF'}  # blue
-colordict.update({'complete':'#FF0000'})  # red
-colordict.update({'incomplete':'#FFFF00'})  # yellow
-colordict.update({'boundary':'#00FF00'})  # green
-colordict.update({'safe1':'#FF9900'})  # used by program to highlight problems.
-colordict.update({'safe2':'#00FFCC'})  # used by program to highlight problems.
+colordict = {
+    'center': '#0000FF',  # blue
+    'complete': '#FF0000',  # red
+    'incomplete': '#FFFF00',  # yellow
+    'boundary': '#00FF00',  # green
+    'joint': '#800080',  # purple (used for output)
+    'transect': '#000000',  # black (used for output)
+    'safe1': '#FF9900',  # used by program to highlight problems.
+    'safe2': '#00FFCC',  # used by program to highlight problems.
+}
 auto_fix_ring_colors = True

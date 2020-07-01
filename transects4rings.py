@@ -81,7 +81,7 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
         list of tuples of form [(pt, ring_idx, seg_idx, t), ...]
     """
     cur_ring = sorted_ring_list[-1]
-    cur_idx = len(sorted_ring_list) - 2
+    cur_idx = len(sorted_ring_list) - 1
     init_t, init_seg = pathT2tseg(cur_ring.path, T)
     init_seg_idx = cur_ring.path.index(init_seg)
     transect_info = [(cur_ring.point(T),
@@ -94,13 +94,10 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
 
         # Find all rings this transect segment could be coming from
         test_rings = []
-        r_idx = cur_idx - 1
-        while r_idx >= 0:
-            r = sorted_ring_list[r_idx]
+        for r_idx, r in list(enumerate(sorted_ring_list[:cur_idx]))[::-1]:
             test_rings.append((r_idx, r))
             if r.path.isclosed():
                 break
-            r_idx -= 1
 
         test_ring_results = []
         for r_idx, test_ring in test_rings:
@@ -175,9 +172,8 @@ def invTransect(T, sorted_ring_list, warnifnotunique=True):
 def generate_inverse_transects(ring_list, Tvals):
     """The main purpose of this function is to run invTransect for all Tvals 
     and format the data"""
-    tmp = sorted([(i, r) for i, r in enumerate(ring_list)],
-                 key=lambda tup: tup[1].sort_index)
-    ring_sorting, sorted_ring_list = zip(*tmp)
+    ring_sorting, sorted_ring_list = \
+        zip(*sorted(enumerate(ring_list), key=lambda i_r: i_r[1].sort_index))
 
     def unsorted_index(idx):
         return ring_sorting[idx]

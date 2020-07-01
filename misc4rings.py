@@ -471,8 +471,8 @@ def transect_from_angle(angle, startPoint, outerPath, *debug):
             return False, False, False
 
 
-def displaySVGPaths_numbered(pathList,savefile,*colors):
-    """creates and saves an svf file displaying the input paths"""
+def displaySVGPaths_numbered(pathList, savefile, *colors):
+    """creates and saves an svg file displaying the input paths"""
     import svgwrite
     dwg = svgwrite.Drawing(savefile)
 
@@ -484,7 +484,7 @@ def displaySVGPaths_numbered(pathList,savefile,*colors):
                      fill='white'))
 
     dc = 100/len(pathList)
-    for i,p in enumerate(pathList):
+    for i, p in enumerate(pathList):
         if isinstance(p, Path):
             ps = path2str(p)
         elif isinstance(p, Line) or isinstance(p, CubicBezier):
@@ -494,7 +494,7 @@ def displaySVGPaths_numbered(pathList,savefile,*colors):
         if colors != tuple():
             dwg.add(dwg.path(ps, stroke=colors[0][i], fill='none'))
             paragraph = dwg.add(dwg.g(font_size=14))
-            coords = (p[0].start.real,p[0].start.imag)
+            coords = (p[0].start.real, p[0].start.imag)
             paragraph.add(dwg.text(str(i), coords))
         else:
             dwg.add(dwg.path(ps,
@@ -610,38 +610,36 @@ def displaySVGPaths_transects_old(ringList, data_transects,
     dwg.save()
 
 
-def displaySVGPaths_transects(ring_list, data_transects, transect_angles,
+def displaySVGPaths_transects(ring_list, transect_joints, transect_angles,
                               skipped_angle_indices, fn=None):
     if not fn:
         filename = opt.output_directory + ring_list[0].svgname
     else:
         filename = fn
 
-    transectPaths = []
-    for tran_index in range(len(data_transects)):
+    transect_paths = []
+    for transect_index, joints in enumerate(transect_joints):
         tran_path = Path()
-        for seg_index in range(len(data_transects[tran_index]) - 1):
-            start_pt = data_transects[tran_index][seg_index]
-            end_pt = data_transects[tran_index][seg_index + 1]
-            tran_path.append(Line(start_pt,end_pt))
-        transectPaths.append(tran_path)
+        for seg_index in range(len(transect_joints[transect_index]) - 1):
+            tran_path.append(Line(joints[seg_index], joints[seg_index + 1]))
+        transect_paths.append(tran_path)
 
-    ringPaths = [r.path for r in ring_list]
-    ringColors = [r.color for r in ring_list]
-    pathList = ringPaths + transectPaths
-    colors = ringColors + ['black']*len(transectPaths)
+    ring_paths = [r.path for r in ring_list]
+    ring_colors = [r.color for r in ring_list]
+    pathList = ring_paths + transect_paths
+    colors = ring_colors + ['black']*len(transect_paths)
 
-    # flatten data_transects
-    transect_nodes = [item for sublist in data_transects for item in sublist]
+    # flatten transect_joints
+    all_joints = [item for sublist in transect_joints for item in sublist]
 
-    nodes = transect_nodes + [ring_list[0].center]
-    node_colors = ['purple']*len(transect_nodes) + ['blue']
+    nodes = all_joints + [ring_list[0].center]
+    node_colors = ['purple']*len(all_joints) + [opt.colordict['center']]
     text = ['%.3f' % theta for idx, theta in enumerate(transect_angles)
             if idx not in skipped_angle_indices]
     text += ['skipped %.3f' % transect_angles[idx]
              for idx in skipped_angle_indices]
     text_path = []
-    for tr in data_transects:
+    for tr in transect_joints:
         end = tr[-1]
         last_seg = Line(tr[-2], tr[-1])
         u = last_seg.unit_tangent(1)
@@ -658,7 +656,7 @@ def displaySVGPaths_transects(ring_list, data_transects, transect_angles,
         text_path.append(Line(end + 10*u, end + 100*u))
 
     wsvg(pathList, colors, nodes=nodes, node_colors=node_colors, text=text,
-         text_path=text_path, filename=filename+'_transects.svg')
+         text_path=text_path, filename=filename)
 
 
 def displaySVGPaths_named(pathList, name, *colors):

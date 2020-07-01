@@ -5,6 +5,7 @@ import argparse
 import _pickle as pickle
 from time import time as current_time
 import numpy as np
+from svgpathtools import wsvg
 
 # Internal Dependencies
 from andysmod import format_time
@@ -16,10 +17,10 @@ from fixsvg import fix_svg
 import options4rings as opt
 
 
-def svgtree(filename, error_list):
+def svgtree(filepath, error_list):
 
     file_start_time = current_time()
-    svg_name = os.path.splitext(os.path.basename(filename))[0]
+    svg_name = os.path.splitext(os.path.basename(filepath))[0]
 
     # Name pickle Files
     pickle_file = os.path.join(
@@ -52,7 +53,7 @@ def svgtree(filename, error_list):
     if not loaded_from_pickle and not loaded_from_sorted_pickle:
         # If pickle file doesn't exist, create one, and
         # store ring_list and center in it
-        center, ring_list = svg2rings(filename)
+        center, ring_list = svg2rings(filepath)
         opt.basic_output_on.dprint("Pickling ring_list... ", 'nr')
         pickle.dump((ring_list, center), open(pickle_file, "wb"))
         opt.basic_output_on.dprint('pickling complete -> ' + pickle_file)
@@ -104,32 +105,31 @@ def svgtree(filename, error_list):
     if opt.N_transects > 0:
         if opt.use_ring_sort_4transects:
             if opt.generate_evenly_spaced_transects:
-                angles = np.linspace(0, 1, opt.N_transects+1)[:-1]
+
+                angles = np.linspace(0, 1, opt.N_transects, endpoint=False)
                 bdry_ring = max(ring_list, key=lambda r: r.maxR)
                 bdry_length = bdry_ring.path.length()
                 Tvals = [bdry_ring.path.ilength(s * bdry_length) for s in angles]
 
-                tmp = generate_inverse_transects(ring_list, Tvals)
-                data, data_indices, skipped_angle_indices = tmp
+                data, data_indices, skipped_angle_indices = \
+                    generate_inverse_transects(ring_list, Tvals)
 
-                num_suc = len(data)
-                nums = (num_suc, opt.N_transects, opt.N_transects - num_suc)
-                trmes = ("%s / %s evenly spaced transects successfully "
-                         "generated (skipped %s)." % nums)
-                opt.basic_output_on.dprint(trmes)
+                opt.basic_output_on.dprint(
+                    f"{len(data)} / {opt.N_transects} evenly spaced transects "
+                    f"successfully generated (skipped "
+                    f"{opt.N_transects - len(data)})."
+                )
             else:
-                tmp = generate_sorted_transects(ring_list, center,
-                                                angles2use=opt.angles2use)
-                data, data_indices, angles = tmp
+                data, data_indices, angles = generate_sorted_transects(
+                    ring_list, center, angles2use=opt.angles2use)
         else:
             from transects4rings import generate_unsorted_transects
-            tmp = generate_unsorted_transects(ring_list, center)
-            data, data_indices, angles = tmp
+            data, data_indices, angles = \
+                generate_unsorted_transects(ring_list, center)
         opt.basic_output_on.dprint("Done generating transects.")
 
         # show them (this creates an svg file in the output folder)
         if opt.create_SVG_picture_of_transects:
-            svg_name = os.path.splitext(os.path.basename(filename))[0]
             svg_trans = os.path.join(opt.output_directory,
                                      svg_name + "_transects.svg")
             displaySVGPaths_transects(ring_list, data, angles,
@@ -160,7 +160,7 @@ def svgtree(filename, error_list):
         sorted_ring_list = sorted(ring_list, key=lambda rg: rg.sort_index)
 
         # this also completes incomplete rings
-        find_ring_areas(sorted_ring_list, center, filename)
+        find_ring_areas(sorted_ring_list, center, filepath)
 
     ####################################################################
     # Other (optional) stuff ###########################################
@@ -172,10 +172,15 @@ def svgtree(filename, error_list):
             "Attempting to create SVG showing ring sorting...", 'nr')
 
         from misc4rings import displaySVGPaths_numbered
-        tmp = filename[0:len(filename) - 4] + "_sort_numbered" + ".svg"
-        svg_name = os.path.join(opt.output_directory_debug, tmp)
-        displaySVGPaths_numbered([r.path for r in ring_list], svg_name,
-                                 [r.color for r in ring_list])
+        tmp = svg_name[:-4] + "_sort_numbered" + ".svg"
+        wsvg(paths=[r.path for r in ring_list],
+             colors=[r.color for r in ring_list],
+             filename=os.path.join(opt.output_directory_debug, tmp),
+             text=[str(i) for i in range(len(ring_list))],
+             text_path=[r.path for r in ring_list])
+        # displaySVGPaths_numbered([r.path for r in ring_list],
+        #                          os.path.join(opt.output_directory_debug, tmp),
+        #                          [r.color for r in ring_list])
         opt.basic_output_on.dprint("Done.")
 
     # test complete ring sort after first sort round
@@ -193,13 +198,13 @@ def svgtree(filename, error_list):
     ####################################################################
     # Report Success/Failure of file ###################################
     ####################################################################
-    tmp = (filename, format_time(current_time() - file_start_time))
+    tmp = (filepath, format_time(current_time() - file_start_time))
     opt.basic_output_on.dprint("Success! Completed {} in {}.".format(*tmp))
     opt.basic_output_on.dprint(":)"*50)
     opt.basic_output_on.dprint("<>"*50)
     opt.basic_output_on.dprint("<>"*50)
     opt.basic_output_on.dprint("\n\n")
-    error_list.append((filename, "Completed Successfully."))
+    error_list.append((filepath, "Completed Successfully."))
     return
 
 
@@ -371,9 +376,9 @@ if __name__ == '__main__':
     #         "To fix this change output_directory in options, or "
     #         "create the folder:\n%s" % opt.output_directory
     # )
-    if not os.path.exists(opt.pickle_dir):  # debug folder
+    if not os.path.exists(opt.pickle_dir):
         os.makedirs(opt.pickle_dir)
-    if not os.path.exists(opt.output_directory_debug):  # pickle folder
+    if not os.path.exists(opt.output_directory_debug):
         os.makedirs(opt.output_directory_debug)
     if not os.path.exists(opt.unsorted_transect_debug_output_folder):
         os.makedirs(opt.unsorted_transect_debug_output_folder)
