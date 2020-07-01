@@ -26,7 +26,7 @@ To Run
 
 4. Open a terminal/command-prompt, navigate into the SVG Dendro folder and enter the following command (without the $).
 
-$ python svgtree.py -i data/real_examples/
+$ python main.py -i data/real_examples/
 
 This will extract data from any SVG files in the `<SVG Dendro Folder>/input/examples/real_examples` folder and store output (by default, areas, and 50 evenly space transects) in the `<SVG Dendro Folder>/output` folder.
 
@@ -35,19 +35,19 @@ Options
 -------
 **To increase/decrease the number of transects found**, use the -n <number> flag
 
-$ python svgtree.py -n 500
+$ python main.py -n 500
 
 **To turn off area calculations**, use the -a flag
 
-$ python svgtree.py -n 500 -a
+$ python main.py -n 500 -a
 
 **To specify the input/output directories:**
 
-$ python svgtree.py -i "your_svg_file.svg" -o "your_desired_output_directory"
+$ python main.py -i "your_svg_file.svg" -o "your_desired_output_directory"
 
 **For more basic options**, enter the command:
 
-$ python svgtree.py -h
+$ python main.py -h
 
 **For advanced options**, read through the file "options4rings.py".
 
