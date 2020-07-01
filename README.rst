@@ -53,30 +53,30 @@ $ python main.py -h
 
 Prerequisites
 -------------
--  **python 2.x**
--  **numpy**
+-  **python 3.x**
 -  **scipy**
--  **svgwrite**
 -  **svgpathtools**
 
 Setup
 -----
 
-1. Get Python 2.  
+1. Get/install Python 3.
 
-Note: If you have a **Mac** or are running **Linux**, you already have Python 2.x.  If you're on **Windows**, go download Python 2 and install it.
+2. Install the necessary python packages.
 
-2. Install the necessary python packages. 
+Note: This is easy using pip (which typically comes with Python).  Just
+open up a terminal/command-prompt and enter the following two commands
+(without the $).
 
-Note: This is easy using pip (which typically comes with Python).  Just open up a terminal/command-prompt and enter the following four commands (without the $).
-
-$ pip install numpy
+$ pip install svgpathtools
 
 $ pip install scipy
 
-$ pip install svgwrite
+Test
+----
+$ python main.py --fakes  # test using the simple fakes in data/test_examples
 
-$ pip install svgpathtools
+$ python main.py --reals  # test using the real examples in data/real_examples
 
 For help
 --------
