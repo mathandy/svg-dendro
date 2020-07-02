@@ -18,18 +18,16 @@ import _pickle as pickle
 import os
 
 
-def ring1_isbelow_ring2_numHits(ring1, ring2, N, debug_name=''):
-    """Computes the number (out of N) of the checked lines from ring1 to
-    the center that intersect  with ring2
-
-    DEPRECATED: replaced by normal transect based method
+def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
+    """Computes the number (out of n_test_lines) of the checked lines
+    from ring1 to the center that intersect  with ring2
     """
     center = ring1.center
     countHits = 0
     tran_colors = []  # for debug mode
     tran_lines = []  # for debug mode
-    for i in range(N):
-        innerT = i/(N-1)
+    for i in range(n_test_lines):
+        innerT = i/(n_test_lines - 1)
         nlin, seg_out, t_out = normalLineAtT_toInner_intersects_withOuter(
             innerT, ring1.path, ring2.path, center, 'debug')
 
@@ -173,19 +171,19 @@ def postsort_ring1_isoutside_ring2_cmp(ring1,ring2):
     
     
 def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
-                                  N_lines2use=alt_sort_N,
+                                  N_lines2use=opt.alt_sort_N,
                                   increase_N_if_zero=True):#####TOL
     """Returns 1 if true, -1 if false and 0 if equal"""
     ring1 = ringlist[ring1_index]
     ring2 = ringlist[ring2_index]
-    if ring1.path==ring2.path:
+    if ring1.path == ring2.path:
         return 0
     countHits12 = ring1_isbelow_ring2_numHits(ring1, ring2, N_lines2use)
     countHits21 = ring1_isbelow_ring2_numHits(ring2, ring1, N_lines2use)
-    if countHits12==0 or countHits21==0:
-        if countHits12>0:
+    if countHits12 == 0 or countHits21 == 0:
+        if countHits12 > 0:
             return -1
-        elif countHits21>0:
+        elif countHits21 > 0:
             return 1
         elif increase_N_if_zero:
             N_upped = N_lines2use * max(len(ring1.path), len(ring2.path))
