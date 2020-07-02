@@ -118,7 +118,7 @@ min_absolute_segment_length = 1e-4
 # This should be True unless you are sure that no paths in the svg have 
 # intersections.  Note: This takes a considerable amount of time to run (though 
 # the results will be stored in a pickle file for use in any subsequent runs).
-rings_may_contain_intersections = False  
+rings_may_contain_intersections = True
 
 # If True then if the orientation of any paths cannot be determined automatically, 
 # will wait for input from user (after outputing an svg to help user decide).
@@ -260,7 +260,7 @@ use_alternative_sorting_method = True
 # This controls how many test normal lines are used to determine whether a ring 
 # is above/below another ring (only used for sets of rings that were failed to 
 # be sorted by transect data)
-alt_sort_N = 10 
+alt_sort_N = 10
 
 # The percentage of transects that must disagree with the majority (regarding 
 # sorting) in order for the user to be asked (set to 0 to always ask the user)
