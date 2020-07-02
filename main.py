@@ -269,7 +269,7 @@ def get_user_args():
         action='store_true',
         help='If this flag is included, the there will be no pre-processing '
              'done on the svg paths.  This should generally only be used if '
-             'the input svg is a fixed svg output by svg-dendro.',
+             'the input svg is a fixed svg output by SVG Dendro.',
         # metavar='ASSUME_SVG_IS_FIXED'
         )
 
@@ -278,7 +278,7 @@ def get_user_args():
         # dest='use_pickle_files',
         default= not opt.ignore_extant_sorted_pickle_file,
         action='store_true',
-        help='If this flag is included, SVGTree will attempt to save time by '
+        help='If this flag is included, SVG Dendro will attempt to save time by '
              'loading the sorting information extracted from an SVG on a '
              'previous run.',
     )
@@ -288,7 +288,7 @@ def get_user_args():
         # dest='look_for_user_sort_input',
         default=opt.look_for_user_sort_input,
         action='store_true',
-        help='If this flag is included, SVGTree will look for user responses '
+        help='If this flag is included, SVG Dendro will look for user responses '
              'added to the interactive sorting ouput from a previous run.',
         # metavar='LOOK_FOR_USER_SORT_INPUT'
     )
@@ -298,7 +298,7 @@ def get_user_args():
         # dest='stop_on_error',
         default= not opt.if_file_throws_error_skip_and_move_to_next_file,
         action='store_true',
-        help="If this flag is included, SVGTree will stop and raise errors "
+        help="If this flag is included, SVG Dendro will stop and raise errors "
              "when they are encountered as opposed to moving on to the next "
              "SVG file.",
         # metavar='STOP_ON_ERROR'
@@ -309,7 +309,7 @@ def get_user_args():
         # dest='stop_on_error',
         default=False,
         action='store_true',
-        help="If this flag is included, SVGTree run fake data samples in the "
+        help="If this flag is included, SVG Dendro run fake data samples in the "
              "test_examples folder:\n{}\nNote: overrides --input_path flag."
              "".format(os.path.join(
             os.getcwd(), 'input', 'examples', 'test_examples')),
@@ -320,7 +320,7 @@ def get_user_args():
         # dest='stop_on_error',
         default=False,
         action='store_true',
-        help="If this flag is included, SVGTree run the real data samples "
+        help="If this flag is included, SVG Dendro run the real data samples "
              "stored in the real_examples folder:\n{}\n"
              "Note: overrides --input_path and --fakes flags."
              "".format(os.path.join(
@@ -359,7 +359,7 @@ if __name__ == '__main__':
                 "You're input directory/file must be a valid "
                 "directory (or SVG file).  You could also simply "
                 "put your SVG files in the 'input' folder (inside "
-                "the SVGTree folder that this code is stored in)."
+                "the SVG Dendro folder that this code is stored in)."
             )
 
     ####################################################################
