@@ -269,7 +269,7 @@ def get_user_args():
         action='store_true',
         help='If this flag is included, the there will be no pre-processing '
              'done on the svg paths.  This should generally only be used if '
-             'the input svg is a fixed svg output by SVGTree.',
+             'the input svg is a fixed svg output by svg-dendro.',
         # metavar='ASSUME_SVG_IS_FIXED'
         )
 
