@@ -550,16 +550,12 @@ def visual_test_of_ring_sort(ring_list):
             continue
         elif slide == 1:
             second_to_outer_most_path = \
-                next(ring.path for ring in ring_list
-                     if ring.sort_index == slide - 1)
+                next(r.path for r in ring_list if r.sort_index == 0)
         else:
             second_to_outer_most_path = outer_most_path
-        try:  ###Debug (just keep what's inside try)
-            outer_most_path = next(ring.path for ring in ring_list
-                                   if ring.sort_index == slide)
-        except:
-            bla = 1
-            raise Exception("bla")
+        outer_most_path = \
+            next(r.path for r in ring_list if r.sort_index == slide)
+
         paths = [ring.path for ring in ring_list if ring.sort_index < slide - 1] + \
                 [second_to_outer_most_path, outer_most_path]
         colors = ['blue'] * (len(paths) - 2) + ['red'] + ['green']

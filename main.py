@@ -165,7 +165,6 @@ def svgtree(filepath, error_list):
     ####################################################################
     # Other (optional) stuff ###########################################
     ####################################################################
-
     # Create SVG showing ring sorting
     if opt.create_SVG_showing_ring_sort:
         opt.basic_output_on.dprint(

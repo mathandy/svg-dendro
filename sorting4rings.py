@@ -23,7 +23,7 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
     from ring1 to the center that intersect  with ring2
     """
     center = ring1.center
-    countHits = 0
+    count_hits = 0
     tran_colors = []  # for debug mode
     tran_lines = []  # for debug mode
     for i in range(n_test_lines):
@@ -36,7 +36,7 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
             tran_colors.append('black' if seg_out != False else 'purple')
 
         if seg_out != False:
-            countHits += 1
+            count_hits += 1
 
     if debug_name != '':
         dis([ring1.path, ring2.path],
@@ -44,7 +44,7 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
             lines=tran_lines,
             line_colors=tran_colors,
             filename=debug_name)
-    return countHits
+    return count_hits
 
 
 def ring1_isknowntobebelow_ring2(ring1,ring2):
@@ -420,25 +420,12 @@ def sort_rings(ring_list, om_pickle_file):
     )
     start_time = current_time()
     unlocated_open_ring_indices = \
-        [i for i, r in enumerate(ring_list) if not r.isClosed()]
+        set(i for i, r in enumerate(ring_list) if not r.isClosed())
 
-    for cp_idx, cp in enumerate(closed_pairs):
-        N_unlocated = len(unlocated_open_ring_indices)
-
-        # Loop through unlocated open rings
-        located_in_this_cp = []
-        for idx_un in range(N_unlocated):
-            or_index = unlocated_open_ring_indices[idx_un]
-            cp_contains_or = cp.contains(or_index)
-
-            if cp_contains_or:
-                cp.contents.append(or_index)
-                located_in_this_cp.append(idx_un)
-
-        # remove those unlocated open rings that were located in this cp
-        unlocated_open_ring_indices = \
-            [r_idx for i, r_idx in enumerate(unlocated_open_ring_indices)
-             if i not in located_in_this_cp]
+    for cp in closed_pairs:
+        cp.contents = [r_idx for r_idx in unlocated_open_ring_indices
+                       if cp.contains(r_idx)]
+        unlocated_open_ring_indices -= set(cp.contents)
 
     # there should not be any unlocated open ring indices
     # in case there are, this is likely caused by intersections
