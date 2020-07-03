@@ -28,9 +28,9 @@ def output2file(string2output,
         fout.write(string2output)
 
 
+from scipy.special import comb
 def n_choose_k(n, k):
-    from math import factorial
-    return factorial(n) / factorial(k) / factorial(n - k)
+    return comb(n, k, exact=True)
 
 
 def curvature(func, tval, dt=0.01, num_pts_2use=100):
