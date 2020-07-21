@@ -87,7 +87,7 @@ def get_center(doc):
         elif len(potential_center_paths) > 1:
             raise Exception("Multiple paths found with center color {}."
                             "".format(colordict['center']))
-        
+
     if not centerFound and counter > 0:
         opt.warnings_output_on.dprint(
             "[Warning:] No line objects in the svg were found matching "
