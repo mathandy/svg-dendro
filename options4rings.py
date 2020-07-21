@@ -118,7 +118,7 @@ min_absolute_segment_length = 1e-4
 # This should be True unless you are sure that no paths in the svg have 
 # intersections.  Note: This takes a considerable amount of time to run (though 
 # the results will be stored in a pickle file for use in any subsequent runs).
-rings_may_contain_intersections = True
+rings_may_contain_intersections = False
 
 # If True then if the orientation of any paths cannot be determined automatically, 
 # will wait for input from user (after outputing an svg to help user decide).
