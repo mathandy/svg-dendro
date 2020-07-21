@@ -16,10 +16,6 @@ import options4rings as opt
 
 
 def askUserOrientation():
-    try:
-        input = raw_input
-    except NameError:
-        pass
     dec = input("Enter 'y' or 'n' to specify orientation, or \n"
                 "enter 'r' to ignore this path and not include it in the "
                 "fixed svg that will be output, or\n"
@@ -79,6 +75,19 @@ def get_center(doc):
         else:
             counter += 1
 
+    if not centerFound:
+        potential_center_paths = [parse_path(elem.getAttribute('d'))
+                                  for elem in doc.getElementsByTagName('path')
+                                  if get_stroke(elem) == colordict['center']]
+
+        if len(potential_center_paths) == 1:
+            center_path = potential_center_paths[0]
+            center = 0.5 * center_path.start + 0.5 * center_path.end
+            centerFound = True
+        elif len(potential_center_paths) > 1:
+            raise Exception("Multiple paths found with center color {}."
+                            "".format(colordict['center']))
+        
     if not centerFound and counter > 0:
         opt.warnings_output_on.dprint(
             "[Warning:] No line objects in the svg were found matching "
