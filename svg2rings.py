@@ -75,18 +75,18 @@ def get_center(doc):
         else:
             counter += 1
 
-    # if not centerFound:
-    #     potential_center_paths = [parse_path(elem.getAttribute('d'))
-    #                               for elem in doc.getElementsByTagName('path')
-    #                               if get_stroke(elem) == colordict['center']]
-    #
-    #     if len(potential_center_paths) == 1:
-    #         center_path = potential_center_paths[0]
-    #         center = 0.5 * center_path.start + 0.5 * center_path.end
-    #         centerFound = True
-    #     elif len(potential_center_paths) > 1:
-    #         raise Exception("Multiple paths found with center color {}."
-    #                         "".format(colordict['center']))
+    if not centerFound:
+        potential_center_paths = [parse_path(elem.getAttribute('d'))
+                                  for elem in doc.getElementsByTagName('path')
+                                  if get_stroke(elem) == colordict['center']]
+
+        if len(potential_center_paths) == 1:
+            center_path = potential_center_paths[0]
+            center = 0.5 * center_path.start + 0.5 * center_path.end
+            centerFound = True
+        elif len(potential_center_paths) > 1:
+            raise Exception("Multiple paths found with center color {}."
+                            "".format(colordict['center']))
 
     if not centerFound and counter > 0:
         opt.warnings_output_on.dprint(
@@ -220,7 +220,8 @@ def svg2rings(filename):
     opt.basic_output_on.dprint("Extracting path_data from SVG... ", 'nr')
     path_data = [(p.getAttribute('d'), get_stroke(p),
                   p.parentNode.getAttribute('id'), p.toxml())
-                    for p in doc.getElementsByTagName('path')]
+                    for p in doc.getElementsByTagName('path')
+                 if get_stroke(p) != colordict['center']]
 
     # extract polylines
     path_data += [
