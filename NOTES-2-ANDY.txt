@@ -1,2 +1,0 @@
-does rings_may_contain_intersections = True work?
-change default back?
