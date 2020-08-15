@@ -1,0 +1,670 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AppPointSet	andysSVGpathTools.py	/^class AppPointSet(list):$/;"	c
+CP_BoolSet	area4rings.py	/^from rings4rings import Ring, IncompleteRing, CompleteRing, CP_BoolSet$/;"	i
+CP_BoolSet	rings4rings.py	/^class CP_BoolSet(boolset):$/;"	c
+ClosedPair	sorting4rings.py	/^class ClosedPair(object):$/;"	c
+ClosedRingsOverlapError	noIntersections4rings.py	/^class ClosedRingsOverlapError(Exception):$/;"	c
+CompleteRing	area4rings.py	/^from rings4rings import Ring, IncompleteRing, CompleteRing, CP_BoolSet$/;"	i
+CompleteRing	rings4rings.py	/^class CompleteRing(object):  # this must remain fast to initialize$/;"	c
+ConditionalPrint	andysmod.py	/^class ConditionalPrint(object):$/;"	c
+ConditionalPrint	options4rings.py	/^from andysmod import ConditionalPrint$/;"	i
+CubicBezier	andysSVGpathTools.py	/^from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots$/;"	i
+CubicBezier	misc4rings.py	/^    from svgpathtools import Path, Line, CubicBezier$/;"	i
+CubicBezier	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+CubicBezier	rings4rings.py	/^from svgpathtools import parse_path, Path, Line, CubicBezier, disvg$/;"	i
+CubicBezier	smoothing4rings.py	/^from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength$/;"	i
+CubicBezier	transects4rings.py	/^from svgpathtools import (Path, Line, CubicBezier, polyroots, real,$/;"	i
+IncompleteRing	area4rings.py	/^from rings4rings import Ring, IncompleteRing, CompleteRing, CP_BoolSet$/;"	i
+IncompleteRing	rings4rings.py	/^class IncompleteRing(object):$/;"	c
+Inf	sorting4rings.py	/^        from numpy import Inf$/;"	i
+Line	andysSVGpathTools.py	/^from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots$/;"	i
+Line	area4rings.py	/^from svgpathtools import parse_path, wsvg, Line$/;"	i
+Line	debugtools.py	/^from svgpathtools import Line, disvg, svg2paths$/;"	i
+Line	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+Line	misc4rings.py	/^    from svgpathtools import Path, Line, CubicBezier$/;"	i
+Line	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+Line	rings4rings.py	/^from svgpathtools import parse_path, Path, Line, CubicBezier, disvg$/;"	i
+Line	smoothing4rings.py	/^from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength$/;"	i
+Line	sorting4rings.py	/^from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg$/;"	i
+Line	transects4rings.py	/^    from svgpathtools import Line$/;"	i
+Line	transects4rings.py	/^from svgpathtools import (Path, Line, CubicBezier, polyroots, real,$/;"	i
+MemoDict	andysmod.py	/^    class MemoDict(dict):$/;"	c	function:memoize
+N_transects	options4rings.py	/^N_transects = 50$/;"	v
+N_transects	transects4rings.py	/^    from options4rings import basic_output_on, N_transects$/;"	i
+NaN	sorting4rings.py	/^from numpy import NaN, isnan, where, transpose$/;"	i
+Pair	andysSVGpathTools.py	/^class Pair(object):$/;"	c
+Path	andysSVGpathTools.py	/^from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots$/;"	i
+Path	findT0T1.py	/^from svgpathtools import Path$/;"	i
+Path	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+Path	misc4rings.py	/^    from svgpathtools import Path, Line, CubicBezier$/;"	i
+Path	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+Path	noIntersections4rings.py	/^from svgpathtools import Path$/;"	i
+Path	rings4rings.py	/^from svgpathtools import parse_path, Path, Line, CubicBezier, disvg$/;"	i
+Path	smoothing4rings.py	/^from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength$/;"	i
+Path	sorting4rings.py	/^from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg$/;"	i
+Path	svg2rings.py	/^from svgpathtools import parse_path, Path, disvg$/;"	i
+Path	transects4rings.py	/^from svgpathtools import (Path, Line, CubicBezier, polyroots, real,$/;"	i
+Radius	andysmod.py	/^class Radius(object):$/;"	c
+Radius	area4rings.py	/^from andysmod import Radius, format_time$/;"	i
+Radius	svg2rings.py	/^from andysmod import format_time, Radius$/;"	i
+Ring	area4rings.py	/^from rings4rings import Ring, IncompleteRing, CompleteRing, CP_BoolSet$/;"	i
+Ring	rings4rings.py	/^class Ring(object):$/;"	c
+Ring	svg2rings.py	/^from rings4rings import Ring$/;"	i
+Theta_Tstar	misc4rings.py	/^class Theta_Tstar(object):$/;"	c
+Theta_Tstar	rings4rings.py	/^from misc4rings import (Theta_Tstar, normalLineAtT_toInner_intersects_withOuter,$/;"	i
+Timer	andysmod.py	/^class Timer(object):$/;"	c
+Timer	transects4rings.py	/^    from andysmod import Timer$/;"	i
+Timer	transects4rings.py	/^    from andysmod import Timer, format_time$/;"	i
+_Getch	andysmod.py	/^class _Getch:$/;"	c
+_GetchUnix	andysmod.py	/^class _GetchUnix:$/;"	c
+_GetchWindows	andysmod.py	/^class _GetchWindows:$/;"	c
+__all__	toposort.py	/^__all__ = ['toposort', 'toposort_flatten']$/;"	v
+__call__	andysmod.py	/^        def __call__(self, *args):$/;"	m	class:memoize.MemoDict	file:
+__call__	andysmod.py	/^    def __call__(self):$/;"	m	class:_Getch	file:
+__call__	andysmod.py	/^    def __call__(self):$/;"	m	class:_GetchUnix	file:
+__call__	andysmod.py	/^    def __call__(self):$/;"	m	class:_GetchWindows	file:
+__call__	andysmod.py	/^    def __call__(self, s, *nr):$/;"	m	class:ConditionalPrint	file:
+__contains__	andysSVGpathTools.py	/^    def __contains__(self, pt):$/;"	m	class:AppPointSet	file:
+__contains__	andysmod.py	/^    def __contains__(self, element):$/;"	m	class:boolset	file:
+__enter__	andysmod.py	/^    def __enter__(self):$/;"	m	class:Timer	file:
+__eq__	rings4rings.py	/^    def __eq__(self, other):#just checks that inner ring is the same$/;"	m	class:CompleteRing	file:
+__eq__	rings4rings.py	/^    def __eq__(self, other):$/;"	m	class:IncompleteRing	file:
+__eq__	rings4rings.py	/^    def __eq__(self, other):$/;"	m	class:Ring	file:
+__exit__	andysmod.py	/^    def __exit__(self, type, value, traceback):$/;"	m	class:Timer	file:
+__init__	andysSVGpathTools.py	/^    def __init__(self, cub1, cub2, t1, t2):$/;"	m	class:Pair
+__init__	andysSVGpathTools.py	/^    def __init__(self, tol):$/;"	m	class:AppPointSet
+__init__	andysmod.py	/^        def __init__(self, f_):$/;"	m	class:memoize.MemoDict
+__init__	andysmod.py	/^    def __init__(self):$/;"	m	class:_Getch
+__init__	andysmod.py	/^    def __init__(self):$/;"	m	class:_GetchUnix
+__init__	andysmod.py	/^    def __init__(self):$/;"	m	class:_GetchWindows
+__init__	andysmod.py	/^    def __init__(self, b):$/;"	m	class:ConditionalPrint
+__init__	andysmod.py	/^    def __init__(self, name='', overwrite=False, formatted=True):$/;"	m	class:Timer
+__init__	andysmod.py	/^    def __init__(self, origin):$/;"	m	class:Radius
+__init__	findT0T1.py	/^    def __init__(self,t1,a0,a1,a2,a3,b0,b1,b2,b3):$/;"	m	class:s_func
+__init__	findT0T1.py	/^    def __init__(self,t1,a0,a1,a2,a3,b0,b1,b2,b3):$/;"	m	class:tau_func
+__init__	misc4rings.py	/^    def __init__(self, Tstar):$/;"	m	class:Theta_Tstar
+__init__	noIntersections4rings.py	/^    def __init__(self,mes):$/;"	m	class:ClosedRingsOverlapError
+__init__	rings4rings.py	/^    def __init__(self, innerRing, outerRing, *internalRings):$/;"	m	class:CompleteRing
+__init__	rings4rings.py	/^    def __init__(self, path_string, color, brook_tag, rad, path, xml=None):$/;"	m	class:Ring
+__init__	rings4rings.py	/^    def __init__(self, ring):$/;"	m	class:IncompleteRing
+__init__	sorting4rings.py	/^    def __init__(self, ring_list, outside_point, inner, outer,  contents=[]):$/;"	m	class:ClosedPair
+__missing__	andysmod.py	/^        def __missing__(self, key):$/;"	m	class:memoize.MemoDict	file:
+__ne__	rings4rings.py	/^    def __ne__(self, other):$/;"	m	class:CompleteRing	file:
+__ne__	rings4rings.py	/^    def __ne__(self, other):$/;"	m	class:IncompleteRing	file:
+__ne__	rings4rings.py	/^    def __ne__(self, other):$/;"	m	class:Ring	file:
+__repr__	andysmod.py	/^    def __repr__(self):$/;"	m	class:ConditionalPrint	file:
+__repr__	andysmod.py	/^    def __repr__(self):$/;"	m	class:Radius	file:
+__repr__	sorting4rings.py	/^    def __repr__(self):$/;"	m	class:ClosedPair	file:
+__str__	noIntersections4rings.py	/^    def __str__(self):$/;"	m	class:ClosedRingsOverlapError	file:
+_reduce	toposort.py	/^from functools import reduce as _reduce$/;"	i
+_remove_seg	fixsvg.py	/^    def _remove_seg(path, _seg_idx, _newjoint):$/;"	f	function:fix_svg
+_repo_root	main.py	/^    _repo_root = os.path.dirname(os.path.abspath(__file__))$/;"	v
+_report_unfixable_kinks	smoothing4rings.py	/^def _report_unfixable_kinks(_path,_kink_list):$/;"	f
+absolute_import	debugtools.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+absolute_import	fixsvg.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+accept_transect_crossings	options4rings.py	/^accept_transect_crossings = False $/;"	v
+add	rings4rings.py	/^    def add(self, value):$/;"	m	class:CompleteRing
+addConnectingPathToCP	rings4rings.py	/^    def addConnectingPathToCP(self, connecting_path, seg0, t0, seg1, t1):$/;"	m	class:IncompleteRing
+addSegsToCP	rings4rings.py	/^    def addSegsToCP(self, segs, tol_closure=opt.tol_isApproxClosedPath):$/;"	m	class:IncompleteRing
+allcond	transects4rings.py	/^    def allcond(_t):$/;"	f	function:isPointOutwardOfSeg
+alt_sort_N	options4rings.py	/^alt_sort_N = 10$/;"	v
+andysSVGpathTools_areaEnclosed	misc4rings.py	/^from andysSVGpathTools import areaEnclosed as andysSVGpathTools_areaEnclosed$/;"	i
+angles2use	options4rings.py	/^angles2use = None  $/;"	v
+appropriate_ring_length_minimum	options4rings.py	/^appropriate_ring_length_minimum = 2.5 * tol_isNear$/;"	v
+apsadd	andysSVGpathTools.py	/^    def apsadd(self, pt):$/;"	m	class:AppPointSet
+area	rings4rings.py	/^    def area(self):$/;"	m	class:CompleteRing
+area	rings4rings.py	/^    def area(self):$/;"	m	class:IncompleteRing
+area	rings4rings.py	/^    def area(self):$/;"	m	class:Ring
+areaEnclosed	andysSVGpathTools.py	/^def areaEnclosed(path, closure_tolerance=opt.tol_isApproxClosedPath):$/;"	f
+areaEnclosed	misc4rings.py	/^def areaEnclosed(path):$/;"	f
+areaIgnoringIRs	rings4rings.py	/^    def areaIgnoringIRs(self):$/;"	m	class:CompleteRing
+argmin	misc4rings.py	/^def argmin(somelist):$/;"	f
+argmin_of_s	findT0T1.py	/^def argmin_of_s(t1,a0,a1,a2,a3,b0,b1,b2,b3):$/;"	f
+argparse	main.py	/^import argparse$/;"	i
+array	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+array	andysmod.py	/^    from numpy import array$/;"	i
+askUserOrientation	svg2rings.py	/^def askUserOrientation():$/;"	f
+ask_user	andysmod.py	/^def ask_user(options=None):$/;"	f
+ask_user_to_sort	sorting4rings.py	/^def ask_user_to_sort(i,j,ring_list,make_svg=True,ask_later=True):$/;"	f
+assume_svg_is_fixed	options4rings.py	/^assume_svg_is_fixed = False$/;"	v
+auto_fix_ring_colors	options4rings.py	/^auto_fix_ring_colors = True$/;"	v
+aveR	rings4rings.py	/^    def aveR(self):$/;"	m	class:CompleteRing
+aveR	rings4rings.py	/^    def aveR(self):$/;"	m	class:Ring
+aveRadiusEnclosed	misc4rings.py	/^def aveRadiusEnclosed(path, center):$/;"	f
+aveRadius_path	misc4rings.py	/^def aveRadius_path(path, origin):$/;"	f
+basic_output_on	area4rings.py	/^from options4rings import (colordict, basic_output_on,$/;"	i
+basic_output_on	options4rings.py	/^basic_output_on = ConditionalPrint(True)$/;"	v
+basic_output_on	sorting4rings.py	/^from options4rings import (basic_output_on, use_alternative_sorting_method,$/;"	i
+basic_output_on	transects4rings.py	/^    from options4rings import basic_output_on$/;"	i
+basic_output_on	transects4rings.py	/^    from options4rings import basic_output_on, N_transects$/;"	i
+bezier2standard	andysSVGpathTools.py	/^def bezier2standard(cub):$/;"	f
+bigBoundingBox	andysSVGpathTools.py	/^    def bigBoundingBox(bbs):$/;"	f	function:boundingBox
+bool2bin	andysmod.py	/^def bool2bin(boolval):  # this can also be done by using True.real$/;"	f
+bool2bin	misc4rings.py	/^from andysmod import memoize, bool2bin, eucdist_numpy$/;"	i
+booladd	andysmod.py	/^    def booladd(self, element):$/;"	m	class:boolset
+boolset	andysmod.py	/^class boolset(list):$/;"	c
+boolset	rings4rings.py	/^from andysmod import boolset$/;"	i
+boundingBox	andysSVGpathTools.py	/^def boundingBox(curves):$/;"	f
+centerSquare	area4rings.py	/^from misc4rings import centerSquare, isCCW$/;"	i
+centerSquare	misc4rings.py	/^def centerSquare(c):$/;"	f
+check4overlappingends	options4rings.py	/^check4overlappingends = False$/;"	v
+check_for_kinksTrue	andysSVGpathTools.py	/^check_for_kinksTrue = rings_may_contain_unremoved_kinks  # set to true for github version$/;"	v
+closedRing_cmp_ring_partial	sorting4rings.py	/^def closedRing_cmp_ring_partial(cring,ring):$/;"	f
+closednessCheck_output_on	options4rings.py	/^closednessCheck_output_on = ConditionalPrint(True)$/;"	v
+closedness_consistency_check	fixsvg.py	/^    from svg2rings import closedness_consistency_check$/;"	i
+closedness_consistency_check	svg2rings.py	/^def closedness_consistency_check(ring_list):$/;"	f
+closestColor	misc4rings.py	/^def closestColor(hexcolor, colordict):$/;"	f
+closestColor	svg2rings.py	/^from misc4rings import isCCW, closestColor, isApproxClosedPath$/;"	i
+closestColor	transects4rings.py	/^        from misc4rings import closestColor$/;"	i
+closestPath	andysSVGpathTools.py	/^def closestPath(pt, path_list):$/;"	f
+closestPointInPath	andysSVGpathTools.py	/^def closestPointInPath(pt, path):$/;"	f
+closestRing	misc4rings.py	/^def closestRing(pt, ring_list):$/;"	f
+collect	transects4rings.py	/^    def collect(some_dict,key,val):$/;"	f	function:save_transect_summary
+colorcheck_output_on	options4rings.py	/^colorcheck_output_on = ConditionalPrint(False)$/;"	v
+colordict	area4rings.py	/^from options4rings import (colordict, basic_output_on,$/;"	i
+colordict	misc4rings.py	/^    from options4rings import try_to_open_svgs_in_browser, colordict$/;"	i
+colordict	options4rings.py	/^colordict = {$/;"	v
+colordict	rings4rings.py	/^                from options4rings import colordict$/;"	i
+colordict	svg2rings.py	/^from options4rings import colordict$/;"	i
+comb	andysmod.py	/^from scipy.special import comb$/;"	i
+combinations	sorting4rings.py	/^from itertools import combinations$/;"	i
+completeIncompleteRings	rings4rings.py	/^    def completeIncompleteRings(self):$/;"	m	class:CompleteRing
+concatPaths	andysSVGpathTools.py	/^def concatPaths(list_of_paths):$/;"	f
+consecutive_pairs	andysmod.py	/^def consecutive_pairs(iterable):$/;"	f
+contains	sorting4rings.py	/^    def contains(self, or_index):$/;"	m	class:ClosedPair
+copyobject	rings4rings.py	/^from copy import deepcopy as copyobject$/;"	i
+cos	misc4rings.py	/^from math import sqrt, cos, sin, pi$/;"	i
+cpUpdate	rings4rings.py	/^    def cpUpdate(self,new_cp):$/;"	m	class:CP_BoolSet
+createDependencyDictionary	andysmod.py	/^def createDependencyDictionary(ordering_matrix):$/;"	f
+createOrderingMatrix	andysmod.py	/^def createOrderingMatrix(list_of_objects, cmp_fcn, test_symmetry=False):$/;"	f
+createOrderingMatrix	sorting4rings.py	/^from andysmod import (format_time, topo_sorted, createOrderingMatrix,$/;"	i
+create_SVG_picture_of_transects	options4rings.py	/^create_SVG_picture_of_transects = True$/;"	v
+create_SVG_showing_area_paths	options4rings.py	/^create_SVG_showing_area_paths = True $/;"	v
+create_SVG_showing_ring_sort	options4rings.py	/^create_SVG_showing_ring_sort = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+create_fixed_svg	options4rings.py	/^create_fixed_svg = True$/;"	v
+create_svg_highlighting_inappropriately_short_rings	options4rings.py	/^create_svg_highlighting_inappropriately_short_rings = True$/;"	v
+cropPath	andysSVGpathTools.py	/^def cropPath(path, T0, T1):  ###TOL uses isclose$/;"	f
+cropPath	rings4rings.py	/^from andysSVGpathTools import (path2str, printPath, pathT2tseg, cropPath,$/;"	i
+crop_to_unit_interval	fixsvg.py	/^def crop_to_unit_interval(tval, tol=opt.tol_intersections):$/;"	f
+cubPoints	andysSVGpathTools.py	/^def cubPoints(cubicbezier):$/;"	f
+cubicBoundingBoxArea	andysSVGpathTools.py	/^def cubicBoundingBoxArea(cub_points):$/;"	f
+cubicBoundingBoxesIntersect	andysSVGpathTools.py	/^def cubicBoundingBoxesIntersect($/;"	f
+cubicCurve	andysSVGpathTools.py	/^def cubicCurve(P, t):$/;"	f
+cubicMinMax_x	andysSVGpathTools.py	/^def cubicMinMax_x(points):$/;"	f
+cubicMinMax_y	andysSVGpathTools.py	/^def cubicMinMax_y(points):$/;"	f
+cubicPoints2RelString	andysSVGpathTools.py	/^def cubicPoints2RelString(P):$/;"	f
+cubicPoints2String	andysSVGpathTools.py	/^def cubicPoints2String(P):$/;"	f
+cubicXcubicIntersections	andysSVGpathTools.py	/^def cubicXcubicIntersections(cubs, Tol_deC=tol_intersections):$/;"	f
+cubicXlineIntersections	andysSVGpathTools.py	/^def cubicXlineIntersections(cub, line):$/;"	f
+current_time	area4rings.py	/^from time import time as current_time$/;"	i
+current_time	fixsvg.py	/^from time import time as current_time$/;"	i
+current_time	main.py	/^from time import time as current_time$/;"	i
+current_time	noIntersections4rings.py	/^    from time import time as current_time$/;"	i
+current_time	sorting4rings.py	/^from time import sleep, time as current_time$/;"	i
+current_time	svg2rings.py	/^from time import time as current_time$/;"	i
+current_time	transects4rings.py	/^    from time import time as current_time$/;"	i
+curvature	andysSVGpathTools.py	/^def curvature(path_or_seg, T_or_t, check_for_kinks=check_for_kinksTrue):$/;"	f
+curvature	andysmod.py	/^def curvature(func, tval, dt=0.01, num_pts_2use=100):$/;"	f
+debug_unlocated_rings_and_raise_error	sorting4rings.py	/^def debug_unlocated_rings_and_raise_error(unlocated_open_ring_indices,$/;"	f
+debugging_mode_on	options4rings.py	/^debugging_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+deliminate_and_write	transects4rings.py	/^    def deliminate_and_write(out_file,*args):$/;"	f	function:save_transect_summary
+dis	misc4rings.py	/^def dis(paths, colors=None, nodes=None, node_colors=None, node_radii=None,$/;"	f
+display2rings4user	misc4rings.py	/^def display2rings4user(green_index, red_index, ring_list, mode=None):$/;"	f
+displaySVGPaths	misc4rings.py	/^def displaySVGPaths(pathList, *colors):$/;"	f
+displaySVGPaths_named	misc4rings.py	/^def displaySVGPaths_named(pathList, name, *colors):$/;"	f
+displaySVGPaths_numbered	main.py	/^        from misc4rings import displaySVGPaths_numbered$/;"	i
+displaySVGPaths_numbered	misc4rings.py	/^def displaySVGPaths_numbered(pathList, savefile, *colors):$/;"	f
+displaySVGPaths_transects	main.py	/^from misc4rings import displaySVGPaths_transects, plotUnraveledRings$/;"	i
+displaySVGPaths_transects	misc4rings.py	/^def displaySVGPaths_transects(ring_list, transect_joints, transect_angles,$/;"	f
+displaySVGPaths_transects_old	misc4rings.py	/^def displaySVGPaths_transects_old(ringList, data_transects,$/;"	f
+dist	transects4rings.py	/^        def dist(res_):$/;"	f	function:invTransect
+distfcn	misc4rings.py	/^    def distfcn(self, T):$/;"	m	class:Theta_Tstar
+disvg	andysSVGpathTools.py	/^def disvg(paths, colors=[], nodes=None, node_colors=None, node_radii=None,$/;"	f
+disvg	area4rings.py	/^from andysSVGpathTools import reversePath, disvg$/;"	i
+disvg	debugtools.py	/^from svgpathtools import Line, disvg, svg2paths$/;"	i
+disvg	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+disvg	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+disvg	rings4rings.py	/^from svgpathtools import parse_path, Path, Line, CubicBezier, disvg$/;"	i
+disvg	smoothing4rings.py	/^from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength$/;"	i
+disvg	sorting4rings.py	/^from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg$/;"	i
+disvg	svg2rings.py	/^from svgpathtools import parse_path, Path, disvg$/;"	i
+division	andysSVGpathTools.py	/^from __future__ import division$/;"	i
+division	andysmod.py	/^from __future__ import division, print_function$/;"	i
+division	debugtools.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+division	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+division	fixsvg.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+division	main.py	/^from __future__ import division$/;"	i
+division	misc4rings.py	/^from __future__ import division$/;"	i
+division	noIntersections4rings.py	/^from __future__ import division$/;"	i
+division	smoothing4rings.py	/^from __future__ import division$/;"	i
+division	transects4rings.py	/^from __future__ import division$/;"	i
+dont_remove_closed_inappropriately_short_rings	options4rings.py	/^dont_remove_closed_inappropriately_short_rings = True$/;"	v
+dot	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+dot_prod	transects4rings.py	/^    def dot_prod(z1, z2):$/;"	f	function:isPointOutwardOfSeg
+dprint	andysmod.py	/^    def dprint(self, s, *nr):$/;"	m	class:ConditionalPrint
+endpt	rings4rings.py	/^    def endpt(self):$/;"	m	class:Ring
+error_list	main.py	/^    error_list = []$/;"	v
+error_log	main.py	/^    error_log = os.path.join(opt.output_directory, "error_list.txt")$/;"	v
+eucdist_numpy	andysmod.py	/^def eucdist_numpy(l1, l2):$/;"	f
+eucdist_numpy	misc4rings.py	/^from andysmod import memoize, bool2bin, eucdist_numpy$/;"	i
+eucdot	andysmod.py	/^def eucdot(l1, l2):$/;"	f
+eucnorm_numpy	andysmod.py	/^def eucnorm_numpy(lon):$/;"	f
+eucnormalize_numpy	andysmod.py	/^def eucnormalize_numpy(lon):$/;"	f
+eucnormalize_numpy	transects4rings.py	/^    from andysmod import eucnormalize_numpy, flattenList$/;"	i
+eval	findT0T1.py	/^    def eval(self,t):$/;"	m	class:s_func
+eval	findT0T1.py	/^    def eval(self,t):$/;"	m	class:tau_func
+extremePointInPath	andysSVGpathTools.py	/^def extremePointInPath(pt, path, min_or_max):  # 0=min, 1=max$/;"	f
+extremePointInPath	misc4rings.py	/^from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,$/;"	i
+findAppropriateTstep	noIntersections4rings.py	/^def findAppropriateTstep(path, T, stepInPositiveDirection):$/;"	f
+findLines2Bdry	rings4rings.py	/^    def findLines2Bdry(self,bdry_rectangle):$/;"	m	class:Ring
+findMiddleOfConnectingPath	rings4rings.py	/^    def findMiddleOfConnectingPath(self):$/;"	m	class:IncompleteRing
+findTransect2endpointFromInnerPath_normal	rings4rings.py	/^    def findTransect2endpointFromInnerPath_normal(self,irORcr_innerPath,innerPath,T_range,Tpf,endBin):$/;"	m	class:IncompleteRing
+findTransects2endpointsFromInnerPath_normal	rings4rings.py	/^    def findTransects2endpointsFromInnerPath_normal(self,irORcr_innerPath,innerPath):$/;"	m	class:IncompleteRing
+find_areas	options4rings.py	/^find_areas = True$/;"	v
+find_boundary_curve	findT0T1.py	/^def find_boundary_curve(cub,outer_path,endBin,center):$/;"	f
+find_ring_areas	area4rings.py	/^def find_ring_areas(sorted_ring_list, center, svgfile):$/;"	f
+find_ring_areas	main.py	/^        from area4rings import find_ring_areas$/;"	i
+fixClosure	rings4rings.py	/^    def fixClosure(self):$/;"	m	class:Ring
+fix_svg	fixsvg.py	/^def fix_svg(ring_list, center, svgname):$/;"	f
+fix_svg	main.py	/^from fixsvg import fix_svg$/;"	i
+flattenList	andysmod.py	/^def flattenList(list_2_flatten):$/;"	f
+flattenList	transects4rings.py	/^    from andysmod import eucnormalize_numpy, flattenList$/;"	i
+floating	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+followPathBackwards2LadderAndUpDown	rings4rings.py	/^    def followPathBackwards2LadderAndUpDown(self, irORcr, T0):$/;"	m	class:IncompleteRing
+for	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+force_remove_self_intersections	options4rings.py	/^force_remove_self_intersections = True $/;"	v
+forces	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+format001	andysmod.py	/^def format001(digits, num):$/;"	f
+format001	transects4rings.py	/^                    from andysmod import format001$/;"	i
+format__1	andysmod.py	/^def format__1(digits, num):$/;"	f
+format_exc	main.py	/^                    from traceback import format_exc$/;"	i
+format_time	andysmod.py	/^def format_time(et):$/;"	f
+format_time	area4rings.py	/^from andysmod import Radius, format_time$/;"	i
+format_time	fixsvg.py	/^from andysmod import format_time, inputyn$/;"	i
+format_time	main.py	/^from andysmod import format_time$/;"	i
+format_time	noIntersections4rings.py	/^    from andysmod import n_choose_k, format_time$/;"	i
+format_time	sorting4rings.py	/^from andysmod import (format_time, topo_sorted, createOrderingMatrix,$/;"	i
+format_time	svg2rings.py	/^from andysmod import format_time, Radius$/;"	i
+format_time	transects4rings.py	/^    from andysmod import Timer, format_time$/;"	i
+format_time	transects4rings.py	/^    from andysmod import format_time$/;"	i
+full_output_on	options4rings.py	/^full_output_on = ConditionalPrint(False)$/;"	v
+func_wrapper	misc4rings.py	/^   def func_wrapper(*args, **kwargs):$/;"	f	function:remove_degenerate_segments_helper
+g	transects4rings.py	/^    def g(ridx):$/;"	f	function:save_transect_summary
+generate_evenly_spaced_transects	options4rings.py	/^generate_evenly_spaced_transects = True$/;"	v
+generate_inverse_transects	main.py	/^from transects4rings import (generate_inverse_transects,$/;"	i
+generate_inverse_transects	transects4rings.py	/^def generate_inverse_transects(ring_list, Tvals):$/;"	f
+generate_sorted_transects	transects4rings.py	/^def generate_sorted_transects(ring_list, center, angles2use=None):$/;"	f
+generate_unsorted_transects	main.py	/^            from transects4rings import generate_unsorted_transects$/;"	i
+generate_unsorted_transects	transects4rings.py	/^def generate_unsorted_transects(ring_list, center):$/;"	f
+get_center	svg2rings.py	/^def get_center(doc):$/;"	f
+get_stroke	svg2rings.py	/^def get_stroke(elem):$/;"	f
+get_user_args	main.py	/^def get_user_args():$/;"	f
+getch	andysmod.py	/^getch = _Getch()$/;"	v
+getcwd	andysSVGpathTools.py	/^from os import getcwd, path as os_path, listdir, unlink, makedirs$/;"	i
+getcwd	misc4rings.py	/^from os import getcwd, path as os_path$/;"	i
+getcwd	options4rings.py	/^from os import getcwd$/;"	i
+gettempdir	options4rings.py	/^from tempfile import gettempdir$/;"	i
+halveCubic	andysSVGpathTools.py	/^def halveCubic(P):$/;"	f
+hardComplete	rings4rings.py	/^    def hardComplete(self, tol_closure=opt.tol_isApproxClosedPath):$/;"	m	class:IncompleteRing
+hex2rgb	misc4rings.py	/^def hex2rgb(value):$/;"	f
+icurvature	fixsvg.py	/^            def icurvature(segment, kappa):$/;"	f	function:fix_svg._remove_seg
+if_file_throws_error_skip_and_move_to_next_file	options4rings.py	/^if_file_throws_error_skip_and_move_to_next_file = True$/;"	v
+ignoreCase	andysmod.py	/^def ignoreCase(*something_to_say):$/;"	f
+ignore_extant_pickle_file	options4rings.py	/^ignore_extant_pickle_file = True$/;"	v
+ignore_extant_sorted_pickle_file	options4rings.py	/^ignore_extant_sorted_pickle_file = True$/;"	v
+ignore_unremovable_kinks	options4rings.py	/^ignore_unremovable_kinks = True$/;"	v
+imag	fixsvg.py	/^            from svgpathtools import real, imag$/;"	i
+inf	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+info	rings4rings.py	/^    def info(self, cp_index, colordict):$/;"	m	class:IncompleteRing
+info	rings4rings.py	/^    def info(self,cp_index,colordict):$/;"	m	class:CompleteRing
+input_path	options4rings.py	/^input_path = os_path.join(getcwd(), 'input')$/;"	v
+inputyn	andysmod.py	/^def inputyn():$/;"	f
+inputyn	fixsvg.py	/^from andysmod import format_time, inputyn$/;"	i
+int	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+intersect	sorting4rings.py	/^    def intersect(self, path):$/;"	m	class:ClosedPair
+intersection_removal_progress_output_on	noIntersections4rings.py	/^    from options4rings import intersection_removal_progress_output_on$/;"	i
+intersection_removal_progress_output_on	options4rings.py	/^intersection_removal_progress_output_on = ConditionalPrint(True)$/;"	v
+intervalIntersectionWidth	andysSVGpathTools.py	/^def intervalIntersectionWidth(a, b, c,$/;"	f
+invTransect	transects4rings.py	/^def invTransect(T, sorted_ring_list, warnifnotunique=True):$/;"	f
+inv_arclength	misc4rings.py	/^def inv_arclength(curve, s):$/;"	f
+inv_arclength	smoothing4rings.py	/^from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength$/;"	i
+irpoint	rings4rings.py	/^    def irpoint(self, pos):$/;"	m	class:IncompleteRing
+isApproxClosedPath	misc4rings.py	/^def isApproxClosedPath(path):$/;"	f
+isApproxClosedPath	svg2rings.py	/^from misc4rings import isCCW, closestColor, isApproxClosedPath$/;"	i
+isApproxClosedRing	rings4rings.py	/^    def isApproxClosedRing(self):$/;"	m	class:Ring
+isCCW	area4rings.py	/^from misc4rings import centerSquare, isCCW$/;"	i
+isCCW	misc4rings.py	/^def isCCW(path, center):$/;"	f
+isCCW	svg2rings.py	/^from misc4rings import isCCW, closestColor, isApproxClosedPath$/;"	i
+isClosed	andysSVGpathTools.py	/^def isClosed(path_or_seg):$/;"	f
+isClosed	rings4rings.py	/^    def isClosed(self):$/;"	m	class:Ring
+isClosed	transects4rings.py	/^from andysSVGpathTools import pathT2tseg, segDerivative, isClosed$/;"	i
+isClosedPathStr	andysSVGpathTools.py	/^def isClosedPathStr(pathStr):$/;"	f
+isClosedPathStr	svg2rings.py	/^from andysSVGpathTools import polylineStr2pathStr, isClosedPathStr$/;"	i
+isDegenerateSegment	misc4rings.py	/^def isDegenerateSegment(seg, tol_degSeg=1):  # #### TOLERANCE$/;"	f
+isNear	misc4rings.py	/^def isNear(p, q):$/;"	f
+isNear	noIntersections4rings.py	/^from misc4rings import isNear$/;"	i
+isNotTooFarFrom	misc4rings.py	/^def isNotTooFarFrom(p, q):$/;"	f
+isPointOutwardOfPath	fixsvg.py	/^from transects4rings import isPointOutwardOfPath$/;"	i
+isPointOutwardOfPath	transects4rings.py	/^def isPointOutwardOfPath(pt, path, outerRing=None, justone=False):$/;"	f
+isPointOutwardOfSeg	transects4rings.py	/^def isPointOutwardOfSeg(pt, seg):$/;"	f
+is_differentiable	smoothing4rings.py	/^def is_differentiable(path, tol=1e-8, return_kinks=False):$/;"	f
+isclose	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+isclose	findT0T1.py	/^from numpy import roots, isclose$/;"	i
+isclose	noIntersections4rings.py	/^from numpy import isclose$/;"	i
+isclose	smoothing4rings.py	/^from numpy import isclose$/;"	i
+isclose	transects4rings.py	/^from svgpathtools.misctools import isclose$/;"	i
+isnan	sorting4rings.py	/^from numpy import NaN, isnan, where, transpose$/;"	i
+itemgetter	andysSVGpathTools.py	/^from operator import itemgetter$/;"	i
+itemgetter	findT0T1.py	/^from operator import itemgetter$/;"	i
+itemgetter	misc4rings.py	/^from operator import itemgetter$/;"	i
+itemgetter	rings4rings.py	/^from operator import itemgetter$/;"	i
+itemgetter	sorting4rings.py	/^from operator import itemgetter$/;"	i
+itemgetter	transects4rings.py	/^    from operator import itemgetter$/;"	i
+kinks	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+kinks	smoothing4rings.py	/^def kinks(path, tol=1e-8, return_kinks=False):$/;"	f
+limit	andysSVGpathTools.py	/^        from andysmod import limit$/;"	i
+limit	andysmod.py	/^def limit(func, t0, side=0, epsilon=1e-16, delta0=0.5, maxits=10000, n=5):$/;"	f
+linePts2pathStr	andysSVGpathTools.py	/^def linePts2pathStr(p0, p1):  # formerly pts2lineStr$/;"	f
+lineXlineIntersections	andysSVGpathTools.py	/^def lineXlineIntersections(seg1, seg2):$/;"	f
+listdir	andysSVGpathTools.py	/^from os import getcwd, path as os_path, listdir, unlink, makedirs$/;"	i
+longPart	noIntersections4rings.py	/^def longPart(path, T, remove_a_little_extra=True):$/;"	f
+look_for_user_sort_input	options4rings.py	/^look_for_user_sort_input = False$/;"	v
+makedirs	andysSVGpathTools.py	/^from os import getcwd, path as os_path, listdir, unlink, makedirs$/;"	i
+manually_fix_orientations	options4rings.py	/^manually_fix_orientations = True$/;"	v
+manually_fix_sorting	options4rings.py	/^manually_fix_sorting = True$/;"	v
+matplotlib	andysmod.py	/^    import matplotlib.pyplot as plt$/;"	i
+matplotlib	misc4rings.py	/^    import matplotlib.pyplot as plt$/;"	i
+matrix	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+maxR	rings4rings.py	/^    def maxR(self):$/;"	m	class:CompleteRing
+maxRadius	andysSVGpathTools.py	/^def maxRadius(origin, path):$/;"	f
+maxjointsize	options4rings.py	/^maxjointsize = 3  # smoothing parameter  (must be positive)$/;"	v
+md_xml_parse	andysSVGpathTools.py	/^    from xml.dom.minidom import parse as md_xml_parse$/;"	i
+memoize	andysSVGpathTools.py	/^from andysmod import open_in_browser, memoize$/;"	i
+memoize	andysmod.py	/^def memoize(f):$/;"	f
+memoize	misc4rings.py	/^from andysmod import memoize, bool2bin, eucdist_numpy$/;"	i
+minR	rings4rings.py	/^    def minR(self):$/;"	m	class:CompleteRing
+minRadius	andysSVGpathTools.py	/^def minRadius(origin, path):$/;"	f
+min_absolute_segment_length	options4rings.py	/^min_absolute_segment_length = 1e-4$/;"	v
+min_relative_segment_length	options4rings.py	/^min_relative_segment_length = 0$/;"	v
+minidom	andysSVGpathTools.py	/^from xml.dom import minidom$/;"	i
+minidom	svg2rings.py	/^from xml.dom import minidom$/;"	i
+msvcrt	andysmod.py	/^        import msvcrt$/;"	i
+n_choose_k	andysmod.py	/^def n_choose_k(n, k):$/;"	f
+n_choose_k	noIntersections4rings.py	/^    from andysmod import n_choose_k, format_time$/;"	i
+norm	andysmod.py	/^    from numpy.linalg import norm$/;"	i
+normal	andysSVGpathTools.py	/^def normal(path_or_seg, T_or_t):$/;"	f
+normalLineAtT_toInner_intersects_withOuter	findT0T1.py	/^from misc4rings import normalLineAtT_toInner_intersects_withOuter$/;"	i
+normalLineAtT_toInner_intersects_withOuter	misc4rings.py	/^def normalLineAtT_toInner_intersects_withOuter($/;"	f
+normalLineAtT_toInner_intersects_withOuter	rings4rings.py	/^from misc4rings import (Theta_Tstar, normalLineAtT_toInner_intersects_withOuter,$/;"	i
+normalLineAtT_toInner_intersects_withOuter	sorting4rings.py	/^from misc4rings import (normalLineAtT_toInner_intersects_withOuter,$/;"	i
+normalLineAtT_toInner_intersects_withOuter	transects4rings.py	/^from misc4rings import normalLineAtT_toInner_intersects_withOuter$/;"	i
+normalLineAt_t_toInnerSeg_intersects_withOuter	misc4rings.py	/^def normalLineAt_t_toInnerSeg_intersects_withOuter($/;"	f
+normalized	transects4rings.py	/^    def normalized(vec):$/;"	f	function:save_transect_summary
+normalvf	debugtools.py	/^def normalvf(paths, cols, l=None, sw=.1):$/;"	f
+np	andysmod.py	/^import numpy as np$/;"	i
+np	debugtools.py	/^import numpy as np$/;"	i
+np	main.py	/^import numpy as np$/;"	i
+nparray2nestedlist	andysmod.py	/^def nparray2nestedlist(npa):  # 2d arrays only$/;"	f
+of	andysmod.py	/^    def of(self, pt):$/;"	m	class:Radius
+open_in_browser	andysSVGpathTools.py	/^from andysmod import open_in_browser, memoize$/;"	i
+open_in_browser	andysmod.py	/^def open_in_browser(file_location):$/;"	f
+operator	misc4rings.py	/^    import operator$/;"	i
+operator	transects4rings.py	/^    import operator$/;"	i
+opt	andysSVGpathTools.py	/^import options4rings as opt$/;"	i
+opt	fixsvg.py	/^import options4rings as opt$/;"	i
+opt	main.py	/^import options4rings as opt$/;"	i
+opt	misc4rings.py	/^import options4rings as opt$/;"	i
+opt	rings4rings.py	/^import options4rings as opt$/;"	i
+opt	sorting4rings.py	/^import options4rings as opt$/;"	i
+opt	svg2rings.py	/^import options4rings as opt$/;"	i
+opt	transects4rings.py	/^import options4rings as opt$/;"	i
+os	andysmod.py	/^import os$/;"	i
+os	fixsvg.py	/^import os$/;"	i
+os	main.py	/^import os$/;"	i
+os	sorting4rings.py	/^import os$/;"	i
+os	transects4rings.py	/^import os$/;"	i
+os_path	andysSVGpathTools.py	/^from os import getcwd, path as os_path, listdir, unlink, makedirs$/;"	i
+os_path	area4rings.py	/^from os import path as os_path$/;"	i
+os_path	misc4rings.py	/^from os import getcwd, path as os_path$/;"	i
+os_path	options4rings.py	/^from os import path as os_path$/;"	i
+os_path	sorting4rings.py	/^        from os import path as os_path$/;"	i
+os_path	sorting4rings.py	/^    from os import path as os_path$/;"	i
+os_path	svg2rings.py	/^    from os import path as os_path$/;"	i
+output2file	andysSVGpathTools.py	/^    from andysmod import output2file$/;"	i
+output2file	andysmod.py	/^def output2file(string2output, $/;"	f
+output2file	sorting4rings.py	/^    from andysmod import output2file$/;"	i
+outputTroubledCPs	options4rings.py	/^outputTroubledCPs = True$/;"	v
+output_directory	options4rings.py	/^output_directory = os_path.join(gettempdir(), 'svg-dendro-output')$/;"	v
+output_directory	sorting4rings.py	/^        from options4rings import output_directory$/;"	i
+output_directory	sorting4rings.py	/^    from options4rings import output_directory$/;"	i
+output_directory_debug	options4rings.py	/^output_directory_debug = os_path.join(output_directory, "debug")$/;"	v
+palette_check	fixsvg.py	/^    from svg2rings import palette_check$/;"	i
+palette_check	svg2rings.py	/^def palette_check(ring_list):$/;"	f
+parseCCW	rings4rings.py	/^    def parseCCW(self):$/;"	m	class:Ring
+parse_path	andysSVGpathTools.py	/^from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots$/;"	i
+parse_path	area4rings.py	/^from svgpathtools import parse_path, wsvg, Line$/;"	i
+parse_path	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+parse_path	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+parse_path	rings4rings.py	/^from svgpathtools import parse_path, Path, Line, CubicBezier, disvg$/;"	i
+parse_path	svg2rings.py	/^from svgpathtools import parse_path, Path, disvg$/;"	i
+pasteablePath	andysSVGpathTools.py	/^def pasteablePath(path):$/;"	f
+pasteableRing	misc4rings.py	/^def pasteableRing(ring):$/;"	f
+path	rings4rings.py	/^    def path(self):$/;"	m	class:Ring
+path	rings4rings.py	/^    def path(self, new_path):$/;"	m	class:Ring
+path2str	andysSVGpathTools.py	/^def path2str(path, closure_tolerance=0):$/;"	f
+path2str	misc4rings.py	/^from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,$/;"	i
+path2str	rings4rings.py	/^from andysSVGpathTools import (path2str, printPath, pathT2tseg, cropPath,$/;"	i
+pathSegDerivative	andysSVGpathTools.py	/^def pathSegDerivative(path, T):$/;"	f
+pathT2tseg	andysSVGpathTools.py	/^def pathT2tseg(path, T):  # formerly pathT2seg$/;"	f
+pathT2tseg	rings4rings.py	/^from andysSVGpathTools import (path2str, printPath, pathT2tseg, cropPath,$/;"	i
+pathT2tseg	transects4rings.py	/^from andysSVGpathTools import pathT2tseg, segDerivative, isClosed$/;"	i
+pathXlineIntersections	andysSVGpathTools.py	/^def pathXlineIntersections(inline, path):$/;"	f
+pathXpathIntersections	andysSVGpathTools.py	/^def pathXpathIntersections(path1, path2, justonemode=False, tol=1e-4):$/;"	f
+pathXpathIntersections	fixsvg.py	/^from misc4rings import pathXpathIntersections$/;"	i
+path_around_bdry	rings4rings.py	/^    def path_around_bdry(self,bdry_path):$/;"	m	class:Ring
+path_encloses_pt	sorting4rings.py	/^from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg$/;"	i
+path_isbelow_point	misc4rings.py	/^def path_isbelow_point(path, pt, center):$/;"	f
+path_listXpathIntersections	andysSVGpathTools.py	/^def path_listXpathIntersections(path_list,$/;"	f
+pathlistXlineIntersections	andysSVGpathTools.py	/^def pathlistXlineIntersections(inline, path_list):$/;"	f
+pathlistXlineIntersections	transects4rings.py	/^    from andysSVGpathTools import pathlistXlineIntersections$/;"	i
+percentage_for_disagreement	options4rings.py	/^percentage_for_disagreement = 0.15 $/;"	v
+phase	misc4rings.py	/^from cmath import phase$/;"	i
+pi	misc4rings.py	/^from math import sqrt, cos, sin, pi$/;"	i
+pickle	main.py	/^import _pickle as pickle$/;"	i
+pickle	sorting4rings.py	/^import _pickle as pickle$/;"	i
+pickle_dir	options4rings.py	/^pickle_dir = os_path.join(output_directory, "pickle_files")$/;"	v
+plotPoints	andysmod.py	/^def plotPoints(points):$/;"	f
+plotUnraveledRings	main.py	/^from misc4rings import displaySVGPaths_transects, plotUnraveledRings$/;"	i
+plotUnraveledRings	misc4rings.py	/^def plotUnraveledRings(ring_list,center):$/;"	f
+plt	andysmod.py	/^    import matplotlib.pyplot as plt$/;"	i
+plt	misc4rings.py	/^    import matplotlib.pyplot as plt$/;"	i
+point	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+point	rings4rings.py	/^    def point(self, pos):$/;"	m	class:Ring
+poly1d	transects4rings.py	/^from numpy import poly1d$/;"	i
+poly_imag_part	transects4rings.py	/^poly_imag_part = imag$/;"	v
+poly_real_part	transects4rings.py	/^poly_real_part = real$/;"	v
+polylineStr2pathStr	andysSVGpathTools.py	/^def polylineStr2pathStr(polylineStr):$/;"	f
+polylineStr2pathStr	svg2rings.py	/^from andysSVGpathTools import polylineStr2pathStr, isClosedPathStr$/;"	i
+polyroots	andysSVGpathTools.py	/^from svgpathtools import Path, Line, CubicBezier, parse_path, polyroots$/;"	i
+polyroots	transects4rings.py	/^from svgpathtools import (Path, Line, CubicBezier, polyroots, real,$/;"	i
+polyroots01	fixsvg.py	/^            from svgpathtools.polytools import polyroots01$/;"	i
+postsort_ring1_isoutside_ring2_cmp	sorting4rings.py	/^def postsort_ring1_isoutside_ring2_cmp(ring1,ring2):$/;"	f
+printPath	andysSVGpathTools.py	/^def printPath(path):$/;"	f
+printPath	rings4rings.py	/^from andysSVGpathTools import (path2str, printPath, pathT2tseg, cropPath,$/;"	i
+print_function	andysmod.py	/^from __future__ import division, print_function$/;"	i
+print_function	debugtools.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+print_function	fixsvg.py	/^from __future__ import division, absolute_import, print_function$/;"	i
+printmat	andysmod.py	/^def printmat(arr, row_labels=[], col_labels=[]):$/;"	f
+printvars	andysmod.py	/^def printvars(*vargs):$/;"	f
+ptInPath2tseg	andysSVGpathTools.py	/^def ptInPath2tseg(pt, path, tol=0.1):  # formerly pt2tvalinPath$/;"	f
+ptInsideClosedPath	andysSVGpathTools.py	/^def ptInsideClosedPath(pt, outpt, path):$/;"	f
+quad	andysSVGpathTools.py	/^from scipy.integrate import quad$/;"	i
+quad	misc4rings.py	/^from scipy.integrate import quad$/;"	i
+re	svg2rings.py	/^import re$/;"	i
+real	fixsvg.py	/^            from svgpathtools import real, imag$/;"	i
+real	transects4rings.py	/^from svgpathtools import (Path, Line, CubicBezier, polyroots, real,$/;"	i
+record_ring1_isbelow_ring2	sorting4rings.py	/^def record_ring1_isbelow_ring2(ring1,ring2):$/;"	f
+record_wasClosed	rings4rings.py	/^    def record_wasClosed(self):$/;"	m	class:Ring
+remove_curly_ends	options4rings.py	/^remove_curly_ends = True$/;"	v
+remove_degenerate_segments	misc4rings.py	/^def remove_degenerate_segments(path):$/;"	f
+remove_degenerate_segments	svg2rings.py	/^def remove_degenerate_segments(path):$/;"	f
+remove_degenerate_segments_helper	misc4rings.py	/^def remove_degenerate_segments_helper(func):$/;"	f
+remove_duplicate_segments	svg2rings.py	/^def remove_duplicate_segments(path):$/;"	f
+remove_inappropriately_short_rings	options4rings.py	/^remove_inappropriately_short_rings = True$/;"	v
+remove_intersections	noIntersections4rings.py	/^def remove_intersections(ipath, jpath, iclosed, jclosed, iringupdated=False, jringupdated=False): #removes one intersection at a time until all are gone$/;"	f
+remove_intersections_from_rings	fixsvg.py	/^        from noIntersections4rings import remove_intersections_from_rings$/;"	i
+remove_intersections_from_rings	noIntersections4rings.py	/^def remove_intersections_from_rings(rings):$/;"	f
+remove_self_intersections	options4rings.py	/^remove_self_intersections = True  $/;"	v
+resolve_orientation_manually	svg2rings.py	/^def resolve_orientation_manually(path, center, ring_list):$/;"	f
+reversePath	andysSVGpathTools.py	/^def reversePath(path):$/;"	f
+reversePath	area4rings.py	/^from andysSVGpathTools import reversePath, disvg$/;"	i
+reverseSeg	andysSVGpathTools.py	/^def reverseSeg(seg):$/;"	f
+rgb2hex	misc4rings.py	/^def rgb2hex(rgb):$/;"	f
+ring1_isabove_ring2_forCertain_cmp	sorting4rings.py	/^def ring1_isabove_ring2_forCertain_cmp(ring1,ring2,sort_round=0,solo_round=False):$/;"	f
+ring1_isbelow_ring2_numHits	sorting4rings.py	/^def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):$/;"	f
+ring1_isknowntobebelow_ring2	sorting4rings.py	/^def ring1_isknowntobebelow_ring2(ring1,ring2):$/;"	f
+ring1_isoutside_ring2_cmp	sorting4rings.py	/^def ring1_isoutside_ring2_cmp(ring1,ring2,outside_point,bdry_path):$/;"	f
+ring1_isoutside_ring2_cmp_alt	sorting4rings.py	/^def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,$/;"	f
+ring_index_cmp	sorting4rings.py	/^        def ring_index_cmp(idx1, idx2): $/;"	f	function:sort_rings
+ring_index_cmp	sorting4rings.py	/^        def ring_index_cmp(idx1, idx2):$/;"	f	function:sort_rings
+rings_may_contain_intersections	options4rings.py	/^rings_may_contain_intersections = False$/;"	v
+rings_may_contain_unremoved_kinks	andysSVGpathTools.py	/^    try_to_open_svgs_in_browser, rings_may_contain_unremoved_kinks$/;"	i
+rings_may_contain_unremoved_kinks	options4rings.py	/^rings_may_contain_unremoved_kinks = True  $/;"	v
+roots	andysSVGpathTools.py	/^from numpy import array, dot, roots, isclose, matrix, inf$/;"	i
+roots	findT0T1.py	/^from numpy import roots, isclose$/;"	i
+s_eval	findT0T1.py	/^def s_eval(t,t1,a0,a1,a2,a3,b0,b1,b2,b3):$/;"	f
+s_func	findT0T1.py	/^class s_func(object):$/;"	c
+save_path_length_in_pickle	options4rings.py	/^save_path_length_in_pickle = True  $/;"	v
+save_transect_data	main.py	/^        from transects4rings import save_transect_data, save_transect_summary$/;"	i
+save_transect_data	transects4rings.py	/^def save_transect_data(outputFile_transects, ring_list, data, data_indices,$/;"	f
+save_transect_summary	main.py	/^        from transects4rings import save_transect_data, save_transect_summary$/;"	i
+save_transect_summary	transects4rings.py	/^def save_transect_summary(outputFile_transect_summary, ring_list, data,$/;"	f
+segBoundingBox	andysSVGpathTools.py	/^    def segBoundingBox(seg):$/;"	f	function:boundingBox
+segCurvature	andysSVGpathTools.py	/^def segCurvature(seg, t,$/;"	f
+segDerivative	andysSVGpathTools.py	/^def segDerivative(seg, t):$/;"	f
+segDerivative	misc4rings.py	/^from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,$/;"	i
+segDerivative	transects4rings.py	/^from andysSVGpathTools import pathT2tseg, segDerivative, isClosed$/;"	i
+segUnitTangent	andysSVGpathTools.py	/^def segUnitTangent(seg, t, dt=1e-2):$/;"	f
+segUnitTangent	transects4rings.py	/^        from andysSVGpathTools import segUnitTangent$/;"	i
+seg_index	andysSVGpathTools.py	/^def seg_index(path, seg):$/;"	f
+segt2PathT	andysSVGpathTools.py	/^def segt2PathT(path, seg, t):  # formerly segt2PathT$/;"	f
+set_inner	rings4rings.py	/^    def set_inner(self, ring):$/;"	m	class:IncompleteRing
+set_outer	rings4rings.py	/^    def set_outer(self, ring):$/;"	m	class:IncompleteRing
+shortPart	noIntersections4rings.py	/^def shortPart(path,T):$/;"	f
+showCurrentFilesProgress	options4rings.py	/^showCurrentFilesProgress = ConditionalPrint(True)$/;"	v
+showUnraveledRingPlot	options4rings.py	/^showUnraveledRingPlot = False$/;"	v
+show_transect_progress	options4rings.py	/^show_transect_progress = ConditionalPrint(True) # Only applies to inverse transects.$/;"	v
+sin	misc4rings.py	/^from math import sqrt, cos, sin, pi$/;"	i
+skip_transects_that_dont_exist	options4rings.py	/^skip_transects_that_dont_exist = True $/;"	v
+sleep	sorting4rings.py	/^from time import sleep, time as current_time$/;"	i
+smooth_joint	smoothing4rings.py	/^def smooth_joint(seg0, seg1, maxjointsize=3, tightness=1):$/;"	f
+smooth_path	smoothing4rings.py	/^def smooth_path(path, ignore_unfixable_kinks=False):$/;"	f
+smooth_rings	options4rings.py	/^smooth_rings = True  # If True, rings will be check for kinks and smoothed$/;"	v
+sortIRs	rings4rings.py	/^    def sortIRs(self):$/;"	m	class:CompleteRing
+sortRingListByMinR	misc4rings.py	/^def sortRingListByMinR(ring_list):$/;"	f
+sortUpLadders	rings4rings.py	/^    def sortUpLadders(self):$/;"	m	class:CompleteRing
+sortUpLadders	rings4rings.py	/^    def sortUpLadders(self):$/;"	m	class:IncompleteRing
+sort_debug_3_on	options4rings.py	/^sort_debug_3_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+sort_debug_mode_on	options4rings.py	/^sort_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+sort_rings	main.py	/^            from sorting4rings import sort_rings$/;"	i
+sort_rings	sorting4rings.py	/^def sort_rings(ring_list, om_pickle_file):$/;"	f
+sort_rings_on	options4rings.py	/^sort_rings_on = True$/;"	v
+sortby	misc4rings.py	/^def sortby(x, k):$/;"	f
+sortby	rings4rings.py	/^def sortby(x, k):$/;"	f
+splitBezier	andysSVGpathTools.py	/^def splitBezier(points, t):$/;"	f
+splitBezier_deCasteljau_recursion	andysSVGpathTools.py	/^def splitBezier_deCasteljau_recursion(cub_lr, points, t):$/;"	f
+sqrt	andysSVGpathTools.py	/^from math import sqrt$/;"	i
+sqrt	misc4rings.py	/^from math import sqrt, cos, sin, pi$/;"	i
+sqrt	transects4rings.py	/^from math import sqrt$/;"	i
+standard2bezier	andysSVGpathTools.py	/^def standard2bezier(coeffs):$/;"	f
+start_at_file_number	options4rings.py	/^start_at_file_number = 0$/;"	v
+startpt	rings4rings.py	/^    def startpt(self):$/;"	m	class:Ring
+stcubic_eval	andysSVGpathTools.py	/^def stcubic_eval(coeffs, t):$/;"	f
+stdout	andysmod.py	/^                from sys import stdout$/;"	i
+stdout	andysmod.py	/^from sys import stdout$/;"	i
+stdout	main.py	/^                    from sys import stdout$/;"	i
+stroke_width_default	andysSVGpathTools.py	/^    try_to_open_svgs_in_browser, rings_may_contain_unremoved_kinks$/;"	i
+stroke_width_default	options4rings.py	/^stroke_width_default = 0.1$/;"	v
+svg2normalvf	debugtools.py	/^def svg2normalvf(fn, l=None, sw=.1):$/;"	f
+svg2pathlist	andysSVGpathTools.py	/^def svg2pathlist(SVGfileLocation):$/;"	f
+svg2paths	debugtools.py	/^from svgpathtools import Line, disvg, svg2paths$/;"	i
+svg2rings	main.py	/^from svg2rings import svg2rings$/;"	i
+svg2rings	svg2rings.py	/^def svg2rings(filename):$/;"	f
+svgSlideShow	andysSVGpathTools.py	/^def svgSlideShow(pathcolortuplelist, save_directory=None,$/;"	f
+svgSlideShow	svg2rings.py	/^    from andysSVGpathTools import svgSlideShow$/;"	i
+svgfiles	main.py	/^        svgfiles = [opt.input_path]$/;"	v
+svgfiles	main.py	/^        svgfiles = [os.path.join(opt.input_path, fn)$/;"	v
+svgtree	main.py	/^def svgtree(filepath, error_list):$/;"	f
+svgwrite	andysSVGpathTools.py	/^    import svgwrite$/;"	i
+svgwrite	misc4rings.py	/^    import svgwrite$/;"	i
+sys	andysmod.py	/^        import sys, tty, termios$/;"	i
+sys	andysmod.py	/^        import tty, sys$/;"	i
+tangentfunc	andysSVGpathTools.py	/^        def tangentfunc(tval):$/;"	f	function:segUnitTangent
+tau_eval	findT0T1.py	/^def tau_eval(t,t1,a0,a1,a2,a3,b0,b1,b2,b3):$/;"	f
+tau_func	findT0T1.py	/^class tau_func(object):$/;"	c
+tee	andysmod.py	/^from itertools import tee$/;"	i
+termios	andysmod.py	/^        import sys, tty, termios$/;"	i
+tightness	options4rings.py	/^tightness = 1.99  # smoothing parameter (must be in (0, 2))$/;"	v
+time	andysmod.py	/^import time$/;"	i
+tol_intersections	andysSVGpathTools.py	/^    try_to_open_svgs_in_browser, rings_may_contain_unremoved_kinks$/;"	i
+tol_intersections	options4rings.py	/^tol_intersections = 1e-4$/;"	v
+tol_isApproxClosedPath	options4rings.py	/^tol_isApproxClosedPath = 0.1  $/;"	v
+tol_isNear	options4rings.py	/^tol_isNear = .1  $/;"	v
+topo_sorted	andysmod.py	/^def topo_sorted(list_of_objects, cmp_fcn, test_symmetry=False,$/;"	f
+topo_sorted	sorting4rings.py	/^from andysmod import (format_time, topo_sorted, createOrderingMatrix,$/;"	i
+toposort	andysmod.py	/^    from toposort import toposort$/;"	i
+toposort	toposort.py	/^def toposort(data):$/;"	f
+toposort_flatten	toposort.py	/^def toposort_flatten(data, sort=True):$/;"	f
+transect_debug_mode_on	options4rings.py	/^transect_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+transect_debug_mode_output_folder	options4rings.py	/^transect_debug_mode_output_folder = os_path.join(output_directory, "debug")$/;"	v
+transect_from_angle	misc4rings.py	/^def transect_from_angle(angle, startPoint, outerPath, *debug):$/;"	f
+transpose	sorting4rings.py	/^from numpy import NaN, isnan, where, transpose$/;"	i
+trimAndAddTransectsBeforeCompletion	rings4rings.py	/^    def trimAndAddTransectsBeforeCompletion(self):$/;"	m	class:IncompleteRing
+trimSeg	andysSVGpathTools.py	/^def trimSeg(seg, t0, t1):$/;"	f
+try_to_open_svgs_in_browser	andysSVGpathTools.py	/^    try_to_open_svgs_in_browser, rings_may_contain_unremoved_kinks$/;"	i
+try_to_open_svgs_in_browser	misc4rings.py	/^    from options4rings import try_to_open_svgs_in_browser, colordict$/;"	i
+try_to_open_svgs_in_browser	options4rings.py	/^try_to_open_svgs_in_browser = True$/;"	v
+tty	andysmod.py	/^        import sys, tty, termios$/;"	i
+tty	andysmod.py	/^        import tty, sys$/;"	i
+type	rings4rings.py	/^    def type(self, colordict):$/;"	m	class:CompleteRing
+type	rings4rings.py	/^    def type(self, colordict):$/;"	m	class:IncompleteRing
+uniform	andysmod.py	/^    from random import uniform$/;"	i
+uniform	transects4rings.py	/^    from random import uniform$/;"	i
+unitTangent	andysSVGpathTools.py	/^def unitTangent(path_or_seg, T_or_t):$/;"	f
+unlink	andysSVGpathTools.py	/^from os import getcwd, path as os_path, listdir, unlink, makedirs$/;"	i
+unsorted_index	transects4rings.py	/^    def unsorted_index(idx):$/;"	f	function:generate_inverse_transects
+unsorted_index	transects4rings.py	/^    def unsorted_index(idx):$/;"	f	function:generate_sorted_transects
+unsorted_transect_debug_on	options4rings.py	/^unsorted_transect_debug_on = False $/;"	v
+unsorted_transect_debug_output_folder	options4rings.py	/^unsorted_transect_debug_output_folder = os_path.join(output_directory, "debug", "transect_slides")$/;"	v
+updatePath	rings4rings.py	/^    def updatePath(self, new_path):$/;"	m	class:Ring
+use	findT0T1.py	/^from __future__ import division #forces floating point division (use \/\/ for int division)$/;"	i
+use_alternative_sorting_method	options4rings.py	/^use_alternative_sorting_method = True$/;"	v
+use_alternative_sorting_method	sorting4rings.py	/^from options4rings import (basic_output_on, use_alternative_sorting_method,$/;"	i
+use_ring_sort_4transects	options4rings.py	/^use_ring_sort_4transects = True$/;"	v
+user_args	main.py	/^    user_args = get_user_args()$/;"	v
+visual_test_of_all_ring_sort_on	options4rings.py	/^visual_test_of_all_ring_sort_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN$/;"	v
+visual_test_of_closed_ring_sort	svg2rings.py	/^def visual_test_of_closed_ring_sort(ring_list):$/;"	f
+visual_test_of_ring_sort	main.py	/^        from svg2rings import visual_test_of_ring_sort$/;"	i
+visual_test_of_ring_sort	svg2rings.py	/^def visual_test_of_ring_sort(ring_list):$/;"	f
+warn	andysSVGpathTools.py	/^        from warnings import warn$/;"	i
+warn	andysmod.py	/^        from warnings import warn$/;"	i
+warn	fixsvg.py	/^from warnings import warn$/;"	i
+warn	sorting4rings.py	/^            from warnings import warn$/;"	i
+warn	transects4rings.py	/^from warnings import warn$/;"	i
+warn_if_not_unique	options4rings.py	/^warn_if_not_unique = False $/;"	v
+warnings_output_on	options4rings.py	/^warnings_output_on = ConditionalPrint(True)$/;"	v
+webbrowser	andysmod.py	/^        import webbrowser$/;"	i
+when_orientation_cannot_be_determined_assume_CCW	options4rings.py	/^when_orientation_cannot_be_determined_assume_CCW = False$/;"	v
+where	sorting4rings.py	/^from numpy import NaN, isnan, where, transpose$/;"	i
+wsvg	area4rings.py	/^from svgpathtools import parse_path, wsvg, Line$/;"	i
+wsvg	fixsvg.py	/^from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,$/;"	i
+wsvg	main.py	/^from svgpathtools import wsvg$/;"	i
+wsvg	misc4rings.py	/^from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg$/;"	i
+wsvg	sorting4rings.py	/^from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg$/;"	i
+z2xy	andysSVGpathTools.py	/^def z2xy(z):$/;"	f
+zeros	andysmod.py	/^    from numpy import zeros$/;"	i
