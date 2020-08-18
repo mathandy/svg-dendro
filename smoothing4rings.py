@@ -1,6 +1,7 @@
 from __future__ import division
 from numpy import isclose
-from svgpathtools import Path, CubicBezier, Line, disvg, inv_arclength
+from svgpathtools import Path, CubicBezier, Line, disvg
+from svgpathtools.path import inv_arclength
 
 
 def is_differentiable(path, tol=1e-8, return_kinks=False):
