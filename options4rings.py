@@ -121,7 +121,7 @@ min_absolute_segment_length = 1e-4
 rings_may_contain_intersections = False
 
 # If True then if the orientation of any paths cannot be determined automatically, 
-# will wait for input from user (after outputing an svg to help user decide).
+# will wait for input from user (after outputting an svg to help user decide).
 manually_fix_orientations = True
 
 # If paths are not close to being convex (and orientation fails to be determined
@@ -130,11 +130,11 @@ manually_fix_orientations = True
 when_orientation_cannot_be_determined_assume_CCW = False
 
 # Sometimes the user will be asked for input based on an output (regarding 
-# sorting or orientation issues).  If true, the program will attemp to display 
+# sorting or orientation issues).  If true, the program will attempt to display
 # the output svg in the user's default web browser.  This can be convenient, but 
-# sometimes scroll/zoom issues arrise in the browser and the user will want to 
+# sometimes scroll/zoom issues arise in the browser and the user will want to
 # just open the file in Illustrator or Inkscape anyways.
-try_to_open_svgs_in_browser = True
+try_to_open_svgs_in_browser = False
 
 # Trims paths with high curvature ends
 remove_curly_ends = True
