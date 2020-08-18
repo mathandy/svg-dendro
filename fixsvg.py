@@ -5,13 +5,14 @@ from time import time as current_time
 from warnings import warn
 from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,
                           bezier_segment, path_encloses_pt)
+from svgpathtools import smoothed_path
 
 # Internal Dependencies
-from andysmod import format_time, inputyn
+from andysmod import format_time, inputyn, consecutive_pairs
 from misc4rings import pathXpathIntersections
 from transects4rings import isPointOutwardOfPath
 import options4rings as opt
-from smoothing4rings import smooth_path as smoothed_path
+# from smoothing4rings import smooth_path as smoothed_path
 
 
 def crop_to_unit_interval(tval, tol=opt.tol_intersections):
@@ -239,11 +240,17 @@ def fix_svg(ring_list, center, svgname):
         print("Smoothing paths...")
         bad_rings = []
         for r_idx, r in enumerate(ring_list):
-            args = (r.path, opt.maxjointsize, opt.tightness, True)
-            r.path = smoothed_path(*args)
-            still_kinky_list = kinks(r.path)
-            if still_kinky_list:
-                bad_rings.append((r_idx, still_kinky_list))
+            if r.path.iscontinuous():
+                args = (r.path, opt.maxjointsize, opt.tightness, True)
+                r.path = smoothed_path(*args)
+                still_kinky_list = kinks(r.path)
+                if still_kinky_list:
+                    bad_rings.append((r_idx, still_kinky_list))
+            else:  # discont. may be added (accidentally) by code near kinks
+                discontinuities = \
+                    [r.path.index(s1) for s0, s1 in consecutive_pairs(r.path)
+                     if s0.end != s1.start]
+                bad_rings.append((r_idx, discontinuities))
 
         # If unremovable kinks exist, tell user to remove them manually
         if opt.ignore_unremovable_kinks or not bad_rings:
@@ -267,18 +274,17 @@ def fix_svg(ring_list, center, svgname):
                   nodes=nodes,
                   node_colors=node_colors,
                   filename=fixed_svg_filename)
-            raise Exception("Some rings contained kinks which could not be "
-                            "removed automatically.  "
-                            "They must be fixed manually (in inkscape or "
-                            "adobe illustrator). An svg has been output "
-                            "highlighting the rings which must be fixed "
-                            "manually (and the points where the "
-                            "kinks occur).  Fix the highlighted "
-                            "rings and replace your old svg with the fixed "
-                            "one (the colors/circles used to highlight the "
-                            "kinks will be fixed/removed automatically).\n"
-                            "Output svg saved to:\n"
-                            "%s" % fixed_svg_filename)
+            raise Exception(
+                "Some rings contained kinks which could not be removed "
+                "automatically.  They must be fixed manually (in "
+                "inkscape or adobe illustrator). An svg has been output "
+                "highlighting the rings which must be fixed manually "
+                "(and the points where the kinks occur).  Fix the "
+                "highlighted rings and replace your old svg with the fixed "
+                "one (the colors/circles used to highlight the kinks "
+                "will be fixed/removed automatically).\n"
+                "Output svg saved to:\n"
+                f"{fixed_svg_filename}\n")
         print("Done smoothing paths.")
 
     # Check for overlapping ends in open rings

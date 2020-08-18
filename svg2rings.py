@@ -2,13 +2,14 @@
 from xml.dom import minidom
 import re
 from time import time as current_time
+import os
 
 # Internal Module Dependencies
 from misc4rings import isCCW, closestColor, isApproxClosedPath
-from andysmod import format_time, Radius
+from andysmod import format_time, Radius, consecutive_pairs
 from andysSVGpathTools import polylineStr2pathStr, isClosedPathStr
 from rings4rings import Ring
-from svgpathtools import parse_path, Path, disvg
+from svgpathtools import parse_path, Path, disvg, wsvg
 
 # Options
 from options4rings import colordict
@@ -257,8 +258,23 @@ def svg2rings(filename):
             continue  # path with single point
 
         # removed small and repeated segments
+        assert path.iscontinuous()
         path = remove_degenerate_segments(path)
         path = remove_duplicate_segments(path)
+        if not path.iscontinuous():
+            discontinuities = \
+                [s1.start for s0, s1 in consecutive_pairs(path)
+                 if s0.end != s1.start]
+            dbfn = os.path.join(opt.output_directory_debug, 'problem.svg')
+            wsvg(path, nodes=discontinuities, filename=dbfn)
+            raise Exception(
+                'Something went wrong wil trying remove small and '
+                f'repeated segments. Please see "{dbfn}" -- there '
+                f'should be nodes highlighting where the problem '
+                f'occurred though the problem may not be visually '
+                f'obvious (e.g. might be related to '
+                f'overlapping/repeated path segments).')
+
 
         # check that no too many segments were removed
         if len(path) == 0:

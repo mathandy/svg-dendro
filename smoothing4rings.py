@@ -130,7 +130,7 @@ def smooth_joint(seg0, seg1, maxjointsize=3, tightness=1):
                         "CubicBezier object.")
         
         
-def smooth_path(path, ignore_unfixable_kinks=False):
+def smooth_path(path, maxjointsize=3, tightness=1, ignore_unfixable_kinks=False):
     """returns a path with no non-differentiable joints."""
     if len(path) == 1:
         return path
@@ -161,7 +161,8 @@ def smooth_path(path, ignore_unfixable_kinks=False):
                 new_path.append(seg1)
                 sharp_kinks.append(kink_idx)
             else:  # joint is not smooth, let's  smooth it.
-                new_seg0, elbow_segs, new_seg1 = smooth_joint(seg0, seg1)
+                new_seg0, elbow_segs, new_seg1 = smooth_joint(
+                    seg0, seg1, maxjointsize=maxjointsize, tightness=tightness)
                 new_path[-1] = new_seg0
                 new_path += elbow_segs
                 if idx == len(path) - 1:
