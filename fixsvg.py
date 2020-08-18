@@ -4,13 +4,14 @@ import os
 from time import time as current_time
 from warnings import warn
 from svgpathtools import (parse_path, Path, Line, disvg, wsvg, kinks,
-                          smoothed_path, bezier_segment, path_encloses_pt)
+                          bezier_segment, path_encloses_pt)
 
 # Internal Dependencies
 from andysmod import format_time, inputyn
 from misc4rings import pathXpathIntersections
 from transects4rings import isPointOutwardOfPath
 import options4rings as opt
+from smoothing4rings import smooth_path
 
 
 def crop_to_unit_interval(tval, tol=opt.tol_intersections):
