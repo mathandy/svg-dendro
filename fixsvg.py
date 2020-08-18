@@ -11,7 +11,7 @@ from andysmod import format_time, inputyn
 from misc4rings import pathXpathIntersections
 from transects4rings import isPointOutwardOfPath
 import options4rings as opt
-from smoothing4rings import smooth_path
+from smoothing4rings import smooth_path as smoothed_path
 
 
 def crop_to_unit_interval(tval, tol=opt.tol_intersections):
