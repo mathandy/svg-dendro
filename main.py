@@ -271,7 +271,15 @@ def get_user_args():
              'the input svg is a fixed svg output by SVG Dendro.',
         # metavar='ASSUME_SVG_IS_FIXED'
         )
-
+    parser.add_argument(
+        '--rings_may_contain_intersections',
+        # dest='assume_svg_is_fixed',
+        default=opt.rings_may_contain_intersections,
+        action='store_true',
+        help='Some intersections (e.g. at mergers) can be automatically '
+             'removed.  Use this flag to attempt to do this.',
+        # metavar='ASSUME_SVG_IS_FIXED'
+        )
     parser.add_argument(
         '-p', '--use_pickle_files',
         # dest='use_pickle_files',
@@ -342,6 +350,7 @@ if __name__ == '__main__':
     opt.ignore_extant_sorted_pickle_file = not user_args.use_pickle_files
     opt.look_for_user_sort_input = user_args.look_for_user_sort_input
     opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
+    opt.rings_may_contain_intersections = user_args.rings_may_contain_intersections
 
     ####################################################################
     # Check input path #################################################
