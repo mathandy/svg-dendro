@@ -2,8 +2,11 @@
 from __future__ import division
 import os
 import argparse
-import _pickle as pickle
 from time import time as current_time
+try:
+    import _pickle as pickle
+except:
+    import pickle
 import numpy as np
 from svgpathtools import wsvg
 

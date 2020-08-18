@@ -14,7 +14,10 @@ from time import sleep, time as current_time
 from itertools import combinations
 from numpy import NaN, isnan, where, transpose
 from operator import itemgetter
-import _pickle as pickle
+try:
+    import _pickle as pickle
+except:
+    import pickle
 import os
 
 
