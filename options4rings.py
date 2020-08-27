@@ -30,7 +30,7 @@ if_file_throws_error_skip_and_move_to_next_file = True
 start_at_file_number = 0
 
 # number of transects to generate; set to zero if none are desired
-N_transects = 50
+N_transects = 100
 
 # This finds transects that end at evenly spaced intervals, this is not like
 # how they'd be down by hand.  Note that given a particular point on the
