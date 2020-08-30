@@ -9,10 +9,13 @@ from andysSVGpathTools import (path2str, printPath, pathT2tseg, cropPath,
                                trimSeg, segt2PathT, reverseSeg,
                                closestPointInPath, concatPaths,
                                lineXlineIntersections)
-from svgpathtools import parse_path, Path, Line, CubicBezier, disvg
+from svgpathtools import parse_path, Path, Line, CubicBezier, disvg, wsvg
 from copy import deepcopy as copyobject
-
 from operator import itemgetter
+
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
+
+
 def sortby(x, k):
     return sorted(x, key=itemgetter(k))
 

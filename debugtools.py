@@ -1,6 +1,8 @@
 from __future__ import division, absolute_import, print_function
 import numpy as np
-from svgpathtools import Line, disvg, svg2paths
+from svgpathtools import Line, disvg, wsvg, svg2paths
+from options4rings import try_to_open_svgs_in_browser
+disvg = disvg if try_to_open_svgs_in_browser else wsvg
 
 
 def normalvf(paths, cols, l=None, sw=.1):

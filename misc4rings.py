@@ -12,6 +12,8 @@ from svgpathtools import Line, CubicBezier, Path, parse_path, wsvg, disvg
 import options4rings as opt
 from andysSVGpathTools import (segDerivative, extremePointInPath, path2str,
                                closestPointInPath, pathXpathIntersections)
+
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
 # from andysSVGpathTools import (
 #     pathXpathIntersections as andysSVGpathTools_pathXpathIntersections)
 

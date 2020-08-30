@@ -15,6 +15,8 @@ from andysSVGpathTools import pathT2tseg, segDerivative, isClosed
 import options4rings as opt
 from misc4rings import normalLineAtT_toInner_intersects_withOuter
 
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
+
 
 def isPointOutwardOfSeg(pt, seg):
     """

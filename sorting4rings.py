@@ -20,6 +20,8 @@ except:
     import pickle
 import os
 
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
+
 
 def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
     """Computes the number (out of n_test_lines) of the checked lines

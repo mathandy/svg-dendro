@@ -14,6 +14,7 @@ from transects4rings import isPointOutwardOfPath
 import options4rings as opt
 # from smoothing4rings import smooth_path as smoothed_path
 
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
 
 def crop_to_unit_interval(tval, tol=opt.tol_intersections):
     """Ensure tval inside unit interval, [0, 1].

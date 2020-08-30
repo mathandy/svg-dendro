@@ -15,6 +15,8 @@ from svgpathtools import parse_path, Path, disvg, wsvg
 from options4rings import colordict
 import options4rings as opt
 
+disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
+
 
 def askUserOrientation():
     dec = input("Enter 'y' or 'n' to specify orientation, or \n"

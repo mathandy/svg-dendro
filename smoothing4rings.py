@@ -1,7 +1,10 @@
 from __future__ import division
 from numpy import isclose
-from svgpathtools import Path, CubicBezier, Line, disvg
+from svgpathtools import Path, CubicBezier, Line, disvg, wsvg
 from svgpathtools.path import inv_arclength
+
+from options4rings import try_to_open_svgs_in_browser
+disvg = disvg if try_to_open_svgs_in_browser else wsvg
 
 
 def is_differentiable(path, tol=1e-8, return_kinks=False):
