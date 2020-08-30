@@ -4,7 +4,7 @@ from math import sqrt
 from numpy import poly1d
 from warnings import warn
 import os
-from svgpathtools import (Path, Line, CubicBezier, polyroots, real,
+from svgpathtools import (Path, Line, polyroots, real,
                           imag, disvg, wsvg)
 from svgpathtools.misctools import isclose
 poly_imag_part = imag
@@ -13,7 +13,6 @@ poly_real_part = real
 # Internal Dependencies
 from andysSVGpathTools import pathT2tseg, segDerivative, isClosed
 import options4rings as opt
-from misc4rings import normalLineAtT_toInner_intersects_withOuter
 
 disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
 
