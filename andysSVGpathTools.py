@@ -1041,7 +1041,8 @@ def pasteablePath(path):
 def disvg(paths, colors=[], nodes=None, node_colors=None, node_radii=None,
           lines=None, line_colors=None,
           filename=os_path.join(getcwd(), 'temporary_displaySVGPaths.svg'),
-          openInBrowser=False, stroke_width=stroke_width_default,
+          openInBrowser=opt.try_to_open_svgs_in_browser,
+          stroke_width=stroke_width_default,
           margin_size=0.1):
     from xml.dom.minidom import parse as md_xml_parse
     import svgwrite
@@ -1119,7 +1120,7 @@ def disvg(paths, colors=[], nodes=None, node_colors=None, node_radii=None,
     # try to open in web browser
     if openInBrowser and try_to_open_svgs_in_browser:
         try:
-            openFileInBrowser(filename)
+            open_in_browser(filename)
         except:
             print(
             "Failed to open output SVG in browser.  SVG saved to:\n%s" % filename)
