@@ -11,7 +11,7 @@ poly_imag_part = imag
 poly_real_part = real
 
 # Internal Dependencies
-from andysSVGpathTools import pathT2tseg, segDerivative, isClosed
+from andysSVGpathTools import pathT2tseg
 import options4rings as opt
 
 disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
