@@ -486,7 +486,8 @@ def sort_rings(ring_list, om_pickle_file):
     flag_count = 0
     num_seg_pairs2check = sum([sum([len(ring_list[i].path)*(len(ring_list[j].path)-1)/2 for (i,j) in combinations(cp.contents,2)]) for cp in closed_pairs])
     num_seg_pairs_checked = 0
-    for k,cp in enumerate(closed_pairs):
+    cyclic_dependencies = []
+    for k, cp in enumerate(closed_pairs):
         if not len(cp.contents):
             if not ordering_matrices_pickle_extant:
                 cp_oms.append([])
@@ -528,7 +529,10 @@ def sort_rings(ring_list, om_pickle_file):
             pass
 
         if not flag_count:
-            psorting = topo_sorted(cp.contents, ring_index_cmp, ordering_matrix=om)
+            psorting, cp_cyclic_dependencies = \
+                topo_sorted(cp.contents, ring_index_cmp, ordering_matrix=om)
+            if cp_cyclic_dependencies:
+                cyclic_dependencies.append(cp_cyclic_dependencies)
 
             cp.contents = [cp.contents[index] for index in flattenList(psorting)]
             cp.contents_psorting = psorting
@@ -538,6 +542,23 @@ def sort_rings(ring_list, om_pickle_file):
             et = et_tmp
             etr = (1-percent_complete)*et/percent_complete
             basic_output_on.dprint("%s percent complete. Time Elapsed = %s | ETR = %s"%(int(percent_complete*100),format_time(et),format_time(etr)))
+
+    if cyclic_dependencies:
+        deps_string = '\n'.join(map(str, cyclic_dependencies))
+        message = f"The following cyclic dependencies were found:\n{deps_string}"
+        message += "\nPlease see the following debug files for visuals:\n"
+        for i, cp_cyclic_dependencies in enumerate(cyclic_dependencies):
+            paths = []
+            path_colors = ''
+            for k, v in cp_cyclic_dependencies.items():
+                paths.append(ring_list[k].path)
+                paths.extend(v)
+                path_colors += 'r' + 'b' * len(v)
+            fp = os.path.join(opt.output_directory_debug,
+                              f'cyclic_dependency_{i}.svg')
+            disvg(paths, path_colors, filename=fp)
+            message += f'{fp}\n'
+        raise ValueError(message)
 
     #Output problem cases for manual sorting
     from options4rings import output_directory
