@@ -552,7 +552,7 @@ def sort_rings(ring_list, om_pickle_file):
             path_colors = ''
             for k, v in cp_cyclic_dependencies.items():
                 paths.append(ring_list[k].path)
-                paths.extend(v)
+                paths.extend([ring_list[vk].path for vk in v])
                 path_colors += 'r' + 'b' * len(v)
             fp = os.path.join(opt.output_directory_debug,
                               f'cyclic_dependency_{i}.svg')
