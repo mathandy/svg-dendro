@@ -548,16 +548,15 @@ def sort_rings(ring_list, om_pickle_file):
         message = f"The following cyclic dependencies were found:\n{deps_string}"
         message += "\nPlease see the following debug files for visuals:\n"
         for i, cp_cyclic_dependencies in enumerate(cyclic_dependencies):
-            paths = []
-            path_colors = ''
             for k, v in cp_cyclic_dependencies.items():
+                paths, path_colors = [], ''
                 paths.append(ring_list[k].path)
                 paths.extend([ring_list[vk].path for vk in v])
                 path_colors += 'r' + 'b' * len(v)
-            fp = os.path.join(opt.output_directory_debug,
-                              f'cyclic_dependency_{i}.svg')
-            disvg(paths, path_colors, filename=fp)
-            message += f'{fp}\n'
+                fp = os.path.join(opt.output_directory_debug,
+                                  f'cyclic_dependency_{i}_{k}.svg')
+                disvg(paths, path_colors, filename=fp)
+                message += f'{fp}\n'
         raise ValueError(message)
 
     #Output problem cases for manual sorting
