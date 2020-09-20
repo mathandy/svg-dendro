@@ -48,7 +48,8 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
             ['green', 'red'],
             lines=tran_lines,
             line_colors=tran_colors,
-            filename=debug_name)
+            filename=debug_name,
+            openInBrowser=opt.try_to_open_svgs_in_browser)
     return count_hits
 
 
@@ -183,8 +184,19 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
     ring2 = ringlist[ring2_index]
     if ring1.path == ring2.path:
         return 0
-    countHits12 = ring1_isbelow_ring2_numHits(ring1, ring2, N_lines2use)
-    countHits21 = ring1_isbelow_ring2_numHits(ring2, ring1, N_lines2use)
+
+    debug12, debug21 = '', ''
+    if opt.debug_lines_used_to_sort:
+        rec_num = 0 if increase_N_if_zero else 1
+        debug12 = os.path.join(opt.output_directory_debug,
+            f'sorting_lines_{ring1_index}-{ring2_index}_it{rec_num}.svg')
+        debug21 = os.path.join(opt.output_directory_debug,
+            f'sorting_lines_{ring2_index}-{ring1_index}_it{rec_num}.svg')
+
+    countHits12 = ring1_isbelow_ring2_numHits(
+        ring1, ring2, N_lines2use, debug_name=debug12)
+    countHits21 = ring1_isbelow_ring2_numHits(
+        ring2, ring1, N_lines2use, debug_name=debug21)
     if countHits12 == 0 or countHits21 == 0:
         if countHits12 > 0:
             return -1
@@ -221,10 +233,21 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
         upper_bound = Inf
 
     if percentage_for_disagreement < ratio21over12< upper_bound:
+
+        debug12, debug21 = '', ''
+        if opt.debug_lines_used_to_sort:
+            rec_num = 0 if increase_N_if_zero else 1
+            debug12 = os.path.join(opt.output_directory_debug,
+                f'sorting_lines_{ring1_index}-{ring2_index}_it2.svg')
+            debug21 = os.path.join(opt.output_directory_debug,
+                f'sorting_lines_{ring2_index}-{ring1_index}_it2.svg')
+
         # still not sure, so use more lines
         N_upped = N_lines2use * max(len(ring1.path), len(ring2.path))
-        countHits12 = ring1_isbelow_ring2_numHits(ring1, ring2, N_upped)
-        countHits21 = ring1_isbelow_ring2_numHits(ring2, ring1, N_upped)
+        countHits12 = ring1_isbelow_ring2_numHits(
+            ring1, ring2, N_upped, debug_name=debug12)
+        countHits21 = ring1_isbelow_ring2_numHits(
+            ring2, ring1, N_upped, debug_name=debug21)
         ratio21over12 = countHits21/countHits12
 
         if percentage_for_disagreement < ratio21over12 < upper_bound:

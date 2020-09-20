@@ -337,6 +337,14 @@ def get_user_args():
             os.getcwd(), 'input', 'examples', 'real_examples')),
     )
 
+    parser.add_argument(
+        '--debug_sort_lines',
+        default=False,
+        action='store_true',
+        help="If this flag is included, SVG Dendro will output SVGs "
+             "showing lines used for sorting)",
+    )
+
     return parser.parse_args()
 
 
@@ -354,6 +362,7 @@ if __name__ == '__main__':
     opt.look_for_user_sort_input = user_args.look_for_user_sort_input
     opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
     opt.rings_may_contain_intersections = user_args.rings_may_contain_intersections
+    opt.debug_lines_used_to_sort = user_args.debug_sort_lines
 
     ####################################################################
     # Check input path #################################################
