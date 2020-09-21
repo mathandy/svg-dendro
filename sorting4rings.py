@@ -23,7 +23,8 @@ import os
 disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
 
 
-def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
+def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name='',
+                                ring_list=None):
     """Computes the number (out of n_test_lines) of the checked lines
     from ring1 to the center that intersect  with ring2
     """
@@ -44,12 +45,22 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name=''):
             count_hits += 1
 
     if debug_name != '':
-        dis([ring1.path, ring2.path],
-            ['green', 'red'],
-            lines=tran_lines,
-            line_colors=tran_colors,
-            filename=debug_name,
-            openInBrowser=opt.try_to_open_svgs_in_browser)
+        disvg([ring1.path, ring2.path] + tran_lines,
+              ['green', 'red'] + tran_colors,
+              filename=debug_name)
+        if opt.debug_lines_used_to_sort_full:
+            dir, fn = os.path.split(debug_name)
+            debug_name = os.path.join(dir, 'full_' + fn)
+            other_paths = [r.path for r in ring_list if r != ring1 and r != ring2]
+            other_colors = ['black'] * len(other_paths)
+
+            stroke_widths = [opt.stroke_width_default] * len(other_paths) + \
+                            [3 * opt.stroke_width_default] * (2 + len(tran_lines))
+            disvg(other_paths + [ring1.path, ring2.path] + tran_lines,
+                  other_colors + ['green', 'red'] + tran_colors,
+                  filename=debug_name,
+                  openinbrowser=opt.try_to_open_svgs_in_browser,
+                  stroke_widths=stroke_widths)
     return count_hits
 
 
@@ -185,18 +196,20 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
     if ring1.path == ring2.path:
         return 0
 
-    debug12, debug21 = '', ''
+    debug12, debug21, dbrlist = '', '', None
     if opt.debug_lines_used_to_sort:
         rec_num = 0 if increase_N_if_zero else 1
         debug12 = os.path.join(opt.output_directory_debug,
             f'sorting_lines_{ring1_index}-{ring2_index}_it{rec_num}.svg')
         debug21 = os.path.join(opt.output_directory_debug,
             f'sorting_lines_{ring2_index}-{ring1_index}_it{rec_num}.svg')
+        if opt.debug_lines_used_to_sort_full:
+            dbrlist = ringlist
 
     countHits12 = ring1_isbelow_ring2_numHits(
-        ring1, ring2, N_lines2use, debug_name=debug12)
+        ring1, ring2, N_lines2use, debug_name=debug12, ring_list=dbrlist)
     countHits21 = ring1_isbelow_ring2_numHits(
-        ring2, ring1, N_lines2use, debug_name=debug21)
+        ring2, ring1, N_lines2use, debug_name=debug21, ring_list=dbrlist)
     if countHits12 == 0 or countHits21 == 0:
         if countHits12 > 0:
             return -1
@@ -234,20 +247,21 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
 
     if percentage_for_disagreement < ratio21over12< upper_bound:
 
-        debug12, debug21 = '', ''
+        debug12, debug21, dbrlist = '', '', None
         if opt.debug_lines_used_to_sort:
-            rec_num = 0 if increase_N_if_zero else 1
             debug12 = os.path.join(opt.output_directory_debug,
                 f'sorting_lines_{ring1_index}-{ring2_index}_it2.svg')
             debug21 = os.path.join(opt.output_directory_debug,
                 f'sorting_lines_{ring2_index}-{ring1_index}_it2.svg')
+            if opt.debug_lines_used_to_sort_full:
+                dbrlist = ringlist
 
         # still not sure, so use more lines
         N_upped = N_lines2use * max(len(ring1.path), len(ring2.path))
         countHits12 = ring1_isbelow_ring2_numHits(
-            ring1, ring2, N_upped, debug_name=debug12)
+            ring1, ring2, N_upped, debug_name=debug12, ring_list=dbrlist)
         countHits21 = ring1_isbelow_ring2_numHits(
-            ring2, ring1, N_upped, debug_name=debug21)
+            ring2, ring1, N_upped, debug_name=debug21, ring_list=dbrlist)
         ratio21over12 = countHits21/countHits12
 
         if percentage_for_disagreement < ratio21over12 < upper_bound:

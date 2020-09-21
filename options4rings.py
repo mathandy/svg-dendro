@@ -179,10 +179,12 @@ visual_test_of_all_ring_sort_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 create_SVG_showing_ring_sort = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 sort_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 sort_debug_3_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
-debug_lines_used_to_sort = False  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 transect_debug_mode_on = True  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 transect_debug_mode_output_folder = os_path.join(output_directory, "debug")
 
+# For if you're trying to figure out where cyclic dependencies are coming
+debug_lines_used_to_sort = False  ### CHANGE TO FALSE FOR NON-DEBUG RUN
+debug_lines_used_to_sort_full = False  ### CHANGE TO FALSE FOR NON-DEBUG RUN
 
 # This produces and SVG slideshow showing how the transect is formed.  
 # You should set N_transects=1 above when using this.

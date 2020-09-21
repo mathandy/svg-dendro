@@ -341,10 +341,22 @@ def get_user_args():
         '--debug_sort_lines',
         default=False,
         action='store_true',
-        help="If this flag is included, SVG Dendro will output SVGs "
-             "showing lines used for sorting)",
+        help="Creates SVGs in output debug folder that will help in finding"
+             "cyclic dependencies and other sorting issues.",
     )
 
+    parser.add_argument(
+        '--debug_sort_lines_full',
+        default=False,
+        action='store_true',
+        help="Creates SVGs in output debug folder that will help in finding"
+             "cyclic dependencies and other sorting issues.  This flag "
+             "creates more useful output than `--debug_sort_lines`, however, "
+             "it may slow down the sorting process significantly.  "
+             "Alternatively, you could use `--debug_sort_lines` and then paste"
+             "copy and paste all rings into these debug SVGs (e.g. by opening "
+             "the fixed or original svg in a text editor).",
+    )
     return parser.parse_args()
 
 
@@ -362,7 +374,9 @@ if __name__ == '__main__':
     opt.look_for_user_sort_input = user_args.look_for_user_sort_input
     opt.if_file_throws_error_skip_and_move_to_next_file = not user_args.stop_on_error
     opt.rings_may_contain_intersections = user_args.rings_may_contain_intersections
-    opt.debug_lines_used_to_sort = user_args.debug_sort_lines
+    opt.debug_lines_used_to_sort = \
+        user_args.debug_sort_lines or user_args.debug_sort_lines_full
+    opt.debug_lines_used_to_sort_full = user_args.debug_sort_lines_full
 
     ####################################################################
     # Check input path #################################################
