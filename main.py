@@ -365,7 +365,16 @@ def get_user_args():
              "are outward of that ring.  Using this flag means that these "
              "transects will not emanate from the endpoints of any ring.",
     )
-
+    parser.add_argument(
+        '--beware_wedging',
+        default=False,
+        action='store_true',
+        help="When sorting transects are drawn from one ring to see if others"
+             "are outward of that ring.  Using this flag means that it will"
+             "be check to ensure these transects do not cross the boundary"
+             "ring before intersecting with the supposedly outward ring, as "
+             "might happen when rings are non-convex (e.g. due to wedging).",
+    )
     return parser.parse_args()
 
 
@@ -387,6 +396,7 @@ if __name__ == '__main__':
         user_args.debug_sort_lines or user_args.debug_sort_lines_full
     opt.debug_lines_used_to_sort_full = user_args.debug_sort_lines_full
     opt.avoid_endpoints_when_sorting = user_args.avoid_endpoints_when_sorting
+    opt.beware_wedging = user_args.beware_wedging
 
     ####################################################################
     # Check input path #################################################

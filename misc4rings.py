@@ -231,7 +231,8 @@ def path_isbelow_point(path, pt, center):
 
 
 def normalLineAtT_toInner_intersects_withOuter(
-        innerT, inner_path, outer_path, center, debug=False, testlength=None):
+        innerT, inner_path, outer_path, center, debug=False, testlength=None,
+        boundary=None):
     """ Finds normal line to `inner_path` at `innerT`
 
     Note: This fcn is meant to be used by the
@@ -283,18 +284,28 @@ def normalLineAtT_toInner_intersects_withOuter(
         long_mag = 1.1 * outer_path.radialrange(inner_pt)[1][0]
     long_norm_line = Line(inner_pt, inner_pt + long_mag*n_vec)
     long_norm_path = Path(long_norm_line)
-    intersec = sortby(pathXpathIntersections(long_norm_path, outer_path), 2)
+    intersec = pathXpathIntersections(long_norm_path, outer_path)
+    intersec.sort(key=itemgetter(2))
+
     if intersec:
+        t_outer = intersec[0][2]
         # this tests if the normal line intersect with the inner (other
         # than at its startpoint) before hitting the outer
         # note: pathxpath returns (seg1,seg2,t1,t2)
-        intersec_withInner = \
-            sortby(pathXpathIntersections(Path(long_norm_line), inner_path), 2)
-        if len(intersec_withInner) > 1 and intersec_withInner[1][2] < intersec[0][2]:
-            if debug:
-                return long_norm_line, False, False
-            else:
-                return False, False, False
+        intersec_withInner = pathXpathIntersections(Path(long_norm_line), inner_path)
+        intersec_withInner.sort(key=itemgetter(2))
+        if len(intersec_withInner) > 1 and intersec_withInner[1][2] < t_outer:
+            return long_norm_line if debug else False, False, False
+
+        # check that line does not go through boundary before outward path
+        if opt.beware_wedging and boundary is not None:
+            boundary_intersections = \
+                pathXpathIntersections(long_norm_path, boundary)
+            boundary_intersections.sort(key=itemgetter(2))
+            if boundary_intersections:
+                t_bdry = boundary_intersections[0][2]
+                if t_bdry < t_outer:
+                    return long_norm_line if debug else False, False, False
 
         # this block tests if the normal line goes through the center (roughly
         # speaking) and finds a false intersection with outer on the other

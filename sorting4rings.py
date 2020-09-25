@@ -24,7 +24,7 @@ disvg = disvg if opt.try_to_open_svgs_in_browser else wsvg
 
 
 def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name='',
-                                ring_list=None):
+                                ring_list=None, boundary=None):
     """Computes the number (out of n_test_lines) of the checked lines
     from ring1 to the center that intersect  with ring2
     """
@@ -40,7 +40,8 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name='',
     for innerT in T_vals:
         # innerT = i/(n_test_lines - 1)
         nlin, seg_out, t_out = normalLineAtT_toInner_intersects_withOuter(
-            innerT, ring1.path, ring2.path, center, 'debug')
+            innerT, ring1.path, ring2.path, center, 'debug',
+            boundary=boundary)
 
         if debug_name != '':  # output an SVG with the lines used
             tran_lines.append(nlin)
@@ -194,22 +195,21 @@ def postsort_ring1_isoutside_ring2_cmp(ring1,ring2):
     
 def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
                                   N_lines2use=opt.alt_sort_N,
-                                  increase_N_if_zero=True):#####TOL
+                                  increase_N_if_zero=True, boundary=None):#####TOL
     """Returns 1 if true, -1 if false and 0 if equal"""
     ring1 = ringlist[ring1_index]
     ring2 = ringlist[ring2_index]
     if ring1.path == ring2.path:
         return 0
 
-    debug12, debug21, dbrlist = '', '', None
+    dbrlist = ringlist if opt.debug_lines_used_to_sort_full else None
+    debug12, debug21 = '', ''
     if opt.debug_lines_used_to_sort:
         rec_num = 0 if increase_N_if_zero else 1
         debug12 = os.path.join(opt.output_directory_debug,
             f'sorting_lines_{ring1_index}-{ring2_index}_it{rec_num}.svg')
         debug21 = os.path.join(opt.output_directory_debug,
             f'sorting_lines_{ring2_index}-{ring1_index}_it{rec_num}.svg')
-        if opt.debug_lines_used_to_sort_full:
-            dbrlist = ringlist
 
     countHits12 = ring1_isbelow_ring2_numHits(
         ring1, ring2, N_lines2use, debug_name=debug12, ring_list=dbrlist)
@@ -224,7 +224,7 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
             N_upped = N_lines2use * max(len(ring1.path), len(ring2.path))
             improved_res = ring1_isoutside_ring2_cmp_alt(
                 ringlist, ring1_index, ring2_index, N_lines2use=N_upped,
-                increase_N_if_zero=False)
+                increase_N_if_zero=False, boundary=boundary)
             if improved_res != 0:
                 return improved_res
             elif ring1.isClosed() or ring2.isClosed():
@@ -252,14 +252,12 @@ def ring1_isoutside_ring2_cmp_alt(ringlist, ring1_index, ring2_index,
 
     if percentage_for_disagreement < ratio21over12< upper_bound:
 
-        debug12, debug21, dbrlist = '', '', None
+        debug12, debug21 = '', ''
         if opt.debug_lines_used_to_sort:
             debug12 = os.path.join(opt.output_directory_debug,
                 f'sorting_lines_{ring1_index}-{ring2_index}_it2.svg')
             debug21 = os.path.join(opt.output_directory_debug,
                 f'sorting_lines_{ring2_index}-{ring1_index}_it2.svg')
-            if opt.debug_lines_used_to_sort_full:
-                dbrlist = ringlist
 
         # still not sure, so use more lines
         N_upped = N_lines2use * max(len(ring1.path), len(ring2.path))
@@ -431,6 +429,8 @@ def debug_unlocated_rings_and_raise_error(unlocated_open_ring_indices,
     raise Exception(error_message)
 
 
+
+
 def sort_rings(ring_list, om_pickle_file):
     """make list of pairs of consecutive closed rings"""
     basic_output_on.dprint("\nSorting closed rings...",'nr')
@@ -514,13 +514,23 @@ def sort_rings(ring_list, om_pickle_file):
         except:
             from warnings import warn
             warn("No ordering matrices pickle file found.");sleep(1)
-    if use_alternative_sorting_method:
-        def ring_index_cmp(idx1, idx2):
-            return ring1_isoutside_ring2_cmp_alt(ring_list, idx1, idx2)
-    else:
-        def ring_index_cmp(idx1, idx2): 
-            return ring1_isoutside_ring2_cmp(
-                ring_list[idx1], ring_list[idx2], outside_point, bdry_ring.path)
+
+    class RingIndexCmp:
+        def __init__(self, outer_closed_path):
+            self.boundary = outer_closed_path
+
+        if opt.use_alternative_sorting_method:
+            def __call__(self, idx1, idx2):
+                return ring1_isoutside_ring2_cmp_alt(
+                    ring_list, idx1, idx2, boundary=self.boundary
+                )
+        else:
+            def __call__(self, idx1, idx2):
+                return ring1_isoutside_ring2_cmp(
+                    ring_list[idx1], ring_list[idx2], outside_point,
+                    self.boundary
+                )
+
     basic_output_on.dprint("Sorting open rings inside each cp...")
     start_time_cp_sorting = current_time()
     et = 0
@@ -552,7 +562,7 @@ def sort_rings(ring_list, om_pickle_file):
                     om[j,i] = -om[i,j]
             start_time_cp_sorting -= current_time() - tmp_time 
         else:
-            om = createOrderingMatrix(cp.contents,ring_index_cmp)
+            om = createOrderingMatrix(cp.contents, RingIndexCmp(cp.outer.path))
             cp_oms.append(om)
         try:
             assert not any(flattenList(isnan(om)))
@@ -572,7 +582,7 @@ def sort_rings(ring_list, om_pickle_file):
 
         if not flag_count:
             psorting, cp_cyclic_dependencies = \
-                topo_sorted(cp.contents, ring_index_cmp, ordering_matrix=om)
+                topo_sorted(cp.contents, RingIndexCmp(cp.outer.path), ordering_matrix=om)
             if cp_cyclic_dependencies:
                 cyclic_dependencies.append(cp_cyclic_dependencies)
 

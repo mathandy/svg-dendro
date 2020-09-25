@@ -168,6 +168,11 @@ create_svg_highlighting_inappropriately_short_rings = True
 # do not use endpoints for lines used to sort rings
 avoid_endpoints_when_sorting = False
 
+# when sorting, check that the transects used to tell that one ring
+# is outward of another do not intersect the boundary (e.g. in case of
+# wedging)
+beware_wedging = False
+
 ###############################################################################
 ###Debug options: (Note: These will slow down the program significantly.  They 
 # should all be False unless you are debugging code.)
