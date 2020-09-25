@@ -357,6 +357,15 @@ def get_user_args():
              "copy and paste all rings into these debug SVGs (e.g. by opening "
              "the fixed or original svg in a text editor).",
     )
+    parser.add_argument(
+        '--avoid_endpoints_when_sorting',
+        default=False,
+        action='store_true',
+        help="When sorting transects are drawn from one ring to see if others"
+             "are outward of that ring.  Using this flag means that these "
+             "transects will not emanate from the endpoints of any ring.",
+    )
+
     return parser.parse_args()
 
 
@@ -377,6 +386,7 @@ if __name__ == '__main__':
     opt.debug_lines_used_to_sort = \
         user_args.debug_sort_lines or user_args.debug_sort_lines_full
     opt.debug_lines_used_to_sort_full = user_args.debug_sort_lines_full
+    opt.avoid_endpoints_when_sorting = user_args.avoid_endpoints_when_sorting
 
     ####################################################################
     # Check input path #################################################

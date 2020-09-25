@@ -12,7 +12,7 @@ import options4rings as opt
 from svgpathtools import Path, Line, path_encloses_pt, disvg, wsvg
 from time import sleep, time as current_time
 from itertools import combinations
-from numpy import NaN, isnan, where, transpose
+from numpy import NaN, isnan, where, transpose, linspace
 from operator import itemgetter
 try:
     import _pickle as pickle
@@ -32,8 +32,13 @@ def ring1_isbelow_ring2_numHits(ring1, ring2, n_test_lines, debug_name='',
     count_hits = 0
     tran_colors = []  # for debug mode
     tran_lines = []  # for debug mode
-    for i in range(n_test_lines):
-        innerT = i/(n_test_lines - 1)
+    if opt.avoid_endpoints_when_sorting:
+        T_vals = linspace(0, 1, n_test_lines + 1, endpoint=False)
+    else:
+        T_vals = linspace(0, 1, n_test_lines)
+
+    for innerT in T_vals:
+        # innerT = i/(n_test_lines - 1)
         nlin, seg_out, t_out = normalLineAtT_toInner_intersects_withOuter(
             innerT, ring1.path, ring2.path, center, 'debug')
 

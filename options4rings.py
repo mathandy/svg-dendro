@@ -165,6 +165,8 @@ appropriate_ring_length_minimum = 2.5 * tol_isNear
 dont_remove_closed_inappropriately_short_rings = True
 create_svg_highlighting_inappropriately_short_rings = True
 
+# do not use endpoints for lines used to sort rings
+avoid_endpoints_when_sorting = False
 
 ###############################################################################
 ###Debug options: (Note: These will slow down the program significantly.  They 
